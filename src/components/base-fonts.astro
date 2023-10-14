@@ -1,0 +1,64 @@
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+<!-- sans -->
+<link
+  rel="preload"
+  href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.woff2"
+  crossorigin
+  as="font"
+  type="font/woff2"
+/>
+
+<!-- serif -->
+<link
+  rel="preload"
+  href="https://cdn.jsdelivr.net/gh/webfontworld/amore/AritaBuri-Medium.woff2"
+  crossorigin
+  as="font"
+  type="font/woff2"
+/>
+<link
+  rel="preload"
+  href="https://cdn.jsdelivr.net/gh/webfontworld/amore/AritaBuri-SemiBold.woff2"
+  crossorigin
+  as="font"
+  type="font/woff2"
+/>
+
+<!-- mono -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  @font-face {
+    font-family: 'SUITE Variable';
+    font-weight: 300 900;
+    src: url('https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/variable/woff2/SUIT-Variable.woff2')
+      format('woff2-variations');
+  }
+  @font-face {
+    font-family: 'AritaBuri';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/amore/AritaBuri-Medium.woff2')
+      format('woff2');
+  }
+  @font-face {
+    font-family: 'AritaBuri';
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/amore/AritaBuri-SemiBold.woff2')
+      format('woff2');
+  }
+  :root {
+    --font-sans: 'SUITE Variable';
+    --font-serif: 'AritaBuri';
+    --font-mono: 'Source Code Pro';
+  }
+</style>

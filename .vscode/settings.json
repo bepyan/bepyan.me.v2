@@ -1,0 +1,26 @@
+{
+  "editor.rulers": [80],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "astro",
+    "typescript",
+    "typescriptreact"
+  ],
+  "files.associations": {
+    "*.mdx": "markdown"
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "cSpell.words": ["Pretendard"],
+  "pasteImage.defaultName": "YYMMDD-HHmmss",
+  "pasteImage.basePath": "${projectRoot}/public",
+  "pasteImage.path": "${projectRoot}/public/img/${currentFileNameWithoutExt}",
+  "pasteImage.forceUnixStyleSeparator": true,
+  "pasteImage.insertPattern": "![${imageFileNameWithoutExt}](${imageFilePath})",
+  "pasteImage.prefix": "/"
+}

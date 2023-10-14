@@ -1,0 +1,41 @@
+---
+title: '(JS) .txt File 만들기'
+description: ''
+image: ''
+draft: false
+date: 2022-09-03 19:14:23
+tags:
+  - javascript
+---
+
+[Blob](https://developer.mozilla.org/ko/docs/Web/API/Blob)을 활용하는 방법
+
+```js
+const generateTxtFile = (data) => {
+  const blob = new Blob([JSON.stringify(data)], {
+    type: 'text/plain;charset=UTF-8',
+  });
+  const textFile = window.URL.createObjectURL(blob);
+  return textFile;
+};
+```
+
+- `charset=UTF-8`을 붙여야 한글이 깨지지 않는다.
+
+[File](https://developer.mozilla.org/ko/docs/Web/API/File)을 활용하는 방법
+
+```js
+const generateTxtFile = (data) => {
+  const fileName = `test.txt`;
+  const txtFile = new File([JSON.stringify(data)], fileName, {
+    type: 'text/plain;charset=UTF-8',
+  });
+  return txtFile;
+};
+```
+
+```js
+window.open(generateTxtFile('한글'), '_blank');
+```
+
+https://www.thecodehubs.com/generate-text-file-using-plain-javascript/

@@ -1,0 +1,58 @@
+---
+title: '(JS) console.log 이쁘게 찍기'
+description: ''
+date: 2022-09-23 20:09:57
+draft: false
+tags:
+  - javascript
+---
+
+```js
+console.log('%cfatfish', 'color: red;');
+```
+
+### 색상을 구분하고 싶을 때
+
+```js
+const getLogStyle = (code) => {
+  const style = 'padding: 4px 8px;';
+
+  if (code >= 200 && code < 300) {
+    return `${style} background: #C2E0C6; color: #000000;`;
+  }
+
+  if (code >= 400 && code < 600) {
+    return `${style} background: #FEF0F0; color: #FF0000;`;
+  }
+
+  return `${style} background: #FEF2C0; color: #000000;`;
+};
+
+console.log(`%c${message}`, getLogStyle(code));
+```
+
+### 정보들을 그룹핑하고 싶을 때
+
+```js {1,11}
+console.groupCollapsed(`%c${groupTitle}`, getLogStyle(data.code));
+
+console.log('>>> response', response);
+console.log('>>> params', params);
+if (data.code !== 200) {
+  console.log('>>> data', data);
+} else {
+  console.log('>>> data', data.data);
+}
+
+console.groupEnd();
+```
+
+### 시간 측정할 때
+
+```jsx {2,4}
+(async () => {
+  console.time();
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.timeEnd();
+})();
+```

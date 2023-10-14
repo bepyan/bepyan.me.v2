@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -- colors --- */
+@layer base {
+  :root {
+    --gray-50: #ffffff;
+    --gray-75: #fdfdfd;
+    --gray-100: #f8f8f8;
+    --gray-200: #e6e6e6;
+    --gray-300: #d5d5d5;
+    --gray-400: #b1b1b1;
+    --gray-500: #909090;
+    --gray-600: #6d6d6d;
+    --gray-700: #464646;
+    --gray-800: #222222;
+    --gray-900: #000000;
+
+    --selection: hsla(0, 0%, 0%, 0.071);
+
+    --page-background: var(--gray-50);
+
+    --heading: var(--gray-900);
+    --text-body: var(--gray-800);
+    --text-second: var(--gray-700);
+    --text-disabled: var(--gray-500);
+  }
+
+  .dark {
+    --gray-50: #000;
+    --gray-75: #141414;
+    --gray-100: #1d1d1d;
+    --gray-200: #303030;
+    --gray-300: #4b4b4b;
+    --gray-400: #6a6a6a;
+    --gray-500: #8d8d8d;
+    --gray-600: #b0b0b0;
+    --gray-700: #d0d0d0;
+    --gray-800: #ebebeb;
+    --gray-900: #fff;
+
+    --selection: hsla(0, 0%, 100%, 0.077);
+
+    --page-background: var(--gray-75);
+
+    --heading: var(--gray-900);
+    --text-body: var(--gray-800);
+    --text-second: var(--gray-600);
+    --text-disabled: var(--gray-500);
+  }
+}
+
+/* -- variable --- */
+@layer base {
+  :root {
+    --lg: 1024px;
+    --md: 768px;
+    --sm: 640px;
+
+    --page-top: 128px;
+    --page-width: 1072px;
+    --content-width: 640px;
+    --body-margin-left: max(24px, env(safe-area-inset-left));
+    --body-margin-right: max(24px, env(safe-area-inset-right));
+  }
+
+  @media (max-width: var(--lg)) {
+    :root {
+      --page-top: 128px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --page-top: 64px;
+    }
+  }
+}
+
+/* ---- layout ---- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-height);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply m-0 min-h-screen font-sans text-base leading-7 tracking-normal antialiased;
+    @apply text-second bg-page;
+    padding-right: var(--body-margin-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: var(--body-margin-left);
+    background-color: var(--page-background);
+  }
+
+  * {
+    @apply box-border border-gray-200;
+  }
+
+  ::selection {
+    @apply bg-selection shadow-none;
+  }
+
+  h1 {
+    @apply text-heading font-serif font-bold;
+  }
+
+  b {
+    @apply text-body font-bold;
+  }
+
+  em {
+    @apply font-serif not-italic;
+  }
+
+  del {
+    @apply text-disabled;
+  }
+
+  mark {
+    padding: 3px 2px;
+    border-radius: 2px;
+    background-color: var(--selection);
+    color: var(--text-body);
+  }
+
+  a.link,
+  a.external-link {
+    @apply text-body relative underline decoration-gray-400 underline-offset-4 hover:decoration-gray-500;
+  }
+  a.external-link {
+    @apply pr-4;
+  }
+  a.external-link::after {
+    @apply absolute bottom-0 right-0 m-0 h-4 w-4;
+    background: url('data:image/svg+xml;utf8,<svg color="%23838383" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m13 3l3.293 3.293l-7 7l1.414 1.414l7-7L21 11V3z"/><path fill="currentColor" d="M19 19H5V5h7l-2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-5l-2-2v7z"/></svg>');
+    background-repeat: no-repeat;
+    background-size: cover;
+    content: '';
+  }
+
+  /* ---- scrollbar ---- */
+  * {
+    --scrollbar-size: 16px;
+    --scrollbar-size-min: 44px;
+    --scrollbar-color: var(--gray-200);
+    scrollbar-color: var(--scrollbar-color) transparent;
+    /* firefox */
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    min-width: var(--scrollbar-size-min);
+    min-height: var(--scrollbar-size-min);
+    border: 5px solid transparent;
+    border-radius: var(--scrollbar-size);
+    background-clip: padding-box;
+    background-color: var(--scrollbar-color);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    --scrollbar-color: var(--gray-300);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    --scrollbar-color: var(--gray-300);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-button,
+  ::-webkit-scrollbar-corner,
+  ::-webkit-resizer {
+    display: none;
+  }
+}
+
+@layer components {
+  .main-grid {
+    @apply grid grid-cols-[192px_640px_192px] items-start gap-6 lg:grid-cols-[auto_640px_auto]
+      md:flex md:flex-col md:justify-start md:gap-8;
+  }
+
+  .main-grid main {
+    width: 100%;
+    grid-column: 2;
+  }
+
+  .blur-layer {
+    position: fixed; /* for IE */
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    width: calc(100% + var(--body-margin-left) + var(--body-margin-right));
+    height: var(--h);
+    margin-bottom: calc(-1 * var(--h));
+    margin-left: calc(-1 * var(--body-margin-left));
+    backdrop-filter: blur(5px);
+    mask-image: linear-gradient(to bottom, #000000 25%, transparent);
+    opacity: 0.95;
+    pointer-events: none;
+    user-select: none;
+    --h: min(96px, var(--page-top));
+  }
+
+  .blur-layer:after {
+    position: absolute;
+    background: linear-gradient(to bottom, var(--page-background), transparent);
+    content: '';
+    inset: 0;
+  }
+}

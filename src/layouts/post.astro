@@ -1,0 +1,36 @@
+---
+import '~/styles/mdx.css';
+
+import type { CollectionEntry } from 'astro:content';
+
+import BaseNav from '~/components/base-nav.astro';
+
+import Main from './main.astro';
+
+type Props = CollectionEntry<'writing'>['data'];
+
+const { title, description, date } = Astro.props;
+---
+
+<Main seo={{ title, description }}>
+  <BaseNav href="/" />
+  <main>
+    <article class="mdx">
+      <!-- header -->
+      <div class="mb-14 font-serif">
+        <h1 class="text-heading font-semibold leading-7">{title}</h1>
+        <time class="text-disabled text-sm"
+          >{
+            new Date(date).toLocaleDateString('en', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })
+          }</time
+        >
+      </div>
+      <!-- content -->
+      <slot />
+    </article>
+  </main>
+</Main>

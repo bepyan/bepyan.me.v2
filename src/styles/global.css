@@ -89,7 +89,8 @@
   }
 
   body {
-    @apply m-0 min-h-screen font-sans text-base leading-7 tracking-normal antialiased;
+    @apply m-0 min-h-screen;
+    @apply font-sans text-base leading-7 tracking-normal antialiased;
     @apply bg-page text-second;
     padding-right: var(--body-margin-right);
     padding-bottom: env(safe-area-inset-bottom);

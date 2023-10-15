@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 
+import ThemeToggle from '~/components/theme-toggle';
 import { GithubIcon, NotionIcon, TwitterXIcon } from '~/components/ui/icons';
 import Main from '~/layouts/main.astro';
 import { sortDateDesc } from '~/libs/mdx';
@@ -16,7 +17,13 @@ const recentNoteList = (await getCollection('note'))
 
 <Main>
   <main class="font-serif">
-    <h1>김평안 ﹒ bepyan</h1>
+    <div class="flex items-end">
+      <h1>김평안 ﹒ bepyan</h1>
+      <div class="ml-auto">
+        <ThemeToggle client:load />
+      </div>
+    </div>
+    <!-- 소개 -->
     <div class="my-7">
       <p>
         사용자와 <b>부드럽게</b> 상호작용하는 것, 복잡한 것을
@@ -24,6 +31,7 @@ const recentNoteList = (await getCollection('note'))
       </p>
       <p>탐구하고 사색하는 것을 좋아하여 틈틈이 발견한 것을 기록하려 합니다.</p>
     </div>
+    <!-- 현재 -->
     <div class="my-7">
       <p>
         현재
@@ -56,7 +64,7 @@ const recentNoteList = (await getCollection('note'))
           <TwitterXIcon />
         </a>
         <a
-          class="hover:text-body flex items-end"
+          class="flex items-end hover:text-body"
           href="https://bepyan.notion.site/Frontend-Developer-69fd245161734c1793e8df78dffe705c?pvs=4"
           target="_blank"
         >
@@ -65,9 +73,10 @@ const recentNoteList = (await getCollection('note'))
         </a>
       </div>
     </div>
+    <!-- 글 목록 -->
     <div class="mt-14 flex gap-4">
       <section class="w-80">
-        <h2 class="text-second mb-4">나의 서재</h2>
+        <h2 class="mb-4 text-second">나의 서재</h2>
         <div class="flex flex-col items-start gap-4">
           {
             recentWritingList.map((post) => (
@@ -85,7 +94,7 @@ const recentNoteList = (await getCollection('note'))
         </div>
       </section>
       <section class="w-80">
-        <h2 class="text-second mb-4">수첩</h2>
+        <h2 class="mb-4 text-second">수첩</h2>
         <div class="flex flex-col items-start">
           {
             recentNoteList.map((post) => (

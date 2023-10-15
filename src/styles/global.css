@@ -16,6 +16,7 @@
     --gray-700: #464646;
     --gray-800: #222222;
     --gray-900: #000000;
+    --gray-950: #000000;
 
     --selection: hsla(0, 0%, 0%, 0.071);
 
@@ -39,6 +40,7 @@
     --gray-700: #d0d0d0;
     --gray-800: #ebebeb;
     --gray-900: #fff;
+    --gray-950: #fff;
 
     --selection: hsla(0, 0%, 100%, 0.077);
 
@@ -88,7 +90,7 @@
 
   body {
     @apply m-0 min-h-screen font-sans text-base leading-7 tracking-normal antialiased;
-    @apply text-second bg-page;
+    @apply bg-page text-second;
     padding-right: var(--body-margin-right);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: var(--body-margin-left);
@@ -104,11 +106,11 @@
   }
 
   h1 {
-    @apply text-heading font-serif font-bold;
+    @apply font-serif font-bold text-heading;
   }
 
   b {
-    @apply text-body font-bold;
+    @apply font-bold text-body;
   }
 
   em {
@@ -128,7 +130,7 @@
 
   a.link,
   a.external-link {
-    @apply text-body relative underline decoration-gray-400 underline-offset-4 hover:decoration-gray-500;
+    @apply relative text-body underline decoration-gray-400 underline-offset-4 hover:decoration-gray-500;
   }
   a.external-link {
     @apply pr-4;

@@ -2,8 +2,10 @@
 import '~/styles/mdx.css';
 
 import type { CollectionEntry } from 'astro:content';
+import { format } from 'date-fns';
 
 import BaseNav from '~/components/base-nav.astro';
+import ThemeToggle from '~/components/theme-toggle';
 
 import Main from './main.astro';
 
@@ -18,16 +20,15 @@ const { title, description, date } = Astro.props;
     <article class="mdx">
       <!-- header -->
       <div class="mb-14 font-serif">
-        <h1 class="text-heading font-semibold leading-7">{title}</h1>
-        <time class="text-disabled text-sm"
-          >{
-            new Date(date).toLocaleDateString('en', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })
-          }</time
-        >
+        <div class="flex items-end">
+          <h1 class="font-semibold leading-7 text-heading">{title}</h1>
+          <div class="ml-auto">
+            <ThemeToggle client:load />
+          </div>
+        </div>
+        <time class="text-sm text-disabled">
+          {format(date, 'MMM dd, yyyy')}
+        </time>
       </div>
       <!-- content -->
       <slot />

@@ -1,31 +1,3 @@
-:root {
-  --shiki-color-text: var(--gray-900);
-  --shiki-color-background: var(--gray-100);
-  --shiki-token-string: var(--gray-400);
-  --shiki-token-comment: var(--gray-400);
-  --shiki-token-keyword: var(--gray-400);
-  --shiki-token-punctuation: var(--gray-400);
-  --shiki-token-string-expression: var(--gray-600);
-  --shiki-token-constant: var(--gray-800);
-  --shiki-token-parameter: var(--gray-800);
-  --shiki-token-function: var(--gray-800);
-  --shiki-token-link: var(--gray-800);
-}
-
-.dark {
-  --shiki-color-text: var(--gray-900);
-  --shiki-color-background: var(--gray-75);
-  --shiki-token-string: var(--gray-400);
-  --shiki-token-comment: var(--gray-400);
-  --shiki-token-keyword: var(--gray-400);
-  --shiki-token-punctuation: var(--gray-400);
-  --shiki-token-string-expression: var(--gray-600);
-  --shiki-token-constant: var(--gray-800);
-  --shiki-token-parameter: var(--gray-800);
-  --shiki-token-function: var(--gray-800);
-  --shiki-token-link: var(--gray-800);
-}
-
 .mdx {
   width: 100%;
   max-width: max-content;
@@ -40,12 +12,12 @@
 }
 
 .mdx > * {
-  margin-bottom: 28px;
+  @apply mb-7;
 }
 
 .mdx > :where(h1, h2, h3, h4) {
-  color: var(--heading);
-  font-weight: 600;
+  color: var(--text-body);
+  font-weight: 500;
   scroll-margin-top: var(--page-top);
 }
 
@@ -59,13 +31,6 @@
 
 .mdx > :where(h1, h2) + :where(h3, h4) {
   margin-top: 0px;
-}
-
-.mdx strong:not:has(code) {
-  padding: 2px;
-  background-color: var(--gray-500);
-  color: var(--text-body);
-  font-weight: 600;
 }
 
 .mdx blockquote {
@@ -102,7 +67,7 @@
 }
 
 .mdx li::marker {
-  color: var(--shiki-token-comment);
+  color: var(--gray-300);
 }
 
 .mdx li + li,
@@ -134,7 +99,7 @@
   align-items: center;
   justify-content: flex-end;
   margin-right: var(--counter-space);
-  color: var(--shiki-color-comment);
+  color: var(--gray-300);
   content: counter(basics-ol) '. ';
   counter-increment: basics-ol;
   font-feature-settings: 'tnum' 1;
@@ -203,6 +168,33 @@
 }
 
 /* code */
+:root {
+  --shiki-color-text: var(--gray-900);
+  --shiki-color-background: var(--gray-100);
+  --shiki-token-string: var(--gray-400);
+  --shiki-token-comment: var(--gray-400);
+  --shiki-token-keyword: var(--gray-400);
+  --shiki-token-punctuation: var(--gray-400);
+  --shiki-token-string-expression: var(--gray-600);
+  --shiki-token-constant: var(--gray-800);
+  --shiki-token-parameter: var(--gray-800);
+  --shiki-token-function: var(--gray-800);
+  --shiki-token-link: var(--gray-800);
+}
+
+.dark {
+  --shiki-color-text: var(--gray-900);
+  --shiki-color-background: var(--gray-100);
+  --shiki-token-string: var(--gray-400);
+  --shiki-token-comment: var(--gray-400);
+  --shiki-token-keyword: var(--gray-400);
+  --shiki-token-punctuation: var(--gray-400);
+  --shiki-token-string-expression: var(--gray-600);
+  --shiki-token-constant: var(--gray-800);
+  --shiki-token-parameter: var(--gray-800);
+  --shiki-token-function: var(--gray-800);
+  --shiki-token-link: var(--gray-800);
+}
 
 .mdx code:not(pre code) {
   position: relative;
@@ -283,8 +275,7 @@ code[data-line-numbers-max-digits='3'] > [data-line]::before {
 }
 
 [data-highlighted-chars] {
-  padding: 0 4px;
-  /* @apply bg-black-A4 rounded-md px-1 shadow; */
+  @apply rounded-md bg-selection px-1 shadow;
 }
 
 [data-chars-id] {

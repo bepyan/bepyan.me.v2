@@ -110,12 +110,13 @@
     @apply font-serif font-bold text-heading;
   }
 
-  b {
-    @apply font-bold text-body;
+  b,
+  strong {
+    @apply font-medium text-body;
   }
 
   em {
-    @apply font-serif not-italic;
+    @apply font-serif font-bold not-italic text-body;
   }
 
   del {
@@ -123,14 +124,15 @@
   }
 
   mark {
-    padding: 3px 2px;
-    border-radius: 2px;
-    background-color: var(--selection);
-    color: var(--text-body);
+    @apply rounded-sm bg-selection font-medium text-body;
+    padding: 3px 5px;
+    border-radius: 4px;
+    margin: 0 2px;
   }
 
   a.link,
-  a.external-link {
+  a.external-link,
+  .mdx a {
     @apply relative text-body underline decoration-gray-400 underline-offset-4 hover:decoration-gray-500;
   }
   a.external-link {

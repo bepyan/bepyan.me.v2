@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
 import { format } from 'date-fns';
 
+import BaseNav from '~/components/base-nav';
 import Main from '~/layouts/main.astro';
 import { sortDateDesc } from '~/libs/mdx';
 
@@ -22,6 +23,7 @@ const yearList = Object.entries(
 ---
 
 <Main>
+  <BaseNav href="/" client:visible />
   <main class="font-serif">
     <h2 class="mb-14 font-semibold leading-7">나의 서재</h2>
     <section class="group">

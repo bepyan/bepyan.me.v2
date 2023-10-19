@@ -4,7 +4,7 @@ import '~/styles/mdx.css';
 import type { CollectionEntry } from 'astro:content';
 import { format } from 'date-fns';
 
-import BaseNav from '~/components/base-nav.astro';
+import BaseNav from '~/components/base-nav';
 import ThemeToggle from '~/components/theme-toggle';
 
 import Main from './main.astro';
@@ -15,7 +15,7 @@ const { title, description, date } = Astro.props;
 ---
 
 <Main seo={{ title, description }}>
-  <BaseNav href="/" />
+  <BaseNav href="/" client:visible />
   <main>
     <article class="mdx">
       <!-- header -->

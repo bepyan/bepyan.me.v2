@@ -201,18 +201,18 @@ export function MoonIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function StarFourPointsIcon(props: SVGProps<SVGSVGElement>) {
+export function DotIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="1em"
       height="1em"
-      viewBox="0 0 24 24"
+      viewBox="0 0 256 256"
       {...props}
     >
       <path
         fill="currentColor"
-        d="M10.74 10.75L12 8l1.25 2.75L16 12l-2.75 1.26L12 16l-1.26-2.74L8 12l2.74-1.25Z"
+        d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Z"
       ></path>
     </svg>
   );

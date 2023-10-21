@@ -133,15 +133,20 @@
   a.link,
   a.external-link,
   .mdx a {
-    @apply relative break-all text-body hover:text-heading;
+    @apply relative inline-flex items-end break-all text-body hover:text-heading;
     @apply underline decoration-gray-400 underline-offset-4 hover:decoration-gray-500;
     @apply duration-200 ease-in-out hover:duration-100;
   }
-  a.external-link {
-    @apply pr-4;
+  a.link::before,
+  a.external-link::before,
+  .mdx a:not(.anchor)::before {
+    @apply absolute -inset-x-1 inset-y-0 -z-10 rounded transition-colors hover:bg-gray-100;
+    content: '';
   }
   a.external-link::after {
-    @apply absolute bottom-0 right-0 m-0 h-4 w-4;
+    @apply m-0 h-4 w-4;
+    margin-bottom: 4px;
+    margin-left: 1px;
     background: url('data:image/svg+xml;utf8,<svg color="%23838383" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m13 3l3.293 3.293l-7 7l1.414 1.414l7-7L21 11V3z"/><path fill="currentColor" d="M19 19H5V5h7l-2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-5l-2-2v7z"/></svg>');
     background-repeat: no-repeat;
     background-size: cover;

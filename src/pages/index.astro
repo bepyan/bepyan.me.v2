@@ -80,7 +80,7 @@ const recentNoteList = (await getCollection('note'))
         <div class="flex flex-col items-start gap-4">
           {
             recentWritingList.map((post) => (
-              <div>
+              <div class="flex flex-col">
                 <a class="link block" href={`/post/${post.slug}`}>
                   {post.data.title}
                 </a>

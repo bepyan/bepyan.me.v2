@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 
-import { MoonIcon, SunIcon } from './ui/icons';
+import { MoonIcon, StarFourPointsIcon, SunIcon } from './ui/icons';
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<string>();
@@ -63,14 +63,26 @@ export default function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
+        <DropdownMenuItem
+          className="justify-between"
+          onClick={() => setTheme('light')}
+        >
           Light
+          {theme === 'light' && <StarFourPointsIcon />}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
+        <DropdownMenuItem
+          className="justify-between"
+          onClick={() => setTheme('dark')}
+        >
           Dark
+          {theme === 'dark' && <StarFourPointsIcon />}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+        <DropdownMenuItem
+          className="justify-between"
+          onClick={() => setTheme('system')}
+        >
           System
+          {theme === 'system' && <StarFourPointsIcon />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

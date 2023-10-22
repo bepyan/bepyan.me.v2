@@ -33,6 +33,11 @@
   margin-top: 0px;
 }
 
+.mdx b,
+.mdx strong {
+  font-weight: 500;
+}
+
 .mdx blockquote {
   position: relative;
   color: var(--text-second);

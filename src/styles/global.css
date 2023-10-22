@@ -112,7 +112,7 @@
 
   b,
   strong {
-    @apply font-medium text-body;
+    @apply font-bold text-body;
   }
 
   em {

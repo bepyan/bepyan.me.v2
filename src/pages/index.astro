@@ -4,14 +4,13 @@ import { getCollection } from 'astro:content';
 import ThemeToggle from '~/components/theme-toggle';
 import { GithubIcon, NotionIcon, TwitterXIcon } from '~/components/ui/icons';
 import Main from '~/layouts/main.astro';
-import { sortDateDesc } from '~/libs/mdx';
+import { getWritingPostInfoList, sortCollectionDateDesc } from '~/libs/mdx';
+import { cn } from '~/libs/utils';
 
-const recentWritingList = (await getCollection('writing'))
-  .sort(sortDateDesc)
-  .slice(0, 3);
+const recentWritingList = (await getWritingPostInfoList()).slice(0, 3);
 
 const recentNoteList = (await getCollection('note'))
-  .sort(sortDateDesc)
+  .sort(sortCollectionDateDesc)
   .slice(0, 3);
 ---
 
@@ -80,13 +79,15 @@ const recentNoteList = (await getCollection('note'))
         <div class="flex flex-col items-start gap-4">
           {
             recentWritingList.map((post) => (
-              <div class="flex flex-col">
-                <a class="link block" href={`/post/${post.slug}`}>
-                  {post.data.title}
+              <div class="flex flex-col items-start">
+                <a
+                  class={cn('link', post.isExternal && 'external-link')}
+                  href={post.href}
+                  target={post.isExternal ? '_blank' : '_self'}
+                >
+                  {post.title}
                 </a>
-                <span class="text-sm text-gray-700">
-                  {post.data.description}
-                </span>
+                <span class="text-xs text-gray-700">{post.description}</span>
               </div>
             ))
           }
@@ -95,7 +96,7 @@ const recentNoteList = (await getCollection('note'))
       </section>
       <section class="w-80">
         <h2 class="mb-4 text-second">수첩</h2>
-        <div class="flex flex-col items-start">
+        <div class="flex flex-col items-start hover:text-ellipsis">
           {
             recentNoteList.map((post) => (
               <a class="link block" href={`/post/${post.slug}`}>

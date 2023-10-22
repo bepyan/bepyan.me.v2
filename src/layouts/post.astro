@@ -20,8 +20,8 @@ const { title, description, date } = Astro.props;
     <article class="mdx">
       <!-- header -->
       <div class="mb-14 font-serif">
-        <div class="flex items-end">
-          <h1 class="font-semibold leading-7 text-heading">{title}</h1>
+        <div class="flex items-center">
+          <h1 class="-mb-1 font-semibold leading-7 text-heading">{title}</h1>
           <div class="ml-auto">
             <ThemeToggle client:load />
           </div>

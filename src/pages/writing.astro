@@ -1,17 +1,20 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseNav from '~/components/base-nav';
+import { BxLinkExternal } from '~/components/ui/icons';
 import Main from '~/layouts/main.astro';
-import { sortDateDesc } from '~/libs/mdx';
+import {
+  getWritingPostInfoList,
+  type PostInfo,
+  sortDateDesc,
+} from '~/libs/mdx';
 
-const posts = (await getCollection('writing')).sort(sortDateDesc);
+const posts = await getWritingPostInfoList();
 
 const yearList = Object.entries(
-  posts.reduce<{ [year: string]: CollectionEntry<'writing'>[] }>((ac, post) => {
-    const year = new Date(post.data.date).getFullYear();
+  posts.reduce<{ [year: string]: PostInfo[] }>((ac, post) => {
+    const year = new Date(post.date).getFullYear();
     if (!ac[year]) {
       ac[year] = [];
     }
@@ -30,19 +33,30 @@ const yearList = Object.entries(
       {
         yearList.map(([year, postList]) => {
           return (
-            <div class="relative border-t">
-              <h3 class="absolute top-3 -z-10 text-sm text-gray-500">{year}</h3>
+            <div class="relative border-t last-of-type:border-b">
+              <h3 class="absolute top-3 -z-10 text-sm text-second">{year}</h3>
               {postList.sort(sortDateDesc).map((post) => {
                 return (
                   <a
-                    href={`/post/${post.slug}`}
-                    class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-40"
+                    href={post.href}
+                    class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-60"
+                    target={post.isExternal ? '_blank' : '_self'}
                   >
-                    <div class="ml-[20%] flex flex-1 border-t py-3 group-first-of-type/item:border-t-0">
-                      <span class="text-gray-900">{post.data.title}</span>
-                      <span class="ml-auto flex-shrink-0 px-2 text-sm text-gray-500">
-                        {format(post.data.date, 'MM. dd.')}
-                      </span>
+                    <div class="ml-[15%] flex flex-1 items-start border-t py-4 group-first-of-type/item:border-t-0">
+                      <div>
+                        <div class="flex items-center gap-0.5 text-heading">
+                          {post.title}
+                        </div>
+                        <div class="max-h-0 overflow-hidden text-xs transition-[max-height] group-hover/item:max-h-10">
+                          <span class="text-second">{post.description}</span>
+                        </div>
+                      </div>
+                      <div class="ml-auto flex flex-shrink-0 items-center gap-1 px-2 pt-1 text-sm text-second">
+                        {post.isExternal && (
+                          <BxLinkExternal className="text-disabled" />
+                        )}
+                        <span>{format(new Date(post.date), 'MM. dd.')}</span>
+                      </div>
                     </div>
                   </a>
                 );

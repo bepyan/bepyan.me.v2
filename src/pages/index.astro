@@ -16,8 +16,8 @@ const recentNoteList = (await getCollection('note'))
 
 <Main>
   <main class="font-serif">
-    <div class="flex items-end">
-      <h1>김평안 ﹒ bepyan</h1>
+    <div class="flex items-center">
+      <h1 class="-mb-0.5">김평안 ﹒ bepyan</h1>
       <div class="ml-auto">
         <ThemeToggle client:load />
       </div>
@@ -49,21 +49,21 @@ const recentNoteList = (await getCollection('note'))
       </p>
       <div class="mt-1 flex gap-0.5">
         <a
-          class="rounded p-1 hover:bg-selection hover:text-body"
+          class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
           href="https://github.com/bepyan"
           target="_blank"
         >
           <GithubIcon />
         </a>
         <a
-          class="rounded p-1 hover:bg-selection hover:text-body"
+          class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
           href="https://twitter.com/__pyungan"
           target="_blank"
         >
           <TwitterXIcon />
         </a>
         <a
-          class="flex items-center gap-1 rounded p-1 hover:bg-selection hover:text-body"
+          class="flex items-center gap-1 rounded p-1 transition-colors hover:bg-selection hover:text-body"
           href="https://bepyan.notion.site/Frontend-Developer-69fd245161734c1793e8df78dffe705c?pvs=4"
           target="_blank"
         >

@@ -1,7 +1,12 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
+import '~/styles/mdx.css';
 
-import Post from '~/layouts/post.astro';
+import { type CollectionEntry, getCollection } from 'astro:content';
+import { format } from 'date-fns';
+
+import BaseNav from '~/components/base-nav';
+import ThemeToggle from '~/components/theme-toggle';
+import Main from '~/layouts/main.astro';
 
 export async function getStaticPaths() {
   const [writings, notes] = await Promise.all([
@@ -19,8 +24,26 @@ type Props = CollectionEntry<'writing'>;
 
 const post = Astro.props;
 const { Content } = await post.render();
+const { title, description, date } = post.data;
 ---
 
-<Post {...post.data}>
-  <Content />
-</Post>
+<Main seo={{ title, description }}>
+  <BaseNav href={`/${post.collection}`} client:visible />
+  <main>
+    <article class="mdx">
+      <!-- header -->
+      <div class="mb-14 font-serif">
+        <div class="flex items-center">
+          <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
+          <div class="ml-auto">
+            <ThemeToggle client:load />
+          </div>
+        </div>
+        <time class="text-sm text-disabled">
+          {format(date, 'MMM dd, yyyy')}
+        </time>
+      </div>
+      <Content />
+    </article>
+  </main>
+</Main>

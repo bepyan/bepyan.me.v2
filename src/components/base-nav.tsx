@@ -8,20 +8,19 @@ type Props = {
 };
 
 export default function BaseNav({ href }: Props) {
-  const onClick = () => {
+  const onNavigate = (href: string) => {
     window.location.href = href;
   };
 
   return (
     <nav
-      className={cn(
-        'sticky top-page flex items-center font-serif leading-7',
-        'md:relative md:top-0',
-      )}
+      className={cn('sticky top-page flex flex-col', 'md:relative md:top-0')}
     >
-      <Button onClick={onClick} variant="ghost" size="icon">
-        <UndoIcon className="h-5 w-5" />
-      </Button>
+      <div className="flex items-center">
+        <Button onClick={() => onNavigate(href)} variant="ghost" size="icon">
+          <UndoIcon className="h-5 w-5" />
+        </Button>
+      </div>
       <slot />
     </nav>
   );

@@ -134,7 +134,7 @@
   a.external-link,
   .mdx a {
     @apply relative inline-flex items-end break-all text-body hover:text-heading;
-    @apply underline decoration-gray-400 underline-offset-4 hover:decoration-gray-500;
+    @apply underline decoration-selection underline-offset-4 hover:decoration-gray-200;
     @apply duration-200 ease-in-out hover:duration-100;
   }
   a.link::before,

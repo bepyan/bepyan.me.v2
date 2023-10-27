@@ -88,14 +88,27 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* react-remove-scroll 에서 강제로 body를 조작한다. */
   body {
-    @apply m-0 min-h-screen;
+    @apply m-0 min-h-screen p-0;
     @apply font-sans text-base leading-7 tracking-normal antialiased;
     @apply bg-page text-second;
+  }
+
+  .container {
+    @apply mx-auto max-w-page py-page;
     padding-right: var(--body-margin-right);
-    padding-bottom: env(safe-area-inset-bottom);
     padding-left: var(--body-margin-left);
-    background-color: var(--page-background);
+  }
+
+  .main-grid {
+    @apply grid grid-cols-[192px_640px_192px] items-start gap-6 lg:grid-cols-[auto_640px_auto]
+      md:flex md:flex-col md:justify-start md:gap-8;
+  }
+
+  .main-grid main {
+    width: 100%;
+    grid-column: 2;
   }
 
   * {
@@ -200,19 +213,9 @@
 }
 
 @layer components {
-  .main-grid {
-    @apply grid grid-cols-[192px_640px_192px] items-start gap-6 lg:grid-cols-[auto_640px_auto]
-      md:flex md:flex-col md:justify-start md:gap-8;
-  }
-
-  .main-grid main {
-    width: 100%;
-    grid-column: 2;
-  }
-
   .blur-layer {
-    position: fixed; /* for IE */
-    position: sticky;
+    --h: min(96px, var(--page-top));
+    position: fixed;
     z-index: 1;
     top: 0;
     width: calc(100% + var(--body-margin-left) + var(--body-margin-right));
@@ -224,7 +227,6 @@
     opacity: 0.95;
     pointer-events: none;
     user-select: none;
-    --h: min(96px, var(--page-top));
   }
 
   .blur-layer:after {

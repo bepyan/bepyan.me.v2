@@ -1,17 +1,7 @@
 ---
-import { getCollection } from 'astro:content';
-
 import ThemeToggle from '~/components/theme-toggle';
 import { GithubIcon, NotionIcon, TwitterXIcon } from '~/components/ui/icons';
 import Main from '~/layouts/main.astro';
-import { getWritingPostInfoList, sortCollectionDateDesc } from '~/libs/mdx';
-import { cn } from '~/libs/utils';
-
-const recentWritingList = (await getWritingPostInfoList()).slice(0, 3);
-
-const recentNoteList = (await getCollection('note'))
-  .sort(sortCollectionDateDesc)
-  .slice(0, 3);
 ---
 
 <Main>
@@ -28,7 +18,7 @@ const recentNoteList = (await getCollection('note'))
         사용자와 <b>부드럽게</b> 상호작용하는 것, 복잡한 것을
         <b>단순하고 간편하게</b> 만드는 것에 열광합니다.
       </p>
-      <p>탐구하고 사색하는 것을 좋아하여 틈틈이 발견한 것을 기록하려 합니다.</p>
+      <p>탐구하고 사색하는 것을 좋아하여 발견한 것을 틈틈이 기록하려 합니다.</p>
     </div>
     <!-- 현재 -->
     <div class="my-7">
@@ -72,41 +62,23 @@ const recentNoteList = (await getCollection('note'))
         </a>
       </div>
     </div>
-    <!-- 글 목록 -->
-    <div class="mt-14 flex gap-7 md:block md:space-y-14">
-      <section class="w-80">
-        <h2 class="mb-4 text-second">나의 서재</h2>
-        <div class="flex flex-col items-start gap-4">
-          {
-            recentWritingList.map((post) => (
-              <div class="flex flex-col items-start">
-                <a
-                  class={cn('link', post.isExternal && 'external-link')}
-                  href={post.href}
-                  target={post.isExternal ? '_blank' : '_self'}
-                >
-                  {post.title}
-                </a>
-                <span class="text-xs text-gray-700">{post.description}</span>
-              </div>
-            ))
-          }
-          <a href="/writing">...</a>
+    <!-- 나의 공간 -->
+    <div class="my-7 flex gap-7">
+      <div>나의 공간</div>
+      <div class="flex flex-col gap-1">
+        <div>
+          <a class="link" href="/writing">서재</a>
+          <span class="ml-3 text-sm">작성한 글을 보관하는 공간</span>
         </div>
-      </section>
-      <section class="w-80">
-        <h2 class="mb-4 text-second">수첩</h2>
-        <div class="flex flex-col items-start hover:text-ellipsis">
-          {
-            recentNoteList.map((post) => (
-              <a class="link block" href={`/post/${post.slug}`}>
-                {post.data.title}
-              </a>
-            ))
-          }
-          <a href="/note">...</a>
+        <div>
+          <a class="link" href="/note">수첩</a>
+          <span class="ml-3 text-sm">유용한 코드 조각을 기록하는 공간</span>
         </div>
-      </section>
+        <div>
+          <a class="link" href="/craft">공방</a>
+          <span class="ml-3 text-sm">무언가 흥미로운 것을 만드는 공간</span>
+        </div>
+      </div>
     </div>
   </main>
 </Main>

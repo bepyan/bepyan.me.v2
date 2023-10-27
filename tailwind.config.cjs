@@ -17,6 +17,7 @@ module.exports = {
       sm: { max: '640px' },
     },
     colors: {
+      transparent: 'transparent',
       gray: {
         50: 'var(--gray-50)',
         75: 'var(--gray-75)',
@@ -31,6 +32,7 @@ module.exports = {
         900: 'var(--gray-900)',
       },
       selection: 'var(--selection)',
+      border: 'var(--border)',
     },
     extend: {
       textColor: {

@@ -19,6 +19,7 @@
     --gray-950: #000000;
 
     --selection: hsla(0, 0%, 0%, 0.045);
+    --border: hsla(0, 0%, 0%, 0.09);
 
     --page-background: var(--gray-50);
 
@@ -43,6 +44,7 @@
     --gray-950: #fff;
 
     --selection: hsla(0, 0%, 100%, 0.077);
+    --border: hsla(0, 0%, 100%, 0.1);
 
     --page-background: var(--gray-75);
 
@@ -112,7 +114,7 @@
   }
 
   * {
-    @apply box-border border-gray-200;
+    @apply border-border box-border;
   }
 
   ::selection {
@@ -147,26 +149,29 @@
   a.external-link,
   .mdx a {
     @apply relative inline-flex items-end break-all text-body hover:text-heading;
-    @apply underline decoration-selection underline-offset-4 hover:decoration-gray-200;
+    @apply decoration-border hover:decoration-transparent underline decoration-1 underline-offset-4;
     @apply duration-200 ease-in-out hover:duration-100;
   }
   a.link::before,
   a.external-link::before,
   .mdx a:not(.anchor)::before {
-    @apply absolute -inset-x-1 inset-y-0 -z-10 rounded transition-colors hover:bg-selection;
+    @apply absolute -inset-x-1 bottom-0.5 top-0 -z-10 rounded transition-colors hover:bg-selection;
     content: '';
+  }
+  a.external-link::before {
+    @apply -right-0.5;
   }
   a.external-link::after {
     @apply m-0 h-3.5 w-3.5;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     margin-left: 1px;
-    background: url('data:image/svg+xml;utf8,<svg color="%23909090" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m13 3l3.293 3.293l-7 7l1.414 1.414l7-7L21 11V3z"/><path fill="currentColor" d="M19 19H5V5h7l-2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-5l-2-2v7z"/></svg>');
+    background: url('data:image/svg+xml;utf8,<svg color="%23464646" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
     background-repeat: no-repeat;
     background-size: cover;
     content: '';
   }
   .dark a.external-link::after {
-    background: url('data:image/svg+xml;utf8,<svg color="%238d8d8d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m13 3l3.293 3.293l-7 7l1.414 1.414l7-7L21 11V3z"/><path fill="currentColor" d="M19 19H5V5h7l-2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2v-5l-2-2v7z"/></svg>');
+    background: url('data:image/svg+xml;utf8,<svg color="%23B0B0B0" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
     background-repeat: no-repeat;
     background-size: cover;
     content: '';

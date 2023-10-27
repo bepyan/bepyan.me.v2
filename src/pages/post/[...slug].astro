@@ -5,8 +5,10 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseNav from '~/components/base-nav';
+import TableOfContent from '~/components/table-of-content';
 import ThemeToggle from '~/components/theme-toggle';
 import Main from '~/layouts/main.astro';
+import { parseToc } from '~/libs/mdx';
 
 export async function getStaticPaths() {
   const [writings, notes] = await Promise.all([
@@ -23,16 +25,20 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<'writing'>;
 
 const post = Astro.props;
+
 const { Content } = await post.render();
 const { title, description, date } = post.data;
+const toc = parseToc(post.body);
 ---
 
 <Main seo={{ title, description }}>
-  <BaseNav href={`/${post.collection}`} client:visible />
+  <BaseNav href={`/${post.collection}`} client:visible>
+    <TableOfContent className="mt-[60px] px-2 text-sm" toc={toc} client:load />
+  </BaseNav>
   <main>
     <article class="mdx">
       <!-- header -->
-      <div class="mb-14 font-serif">
+      <div class="mb-7 font-serif">
         <div class="flex items-center">
           <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
           <div class="ml-auto">

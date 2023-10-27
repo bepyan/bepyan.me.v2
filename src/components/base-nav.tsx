@@ -5,9 +5,10 @@ import { Button } from './ui/button';
 
 type Props = {
   href: string;
+  children?: React.ReactNode;
 };
 
-export default function BaseNav({ href }: Props) {
+export default function BaseNav({ href, children }: Props) {
   const onNavigate = (href: string) => {
     window.location.href = href;
   };
@@ -21,7 +22,7 @@ export default function BaseNav({ href }: Props) {
           <UndoIcon className="h-5 w-5" />
         </Button>
       </div>
-      <slot />
+      {children}
     </nav>
   );
 }

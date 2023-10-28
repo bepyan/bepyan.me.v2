@@ -17,6 +17,13 @@ export const sortDateDesc = (
   return new Date(b.date).valueOf() - new Date(a.date).valueOf();
 };
 
+export const sortCollectionDateAsc = (
+  a: CollectionEntry<'writing' | 'note'>,
+  b: CollectionEntry<'writing' | 'note'>,
+) => {
+  return new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf();
+};
+
 /** 전체 글 정보 */
 export type PostInfo = {
   title: string;

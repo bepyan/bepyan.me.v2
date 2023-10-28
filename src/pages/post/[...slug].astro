@@ -8,7 +8,7 @@ import BaseNav from '~/components/base-nav';
 import TableOfContent from '~/components/table-of-content';
 import ThemeToggle from '~/components/theme-toggle';
 import Main from '~/layouts/main.astro';
-import { parseToc } from '~/libs/mdx';
+import { parseToc, sortCollectionDateAsc } from '~/libs/mdx';
 
 export async function getStaticPaths() {
   const [writings, notes] = await Promise.all([
@@ -16,7 +16,10 @@ export async function getStaticPaths() {
     getCollection('note'),
   ]);
 
-  return [...writings, ...notes].map((post, index, list) => ({
+  return [
+    ...writings.sort(sortCollectionDateAsc),
+    ...notes.sort(sortCollectionDateAsc),
+  ].map((post, index, list) => ({
     params: { slug: post.slug },
     props: {
       post,
@@ -47,19 +50,18 @@ const toc = parseToc(post.body);
       client:load
     />
   </BaseNav>
-  <article class="mdx">
-    <!-- header -->
-    <div class="mb-7 font-serif">
-      <div class="flex items-center">
-        <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
-        <div class="ml-auto">
-          <ThemeToggle client:load />
-        </div>
+  <header class="mb-7 font-serif">
+    <div class="flex items-center">
+      <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
+      <div class="ml-auto">
+        <ThemeToggle client:load />
       </div>
-      <time class="text-sm text-second">
-        {format(date, 'MMM dd, yyyy')}
-      </time>
     </div>
+    <time class="text-sm text-second">
+      {format(date, 'MMM dd, yyyy')}
+    </time>
+  </header>
+  <article class="mdx">
     <Content />
   </article>
   <footer class="mt-page">

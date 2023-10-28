@@ -4,81 +4,79 @@ import { GithubIcon, NotionIcon, TwitterXIcon } from '~/components/ui/icons';
 import Main from '~/layouts/main.astro';
 ---
 
-<Main>
-  <main class="font-serif">
-    <div class="flex items-center">
-      <h1 class="-mb-0.5">김평안 ﹒ bepyan</h1>
-      <div class="ml-auto">
-        <ThemeToggle client:load />
+<Main class="font-serif">
+  <div class="flex items-center">
+    <h1 class="-mb-0.5">김평안 ﹒ bepyan</h1>
+    <div class="ml-auto">
+      <ThemeToggle client:load />
+    </div>
+  </div>
+  <!-- 소개 -->
+  <div class="my-7">
+    <p>
+      사용자와 <b>부드럽게</b> 상호작용하는 것, 복잡한 것을
+      <b>단순하고 간편하게</b> 만드는 것에 열광합니다.
+    </p>
+    <p>탐구하고 사색하는 것을 좋아하여 발견한 것을 틈틈이 기록하려 합니다.</p>
+  </div>
+  <!-- 현재 -->
+  <div class="my-7">
+    <p>
+      현재
+      <b>
+        <a
+          class="external-link"
+          href="https://www.kakaocorp.com/page/"
+          target="_blank">카카오</a
+        >
+      </b>에서
+      <b>
+        <a class="external-link" href="https://brunch.co.kr/" target="_blank"
+          >브런치</a
+        >
+      </b>를 개발하고 있습니다.
+    </p>
+    <div class="mt-1 flex gap-0.5">
+      <a
+        class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
+        href="https://github.com/bepyan"
+        target="_blank"
+      >
+        <GithubIcon />
+      </a>
+      <a
+        class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
+        href="https://twitter.com/__pyungan"
+        target="_blank"
+      >
+        <TwitterXIcon />
+      </a>
+      <a
+        class="flex items-center gap-1 rounded p-1 transition-colors hover:bg-selection hover:text-body"
+        href="https://bepyan.notion.site/Frontend-Developer-69fd245161734c1793e8df78dffe705c?pvs=4"
+        target="_blank"
+      >
+        <NotionIcon />
+        <span class="text-xs leading-tight">resume</span>
+      </a>
+    </div>
+  </div>
+  <!-- 나의 공간 -->
+  <div class="my-14 flex gap-7">
+    <div>나의 공간</div>
+    <div class="flex flex-col gap-1">
+      <div>
+        <a class="link" href="/writing">서재</a>
+        <span class="ml-3 text-sm">작성한 글을 보관하는 공간</span>
+      </div>
+      <div>
+        <a class="link" href="/note">수첩</a>
+        <span class="ml-3 text-sm">유용한 코드 조각을 기록하는 공간</span>
+      </div>
+      <div>
+        <a class="link" href="/craft">공방</a>
+        <span class="ml-3 text-sm">무언가 흥미로운 것을 만드는 공간</span>
       </div>
     </div>
-    <!-- 소개 -->
-    <div class="my-7">
-      <p>
-        사용자와 <b>부드럽게</b> 상호작용하는 것, 복잡한 것을
-        <b>단순하고 간편하게</b> 만드는 것에 열광합니다.
-      </p>
-      <p>탐구하고 사색하는 것을 좋아하여 발견한 것을 틈틈이 기록하려 합니다.</p>
-    </div>
-    <!-- 현재 -->
-    <div class="my-7">
-      <p>
-        현재
-        <b>
-          <a
-            class="external-link"
-            href="https://www.kakaocorp.com/page/"
-            target="_blank">카카오</a
-          >
-        </b>에서
-        <b>
-          <a class="external-link" href="https://brunch.co.kr/" target="_blank"
-            >브런치</a
-          >
-        </b>를 개발하고 있습니다.
-      </p>
-      <div class="mt-1 flex gap-0.5">
-        <a
-          class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://github.com/bepyan"
-          target="_blank"
-        >
-          <GithubIcon />
-        </a>
-        <a
-          class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://twitter.com/__pyungan"
-          target="_blank"
-        >
-          <TwitterXIcon />
-        </a>
-        <a
-          class="flex items-center gap-1 rounded p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://bepyan.notion.site/Frontend-Developer-69fd245161734c1793e8df78dffe705c?pvs=4"
-          target="_blank"
-        >
-          <NotionIcon />
-          <span class="text-xs leading-tight">resume</span>
-        </a>
-      </div>
-    </div>
-    <!-- 나의 공간 -->
-    <div class="my-7 flex gap-7">
-      <div>나의 공간</div>
-      <div class="flex flex-col gap-1">
-        <div>
-          <a class="link" href="/writing">서재</a>
-          <span class="ml-3 text-sm">작성한 글을 보관하는 공간</span>
-        </div>
-        <div>
-          <a class="link" href="/note">수첩</a>
-          <span class="ml-3 text-sm">유용한 코드 조각을 기록하는 공간</span>
-        </div>
-        <div>
-          <a class="link" href="/craft">공방</a>
-          <span class="ml-3 text-sm">무언가 흥미로운 것을 만드는 공간</span>
-        </div>
-      </div>
-    </div>
-  </main>
+  </div>
 </Main>

@@ -5,6 +5,7 @@ import type { SEOProps } from '~/types';
 
 type Props = {
   seo?: SEOProps;
+  class?: string;
 };
 
 const { seo } = Astro.props;
@@ -18,9 +19,9 @@ const { seo } = Astro.props;
   <body>
     <div class="blur-layer" aria-hidden="true"></div>
     <div class="container">
-      <div class="main-grid">
+      <main class={Astro.props.class}>
         <slot />
-      </div>
+      </main>
     </div>
   </body>
 </html>

@@ -15,7 +15,11 @@ export default function BaseNav({ href, children }: Props) {
 
   return (
     <nav
-      className={cn('sticky top-page flex flex-col', 'md:relative md:top-0')}
+      className={cn(
+        'fixed top-page flex max-w-[220px] -translate-x-[260px] flex-col',
+        'transition-opacity lg:opacity-0',
+        'md:relative md:top-0 md:-ml-2 md:mb-7 md:translate-x-0',
+      )}
     >
       <div className="flex items-center">
         <Button onClick={() => onNavigate(href)} variant="ghost" size="icon">

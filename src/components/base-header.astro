@@ -1,0 +1,20 @@
+---
+import ThemeToggle from './theme-toggle';
+
+type Props = {
+  title: string;
+};
+
+const { props } = Astro;
+const { title } = props;
+---
+
+<div class="mb-7 font-serif">
+  <div class="flex items-center">
+    <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
+    <div class="ml-auto">
+      <ThemeToggle client:load />
+    </div>
+  </div>
+  <slot />
+</div>

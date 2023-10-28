@@ -35,21 +35,19 @@ const toc = parseToc(post.body);
   <BaseNav href={`/${post.collection}`} client:visible>
     <TableOfContent className="mt-[60px] px-2 text-sm" toc={toc} client:load />
   </BaseNav>
-  <main>
-    <article class="mdx">
-      <!-- header -->
-      <div class="mb-7 font-serif">
-        <div class="flex items-center">
-          <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
-          <div class="ml-auto">
-            <ThemeToggle client:load />
-          </div>
+  <article class="mdx">
+    <!-- header -->
+    <div class="mb-7 font-serif">
+      <div class="flex items-center">
+        <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
+        <div class="ml-auto">
+          <ThemeToggle client:load />
         </div>
-        <time class="text-sm text-disabled">
-          {format(date, 'MMM dd, yyyy')}
-        </time>
       </div>
-      <Content />
-    </article>
-  </main>
+      <time class="text-sm text-disabled">
+        {format(date, 'MMM dd, yyyy')}
+      </time>
+    </div>
+    <Content />
+  </article>
 </Main>

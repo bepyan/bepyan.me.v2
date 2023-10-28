@@ -98,19 +98,12 @@
   }
 
   .container {
-    @apply mx-auto max-w-page py-page;
     padding-right: var(--body-margin-right);
     padding-left: var(--body-margin-left);
   }
 
-  .main-grid {
-    @apply grid grid-cols-[192px_640px_192px] items-start gap-6 lg:grid-cols-[auto_640px_auto]
-      md:flex md:flex-col md:justify-start md:gap-8;
-  }
-
-  .main-grid main {
-    width: 100%;
-    grid-column: 2;
+  .container > main {
+    @apply mx-auto max-w-content py-page;
   }
 
   * {

@@ -14,12 +14,12 @@ export default function TableOfContent({
   const { currentSectionSlug } = useTocScroll(toc);
 
   return (
-    <ul className={cn('space-y-2.5 font-sans text-sm lg:hidden', className)}>
+    <ul className={cn('space-y-2.5 font-sans text-sm', className)}>
       {toc.map((section, i) => (
         <li key={i} className="flex">
           <a
             className={cn(
-              'transition-colors hover:text-heading',
+              'text-second transition-colors hover:text-heading',
               currentSectionSlug === section.slug && 'font-medium text-body',
             )}
             href={`#${section.slug}`}

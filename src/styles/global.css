@@ -156,7 +156,7 @@
   }
   a.external-link::after {
     @apply m-0 h-3.5 w-3.5;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     margin-left: 1px;
     background: url('data:image/svg+xml;utf8,<svg color="%23464646" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
     background-repeat: no-repeat;

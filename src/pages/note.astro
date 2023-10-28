@@ -1,0 +1,54 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import { format } from 'date-fns';
+
+import BaseHeader from '~/components/base-header.astro';
+import BaseNav from '~/components/base-nav';
+import Main from '~/layouts/main.astro';
+import { sortCollectionDateDesc } from '~/libs/mdx';
+
+const allNotes = await getCollection('note');
+
+const yearList = Object.entries(
+  allNotes.reduce<{ [year: string]: CollectionEntry<'note'>[] }>((ac, v) => {
+    const year = new Date(v.data.date).getFullYear();
+    if (!ac[year]) {
+      ac[year] = [];
+    }
+
+    ac[year].push(v);
+    return ac;
+  }, {}),
+).sort(([yearA], [yearB]) => +yearB - +yearA);
+---
+
+<Main class="font-serif">
+  <BaseNav href="/" client:visible />
+  <BaseHeader title="수첩" />
+  <div class="group border-l pl-4">
+    {
+      yearList.map(([year, postList]) => {
+        return (
+          <div class="relative mb-8">
+            <div class="absolute -left-20 select-none sm:relative sm:left-0 sm:mb-2">
+              <h3 class="font-serif">{year}</h3>
+            </div>
+            {postList.sort(sortCollectionDateDesc).map((post) => {
+              return (
+                <a
+                  href={`/post/${post.slug}`}
+                  class="mb-4 flex items-center transition-opacity hover:!opacity-100 group-hover:opacity-40"
+                >
+                  <span class="text-heading">{post.data.title}</span>
+                  <span class="flex-shrink-0 px-2 text-sm text-second">
+                    {format(new Date(post.data.date), 'MM. dd.')}
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        );
+      })
+    }
+  </div>
+</Main>

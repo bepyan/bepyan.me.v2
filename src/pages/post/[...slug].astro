@@ -16,15 +16,23 @@ export async function getStaticPaths() {
     getCollection('note'),
   ]);
 
-  return [...writings, ...notes].map((post) => ({
+  return [...writings, ...notes].map((post, index, list) => ({
     params: { slug: post.slug },
-    props: post,
+    props: {
+      post,
+      prevPost: list[index - 1],
+      nextPost: list[index + 1],
+    },
   }));
 }
 
-type Props = CollectionEntry<'writing'>;
+type Props = {
+  post: CollectionEntry<'writing'>;
+  prevPost: CollectionEntry<'writing'>;
+  nextPost: CollectionEntry<'writing'>;
+};
 
-const post = Astro.props;
+const { post, prevPost, nextPost } = Astro.props;
 
 const { Content } = await post.render();
 const { title, description, date } = post.data;
@@ -48,10 +56,42 @@ const toc = parseToc(post.body);
           <ThemeToggle client:load />
         </div>
       </div>
-      <time class="text-sm text-disabled">
+      <time class="text-sm text-second">
         {format(date, 'MMM dd, yyyy')}
       </time>
     </div>
     <Content />
   </article>
+  <footer class="mt-page">
+    <hr class="mb-7" />
+    <footer class="text-tx flex items-stretch justify-between gap-1 text-sm">
+      {
+        !!prevPost && (
+          <a class="group flex flex-col gap-1" href={`/post/${prevPost.slug}`}>
+            <div class="text-disabled transition-colors group-hover:text-second">
+              Previous
+            </div>
+            <span class="text-second transition-colors group-hover:text-heading">
+              {prevPost.data.title}
+            </span>
+          </a>
+        )
+      }
+      {
+        !!nextPost && (
+          <a
+            class="group ml-auto flex flex-col gap-1 text-right text-second hover:text-body"
+            href={`/post/${nextPost.slug}`}
+          >
+            <div class="text-disabled transition-colors group-hover:text-second">
+              Next
+            </div>
+            <span class="text-second transition-colors group-hover:text-heading">
+              {nextPost.data.title}
+            </span>
+          </a>
+        )
+      }
+    </footer>
+  </footer>
 </Main>

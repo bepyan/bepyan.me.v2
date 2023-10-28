@@ -17,7 +17,7 @@
 
 .mdx > :where(h1, h2, h3, h4) {
   color: var(--text-body);
-  font-weight: 500;
+  font-weight: 600;
   scroll-margin-top: var(--page-top);
 }
 
@@ -35,7 +35,7 @@
 
 .mdx b,
 .mdx strong {
-  font-weight: 500;
+  font-weight: 550;
 }
 
 .mdx blockquote {
@@ -117,7 +117,7 @@
 .mdx hr {
   height: 1px;
   border: none;
-  background-color: var(--gray-100);
+  background-color: var(--border);
 }
 
 .mdx table {
@@ -174,40 +174,44 @@
 
 /* code */
 :root {
-  --shiki-color-text: var(--gray-900);
+  --shiki-color-text: var(--gray-800);
   --shiki-color-background: var(--gray-100);
-  --shiki-token-string: var(--gray-400);
-  --shiki-token-comment: var(--gray-400);
-  --shiki-token-keyword: var(--gray-400);
-  --shiki-token-punctuation: var(--gray-400);
-  --shiki-token-string-expression: var(--gray-600);
-  --shiki-token-constant: var(--gray-800);
-  --shiki-token-parameter: var(--gray-800);
-  --shiki-token-function: var(--gray-800);
-  --shiki-token-link: var(--gray-800);
+
+  --shiki-token-constant: #171717;
+  --shiki-token-string: #6f6f6f;
+  --shiki-token-comment: #8f8f8f;
+  --shiki-token-keyword: #858585;
+  --shiki-token-parameter: #171717;
+  --shiki-token-function: #171717;
+  --shiki-token-string-expression: #6f6f6f;
+  --shiki-token-punctuation: #8f8f8f;
+  --shiki-token-link: #171717;
 }
 
 .dark {
-  --shiki-color-text: var(--gray-900);
-  --shiki-color-background: var(--gray-100);
-  --shiki-token-string: var(--gray-400);
-  --shiki-token-comment: var(--gray-400);
-  --shiki-token-keyword: var(--gray-400);
-  --shiki-token-punctuation: var(--gray-400);
-  --shiki-token-string-expression: var(--gray-600);
-  --shiki-token-constant: var(--gray-800);
-  --shiki-token-parameter: var(--gray-800);
-  --shiki-token-function: var(--gray-800);
-  --shiki-token-link: var(--gray-800);
+  --shiki-token-constant: #ededed;
+  --shiki-token-string: #a0a0a0;
+  --shiki-token-comment: #707070;
+  --shiki-token-keyword: #858585;
+  --shiki-token-parameter: #ededed;
+  --shiki-token-function: #ededed;
+  --shiki-token-string-expression: #a0a0a0;
+  --shiki-token-punctuation: #707070;
+  --shiki-token-link: #ededed;
 }
 
 .mdx code:not(pre code) {
   position: relative;
   padding: 4px 6px;
   border-radius: 6px;
-  background-color: var(--shiki-color-background);
   color: var(--shiki-color-text);
   font-size: 14px;
+}
+.mdx code:not(pre code, [data-rehype-pretty-code-fragment] code)::before {
+  content: '`';
+}
+.mdx code:not(pre code, [data-rehype-pretty-code-fragment] code)::after {
+  content: '`';
 }
 
 .mdx pre {
@@ -250,7 +254,7 @@
 }
 
 [data-highlighted-line] {
-  background-color: var(--blackA4);
+  background-color: var(--selection);
 }
 
 [data-line-numbers] {

@@ -16,9 +16,9 @@ export default function BaseNav({ href, children }: Props) {
   return (
     <nav
       className={cn(
-        'fixed top-page flex max-w-[220px] -translate-x-[260px] flex-col',
+        'fixed top-page flex max-w-[220px] -translate-x-[230px] flex-col',
         'transition-opacity lg:opacity-0',
-        'md:relative md:top-0 md:-ml-2 md:mb-7 md:translate-x-0',
+        'md:relative md:top-0 md:-ml-2 md:mb-7 md:translate-x-0 md:opacity-100',
       )}
     >
       <div className="flex items-center">

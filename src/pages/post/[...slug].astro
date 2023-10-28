@@ -33,7 +33,11 @@ const toc = parseToc(post.body);
 
 <Main seo={{ title, description }}>
   <BaseNav href={`/${post.collection}`} client:visible>
-    <TableOfContent className="mt-[60px] px-2 text-sm" toc={toc} client:load />
+    <TableOfContent
+      className="mt-[60px] px-2 text-sm md:hidden"
+      toc={toc}
+      client:load
+    />
   </BaseNav>
   <article class="mdx">
     <!-- header -->

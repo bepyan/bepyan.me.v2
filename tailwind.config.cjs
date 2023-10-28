@@ -12,7 +12,7 @@ module.exports = {
       mono: ['var(--font-mono)', 'monospace'],
     },
     screens: {
-      lg: { max: '1160px' },
+      lg: { max: '1074px' },
       md: { max: '768px' },
       sm: { max: '640px' },
     },

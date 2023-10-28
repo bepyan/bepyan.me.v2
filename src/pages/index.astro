@@ -1,6 +1,11 @@
 ---
 import ThemeToggle from '~/components/theme-toggle';
-import { GithubIcon, NotionIcon, TwitterXIcon } from '~/components/ui/icons';
+import {
+  EmailIcon,
+  GithubIcon,
+  NotionIcon,
+  TwitterXIcon,
+} from '~/components/ui/icons';
 import Main from '~/layouts/main.astro';
 ---
 
@@ -50,6 +55,12 @@ import Main from '~/layouts/main.astro';
         target="_blank"
       >
         <TwitterXIcon />
+      </a>
+      <a
+        class="rounded p-1 transition-colors hover:bg-selection hover:text-body"
+        href="mailto:bepyan@naver.com"
+      >
+        <EmailIcon />
       </a>
       <a
         class="flex items-center gap-1 rounded p-1 transition-colors hover:bg-selection hover:text-body"

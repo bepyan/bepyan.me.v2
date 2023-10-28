@@ -7,47 +7,40 @@ tags:
   - javascript
 ---
 
+콘솔 로깅은 개발자의 필수 도구 중 하나입니다. `console.log()` 함수를 사용하여 디버깅 및 코드 개발을 향상시킬 수 있는 몇 가지 고급 기술을 살펴봅시다. 아래에서는 **색상 지정**, **정보 그룹핑**, 그리고 **시간 측정**에 대해 알아보겠습니다.
+
+## 색상을 활용한 메시지 구분
+
+코드 디버깅 시 특정 메시지를 강조하고 싶을 때, `console.log()` 함수에 스타일을 적용할 수 있습니다. 다음과 같이 코드를 작성하면 메시지에 색상과 스타일을 적용할 수 있습니다.
+
 ```js
-console.log('%cfatfish', 'color: red;');
+const message = 'hello world';
+console.log(
+  `%c${message}`,
+  'padding: 4px 8px; background: #C2E0C6; color: #000000;',
+);
 ```
 
-### 색상을 구분하고 싶을 때
+여기서 `%c`는 CSS 스타일을 적용할 수 있는 특수한 placeholder입니다. 위의 코드에서는 메시지를 연두색 배경과 검은색 텍스트로 표시했으며, 필요한 스타일을 적용하여 메시지를 돋보이게 만들 수 있습니다.
 
-```js
-const getLogStyle = (code) => {
-  const style = 'padding: 4px 8px;';
+## 정보 그룹핑
 
-  if (code >= 200 && code < 300) {
-    return `${style} background: #C2E0C6; color: #000000;`;
-  }
+여러 정보를 논리적으로 그룹화하고 구조화된 방식으로 표시하려면 `console.groupCollapsed()` 및 `console.groupEnd()` 함수를 사용할 수 있습니다.
 
-  if (code >= 400 && code < 600) {
-    return `${style} background: #FEF0F0; color: #FF0000;`;
-  }
+```js {1,6}
+console.groupCollapsed('[그룹핑된 정보]');
 
-  return `${style} background: #FEF2C0; color: #000000;`;
-};
-
-console.log(`%c${message}`, getLogStyle(code));
-```
-
-### 정보들을 그룹핑하고 싶을 때
-
-```js {1,11}
-console.groupCollapsed(`%c${groupTitle}`, getLogStyle(data.code));
-
-console.log('>>> response', response);
-console.log('>>> params', params);
-if (data.code !== 200) {
-  console.log('>>> data', data);
-} else {
-  console.log('>>> data', data.data);
-}
+console.log('>>> location', window.location);
+console.log('>>> Astro', window.Astro);
 
 console.groupEnd();
 ```
 
-### 시간 측정할 때
+이를 통해 복잡한 로그 메시지를 구조화하여 코드의 실행 흐름을 더욱 명확하게 이해할 수 있습니다.
+
+## 시간 측정
+
+시간 측정은 코드 실행 시간을 정밀하게 측정하고 성능을 평가하는 데 도움을 줍니다. 아래의 코드를 통해 코드 블록의 실행 시간을 측정할 수 있습니다.
 
 ```jsx {2,4}
 (async () => {

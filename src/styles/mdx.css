@@ -202,10 +202,11 @@
 
 .mdx code:not(pre code) {
   position: relative;
-  padding: 4px 6px;
+  padding: 0px;
   border-radius: 6px;
   color: var(--shiki-color-text);
   font-size: 14px;
+  font-weight: 700;
 }
 .mdx code:not(pre code, [data-rehype-pretty-code-fragment] code)::before {
   content: '`';

@@ -8,17 +8,76 @@ tags:
   - typescript
 ---
 
-`Awaited` 문법을 통해서 Promise 타입을 벗겨낼 수 있다.
+TypeScript에서 비동기 코드를 다룰 때 `Promise` 타입을 다루기 불편할 때가 있습니다.
+이 때 `Awaited`라는 타입을 사용하면 유용합니다.
+
+## Awaited
+
+`Awaited`는 [TypeScript 4.5 버전](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#the-awaited-type-and-promise-improvements)부터 도입된 새로운 유틸리티 타입 중 하나입니다.
 
 ```ts
 // A = string
 type A = Awaited<Promise<string>>;
+```
 
+이와 같이 간단하게 Promise가 반환하는 값을 추출할 수 있습니다.
+
+## 중첩된 Promise 처리
+
+`Awaited` 타입을 사용하면 여러 Promise를 한 번에 처리하는 데도 유용합니다.
+
+```ts
 // B = number
 type B = Awaited<Promise<Promise<number>>>;
 ```
 
-참고 자료
+비동기 코드를 다룰 때 불필요한 중첩을 방지할 수 있습니다.
+아래는 실제 사용 예시입니다.
 
-- https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/#awaited-type
-- https://stackoverflow.com/questions/48944552/typescript-how-to-unwrap-remove-promise-from-a-type
+```ts
+async function fetchData(): Promise<Data> {
+  // 데이터를 비동기적으로 가져옴
+}
+
+async function processData(): Promise<Result> {
+  const data = await fetchData();
+  // 데이터를 가공하고 결과 반환
+}
+
+type Result = Awaited<ReturnType<typeof processData>>;
+```
+
+## 모호한 Promise 타입 처리
+
+`Awaited`는 다른 타입이 혼합되어 있는 상황에서도 유용합니다.
+
+```ts
+// C = boolean | number
+type C = Awaited<boolean | Promise<number>>;
+```
+
+덕분에 `Promise.all` 관련해서 디테일한 자동 타입 추론이 가능해졌습니다.
+
+```ts
+declare function MaybePromise<T>(value: T): T | Promise<T>;
+
+async function doSomething(): Promise<[number, number]> {
+  const result = await Promise.all([MaybePromise(100), MaybePromise(200)]);
+
+  // Typescript 4.5 버전 아래는 아래 에러가 발생됩니다.
+  // Error!
+  //
+  //    [number | Promise<100>, number | Promise<200>]
+  //
+  // is not assignable to type
+  //
+  //    [number, number]
+  return result;
+}
+```
+
+자세한 내용은 [Github 이슈](https://github.com/microsoft/TypeScript/pull/45350)를 참고하기 바랍니다.
+
+## 참고
+
+https://stackoverflow.com/questions/48944552/typescript-how-to-unwrap-remove-promise-from-a-type

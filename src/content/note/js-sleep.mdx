@@ -7,8 +7,41 @@ tags:
   - javascript
 ---
 
+코드를 작성하다 보면 특정 시간동안 대기해야 하는 경우가 종종 발생합니다.
+ex. 테스트, 애니메이션 등...
+
+끝내주는 유틸이 필요합니다!
+
+## sleep
+
+`Promise`을 활용해서 직접 유틸을 만듭니다.
+
 ```ts
 const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 ```
+
+`setTimeout`을 활용하여 인자로 받은 시간(ms)만큼 대기한 다음 `resolve`를 호출하여 `Promise`를 해결합니다.
+
+## lodash.delay
+
+`Promise`는 ES5 문법이기에 별도 도움 없이는 [레거시 브라우저(IE)](https://caniuse.com/?search=Promise)에서 동작할 수 없습니다.
+이 땐 검증된 유틸 라이브러리인 [`lodash`](https://github.com/lodash/lodash/tree/4.17.15)를 활용해도 좋습니다.
+
+```shell
+yarn add lodash-es
+yarn add -D @types/lodash-es
+```
+
+모던 환경에서는 [`tree shaking`](https://developer.mozilla.org/ko/docs/Glossary/Tree_shaking)을 위해서 꼭 `lodash-es`를 사용해주세요.
+
+```js
+import { delay } from 'lodash-es';
+
+delay(() => {
+  console.log('sleep end');
+}, 100);
+```
+
+[원본코드](https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L10470)를 살펴보면 내부는 똑같이 `setTimeout`을 사용하고 있어 성능적인 차이는 없습니다.

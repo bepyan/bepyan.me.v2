@@ -8,34 +8,53 @@ tags:
   - javascript
 ---
 
-[Blob](https://developer.mozilla.org/ko/docs/Web/API/Blob)을 활용하는 방법
+웹에서는 파일 다운로드 및 업로드와 같은 기능이 중요합니다.
+이러한 작업을 수행할 때 **Blob** 객체는 매우 유용한 도구로 활용됩니다.
 
-```js
-const generateTxtFile = (data) => {
+[Blob (Binary Large Object)](https://developer.mozilla.org/ko/docs/Web/API/Blob) 객체는 텍스트 파일 또는 바이너리 데이터와 같은 데이터를 메모리에 저장하고 처리하는 데 사용됩니다.
+
+## 파일 미리보기
+
+`Blob` 객체를 활용하여 파일을 생성하여 새 탭에서 파일 미리보기를 제공해줄 수 있습니다.
+
+```js {3}
+const previewTextFile = (data) => {
   const blob = new Blob([JSON.stringify(data)], {
     type: 'text/plain;charset=UTF-8',
   });
-  const textFile = window.URL.createObjectURL(blob);
-  return textFile;
+  const blobUrl = window.URL.createObjectURL(blob);
+  window.open(blobUrl, '_blank');
 };
 ```
 
-- `charset=UTF-8`을 붙여야 한글이 깨지지 않는다.
+여기서 `charset=UTF-8`를 붙이는 것은 한글이 깨지지 않도록 인코딩을 지정하는 부분입니다.
 
-[File](https://developer.mozilla.org/ko/docs/Web/API/File)을 활용하는 방법
+## 파일 다운로드 받기
 
-```js
-const generateTxtFile = (data) => {
-  const fileName = `test.txt`;
-  const txtFile = new File([JSON.stringify(data)], fileName, {
+`anchor` 엘리먼트를 활용해 파일을 다운로드할 수 있습니다.
+
+```js {9, 13}
+const downloadTextFile = (data, filename = 'download') => {
+  const blob = new Blob([JSON.stringify(data)], {
     type: 'text/plain;charset=UTF-8',
   });
-  return txtFile;
+  const blobUrl = window.URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = `${filename}.txt`;
+  link.click();
+  link.remove();
+
+  window.URL.revokeObjectURL(blobUrl);
 };
 ```
 
-```js
-window.open(generateTxtFile('한글'), '_blank');
-```
+`window.URL.revokeObjectURL`을 사용하는 이유
 
-https://www.thecodehubs.com/generate-text-file-using-plain-javascript/
+- 가비지 콜렉터가 관련 리소스를 자동으로 회수하지 않습니다.
+- 따라서 **메모리 누수를 방지**하기 위해 다운로드 후 불필요해진 URL를 수동으로 해제합니다.
+
+## 참고
+
+https://stackoverflow.com/questions/19327749/javascript-blob-filename-without-link/19328891#19328891

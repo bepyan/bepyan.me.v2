@@ -7,10 +7,17 @@ tags:
   - javascript
 ---
 
+`navigator.clipboard`와 `document.execCommand` 두 가지 방법을 통해 클립보드에 텍스트를 복사할 수 있습니다.
+
+## navigator.clipboard
+
+[Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API)의 `Clipboard` 객체를 가져온 것으로 간편하게 관련 동작을 수행할 수 있습니다.
+~IE는 사용 불가~, [Safari는 13.4 이상](https://caniuse.com/mdn-api_navigator_clipboard)부터 호환된다는 점을 유의해야합니다.
+
 ```tsx {3}
-export const copyClipboard = async (url = window.document.location.href) => {
+const copyToClipboard = async (url = window.document.location.href) => {
   try {
-    await navigator.clipboard.writeText(url);
+    await window.navigator.clipboard.writeText(url);
     alert('링크가 복사되었습니다.');
   } catch (e) {
     console.error(e);
@@ -19,24 +26,55 @@ export const copyClipboard = async (url = window.document.location.href) => {
 };
 ```
 
-https://web.dev/i18n/ko/async-clipboard/
+`writeText`는 사실 `write`를 쓰기 편하게 한번 래핑한 메소드입니다.
+`blob`과 `ClipboardItem`을 활용해서 이미지도 복사를 할 수 있습니다.
 
----
-
-레거시 방법
-
-```tsx
-export const copyURL = () => {
-  let currentUrl = window.document.location.href;
-  let t = document.createElement('textarea');
-  document.body.appendChild(t);
-  t.value = currentUrl;
-  t.select();
-  document.execCommand('copy');
-  document.body.removeChild(t);
-
-  alert('링크가 복사되었습니다.');
+```js
+const copyImageToClipboard = (imgURL) => {
+  try {
+    const data = await fetch(imgURL);
+    const blob = await data.blob();
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [blob.type]: blob
+      })
+    ]);
+    alert('클립보드에 복사되었습니다.');
+  } catch (err) {
+    console.error(e);
+    alert('클립보드 복사에 실패했습니다.');
+  }
 };
 ```
 
-https://sezzled.tistory.com/138
+## document.execCommand
+
+오래된 웹 기술 중 하나로, 현재 [Deprecated](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand) 되었습니다.
+물론 현대 브라우저에서 "아직은" 이를 지원하기에 사용에 큰 지장은 없습니다.
+
+```tsx {8}
+const copyToClipboard = (url = window.document.location.href) => {
+  let t = document.createElement('textarea');
+  t.style.display = 'none';
+  document.body.appendChild(t);
+  t.value = url;
+  t.select();
+
+  const result = document.execCommand('copy');
+  if (result === 'unsuccessful') {
+    alert('링크가 복사되었습니다.');
+  } else {
+    alert('클립보드 복사에 실패했습니다.');
+  }
+
+  document.body.removeChild(t);
+};
+```
+
+`textarea` 태그를 생성하여 키보드 `copy` 이벤트를 발생시킵니다.
+`body`에 태그를 주입하는 것이 조금 찜찜하긴 곧바로 제거되기에 사용에는 문제가 없습니다.
+
+## 참고
+
+- https://web.dev/i18n/ko/async-clipboard
+- https://sezzled.tistory.com/138

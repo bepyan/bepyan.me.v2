@@ -107,7 +107,7 @@
   }
 
   * {
-    @apply border-border box-border;
+    @apply box-border border-border;
   }
 
   ::selection {
@@ -142,7 +142,7 @@
   a.external-link,
   .mdx a {
     @apply relative inline-block break-all text-body hover:text-heading;
-    @apply decoration-border hover:decoration-transparent underline decoration-1 underline-offset-4;
+    @apply underline decoration-border decoration-1 underline-offset-4 hover:decoration-transparent;
     @apply duration-200 ease-in-out hover:duration-100;
   }
   a.link::before,

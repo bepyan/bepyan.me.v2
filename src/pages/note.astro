@@ -25,27 +25,35 @@ const yearList = Object.entries(
 <Main class="font-serif">
   <BaseNav href="/" client:visible />
   <BaseHeader title="수첩" />
-  <div class="group border-l pl-4">
+  <div
+    data-animate
+    data-animate-speed="slow"
+    class="group space-y-7 border-l pl-4"
+  >
     {
-      yearList.map(([year, postList]) => {
+      yearList.map(([year, postList], index) => {
         return (
-          <div class="relative mb-8">
+          <div class="relative">
             <div class="absolute -left-20 select-none sm:relative sm:left-0 sm:mb-2">
               <h3 class="font-serif">{year}</h3>
             </div>
-            {postList.sort(sortCollectionDateDesc).map((post) => {
-              return (
-                <a
-                  href={`/post/${post.slug}`}
-                  class="mb-4 flex items-center transition-opacity hover:!opacity-100 group-hover:opacity-40"
-                >
-                  <span class="text-heading">{post.data.title}</span>
-                  <span class="flex-shrink-0 px-2 text-sm text-second">
-                    {format(new Date(post.data.date), 'MM. dd.')}
-                  </span>
-                </a>
-              );
-            })}
+            <ul data-animate data-animate-speed="fast" class="space-y-2">
+              {postList.sort(sortCollectionDateDesc).map((post) => {
+                return (
+                  <li style={`--start: ${index * 75}ms;`}>
+                    <a
+                      href={`/post/${post.slug}`}
+                      class="flex items-center transition-opacity duration-300 hover:!opacity-100 group-hover:opacity-60"
+                    >
+                      <span class="text-heading">{post.data.title}</span>
+                      <span class="flex-shrink-0 px-2 text-sm text-second">
+                        {format(new Date(post.data.date), 'MM. dd.')}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         );
       })

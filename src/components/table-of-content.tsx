@@ -7,6 +7,7 @@ import { cn } from '~/libs/utils';
 export default function TableOfContent({
   toc,
   className,
+  ...props
 }: {
   toc: TOCSection[];
   className?: string;
@@ -14,7 +15,7 @@ export default function TableOfContent({
   const { currentSectionSlug } = useTocScroll(toc);
 
   return (
-    <ul className={cn('space-y-2.5 font-sans text-sm', className)}>
+    <ul {...props} className={cn('space-y-2.5 font-sans text-sm', className)}>
       {toc.map((section, i) => (
         <li key={i} className="flex">
           <a

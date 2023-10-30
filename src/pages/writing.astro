@@ -29,38 +29,42 @@ const yearList = Object.entries(
 <Main class="font-serif">
   <BaseNav href="/" client:visible />
   <BaseHeader title="나의 서재" />
-  <section class="group my-14">
+  <section data-animate class="group my-14">
     {
-      yearList.map(([year, postList]) => {
+      yearList.map(([year, postList], index) => {
         return (
           <div class="relative border-t last-of-type:border-b">
             <h3 class="absolute top-3 -z-10 text-sm text-second">{year}</h3>
-            {postList.sort(sortDateDesc).map((post) => {
-              return (
-                <a
-                  href={post.href}
-                  class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-60"
-                  target={post.isExternal ? '_blank' : '_self'}
-                >
-                  <div class="ml-[15%] flex flex-1 items-start border-t py-4 group-first-of-type/item:border-t-0">
-                    <div>
-                      <div class="flex items-center gap-0.5 text-heading">
-                        {post.title}
+            <ul data-animate>
+              {postList.sort(sortDateDesc).map((post) => {
+                return (
+                  <li style={`--lv-wait: ${index};`}>
+                    <a
+                      href={post.href}
+                      class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-60"
+                      target={post.isExternal ? '_blank' : '_self'}
+                    >
+                      <div class="ml-[15%] flex flex-1 items-start border-t py-4 group-first-of-type/item:border-t-0">
+                        <div>
+                          <div class="flex items-center gap-0.5 text-heading">
+                            {post.title}
+                          </div>
+                          <div class="max-h-0 overflow-hidden text-xs transition-[max-height] duration-500 group-hover/item:max-h-10">
+                            <span class="text-second">{post.description}</span>
+                          </div>
+                        </div>
+                        <div class="ml-auto flex flex-shrink-0 items-center gap-1 px-2 pt-1 text-sm text-second">
+                          {post.isExternal && (
+                            <BxLinkExternal className="text-disabled" />
+                          )}
+                          <span>{format(new Date(post.date), 'MM. dd.')}</span>
+                        </div>
                       </div>
-                      <div class="max-h-0 overflow-hidden text-xs transition-[max-height] group-hover/item:max-h-10">
-                        <span class="text-second">{post.description}</span>
-                      </div>
-                    </div>
-                    <div class="ml-auto flex flex-shrink-0 items-center gap-1 px-2 pt-1 text-sm text-second">
-                      {post.isExternal && (
-                        <BxLinkExternal className="text-disabled" />
-                      )}
-                      <span>{format(new Date(post.date), 'MM. dd.')}</span>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         );
       })

@@ -8,7 +8,7 @@ type Props = {
   class?: string;
 };
 
-const { seo } = Astro.props;
+const { seo, ...props } = Astro.props;
 ---
 
 <html lang="ko">
@@ -19,7 +19,7 @@ const { seo } = Astro.props;
   <body>
     <div class="blur-layer" aria-hidden="true"></div>
     <div class="container">
-      <main class={Astro.props.class}>
+      <main {...props} class={Astro.props.class}>
         <slot />
       </main>
     </div>

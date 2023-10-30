@@ -45,6 +45,7 @@ const toc = parseToc(post.body);
 <Main seo={{ title, description }}>
   <BaseNav href={`/${post.collection}`} client:visible>
     <TableOfContent
+      data-animate
       className="mt-[60px] px-2 text-sm md:hidden"
       toc={toc}
       client:load
@@ -61,7 +62,7 @@ const toc = parseToc(post.body);
       {format(date, 'MMM dd, yyyy')}
     </time>
   </header>
-  <article class="mdx">
+  <article data-animate data-animate-speed="fast" class="mdx">
     <Content />
   </article>
   <footer class="mt-page">

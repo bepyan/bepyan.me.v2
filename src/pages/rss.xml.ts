@@ -4,7 +4,11 @@ import { getCollection } from 'astro:content';
 import { SITE } from '~/consts';
 
 export async function GET(context: any) {
-  const posts = await getCollection('writing');
+  const [writings, notes] = await Promise.all([
+    getCollection('writing'),
+    getCollection('note'),
+  ]);
+  const posts = [...writings, ...notes];
 
   return rss({
     title: SITE.title,

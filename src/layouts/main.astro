@@ -1,5 +1,6 @@
 ---
 import BaseHead from '~/components/base-head.astro';
+import MonitoringScript from '~/components/monitoring-script.astro';
 import ThemeScript from '~/components/theme-script.astro';
 import type { SEOProps } from '~/types';
 
@@ -23,5 +24,6 @@ const { seo, ...props } = Astro.props;
         <slot />
       </main>
     </div>
+    <MonitoringScript />
   </body>
 </html>

@@ -12,7 +12,7 @@ const { props } = Astro;
 
 const title =
   props.title && SITE.titleTemplate
-    ? SITE.titleTemplate.replace('%s', SITE.title)
+    ? SITE.titleTemplate.replace('%s', props.title)
     : SITE.title;
 const description = props.description ?? SITE.description;
 

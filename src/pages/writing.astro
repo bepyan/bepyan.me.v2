@@ -11,6 +11,8 @@ import {
   sortDateDesc,
 } from '~/libs/mdx';
 
+const TITLE = '서재';
+
 const posts = await getWritingPostInfoList();
 
 const yearList = Object.entries(
@@ -26,9 +28,9 @@ const yearList = Object.entries(
 ).sort((a, b) => +b[0] - +a[0]);
 ---
 
-<Main class="font-serif">
+<Main seo={{ title: TITLE }} class="font-serif">
   <BaseNav href="/" client:visible />
-  <BaseHeader title="나의 서재" />
+  <BaseHeader title={TITLE} />
   <section data-animate class="group my-14">
     {
       yearList.map(([year, postList], index) => {

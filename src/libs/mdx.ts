@@ -1,6 +1,6 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 
-import { externalWritings } from '~/content/constants';
+import { externalWritings } from '~/content/_constants';
 
 /** 최신순 */
 export const sortCollectionDateDesc = (

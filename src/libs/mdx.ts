@@ -37,12 +37,14 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
   const posts = await getCollection('writing');
 
   const postList: PostInfo[] = [
-    ...posts.map<PostInfo>((post) => ({
-      title: post.data.title,
-      description: post.data.description,
-      href: `/post/${post.slug}`,
-      date: post.data.date,
-    })),
+    ...posts
+      .filter((post) => !post.data.draft)
+      .map<PostInfo>((post) => ({
+        title: post.data.title,
+        description: post.data.description,
+        href: `/post/${post.slug}`,
+        date: post.data.date,
+      })),
     ...externalWritings.map<PostInfo>((post) => ({
       title: post.title,
       description: post.description,

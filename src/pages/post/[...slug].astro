@@ -19,14 +19,16 @@ export async function getStaticPaths() {
   return [
     ...writings.sort(sortCollectionDateAsc),
     ...notes.sort(sortCollectionDateAsc),
-  ].map((post, index, list) => ({
-    params: { slug: post.slug },
-    props: {
-      post,
-      prevPost: list[index - 1],
-      nextPost: list[index + 1],
-    },
-  }));
+  ]
+    .filter((post) => post.data.draft)
+    .map((post, index, list) => ({
+      params: { slug: post.slug },
+      props: {
+        post,
+        prevPost: list[index - 1],
+        nextPost: list[index + 1],
+      },
+    }));
 }
 
 type Props = {

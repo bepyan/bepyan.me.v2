@@ -20,7 +20,7 @@ export async function getStaticPaths() {
     ...writings.sort(sortCollectionDateAsc),
     ...notes.sort(sortCollectionDateAsc),
   ]
-    .filter((post) => post.data.draft)
+    .filter((post) => !post.data.draft)
     .map((post, index, list) => ({
       params: { slug: post.slug },
       props: {

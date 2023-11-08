@@ -1,0 +1,29 @@
+---
+import { format } from 'date-fns';
+
+import BaseNav from '~/components/base-nav';
+import ThemeToggle from '~/components/theme-toggle';
+import Main from '~/layouts/main.astro';
+
+import CodePlayground from './CodePlayground';
+
+const title = 'logger';
+---
+
+<Main seo={{ title }}>
+  <BaseNav href={`/`} client:visible />
+  <header class="mb-7 font-serif">
+    <div class="flex items-center">
+      <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
+      <div class="ml-auto">
+        <ThemeToggle client:load />
+      </div>
+    </div>
+    <time class="text-sm text-second">
+      {format(new Date('2023-11-05'), 'MMM dd, yyyy')}
+    </time>
+  </header>
+  <article data-animate data-animate-speed="fast" class="mdx">
+    <CodePlayground client:load />
+  </article>
+</Main>

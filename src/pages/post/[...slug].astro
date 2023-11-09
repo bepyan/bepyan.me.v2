@@ -9,6 +9,7 @@ import TableOfContent from '~/components/table-of-content';
 import ThemeToggle from '~/components/theme-toggle';
 import Main from '~/layouts/main.astro';
 import { parseToc, sortCollectionDateAsc } from '~/libs/mdx';
+import { isDev } from '~/libs/utils';
 
 export async function getStaticPaths() {
   const [writings, notes] = await Promise.all([
@@ -20,7 +21,7 @@ export async function getStaticPaths() {
     ...writings.sort(sortCollectionDateAsc),
     ...notes.sort(sortCollectionDateAsc),
   ]
-    .filter((post) => !post.data.draft)
+    .filter((post) => isDev || !post.data.draft)
     .map((post, index, list) => ({
       params: { slug: post.slug },
       props: {

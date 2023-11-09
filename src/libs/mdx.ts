@@ -2,6 +2,8 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 
 import { externalWritings } from '~/content/_constants';
 
+import { isDev } from './utils';
+
 /** 최신순 */
 export const sortCollectionDateDesc = (
   a: CollectionEntry<'writing' | 'note'>,
@@ -38,7 +40,7 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
 
   const postList: PostInfo[] = [
     ...posts
-      .filter((post) => !post.data.draft)
+      .filter((post) => isDev || !post.data.draft)
       .map<PostInfo>((post) => ({
         title: post.data.title,
         description: post.data.description,

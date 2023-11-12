@@ -40,7 +40,7 @@
 
 .mdx blockquote {
   position: relative;
-  color: var(--text-second);
+  color: var(--text-body);
   font-family: var(--font-serif), sans-serif;
   quotes: '“' '”' '‘' '’';
   --quote-offset: 3px;
@@ -49,8 +49,14 @@
 .mdx blockquote:before {
   position: absolute;
   left: calc(-1 * var(--quote-offset));
+  color: var(--text-body);
   content: open-quote;
   transform: translateX(-100%);
+}
+
+.mdx blockquote :last-child:after {
+  margin-left: var(--quote-offset);
+  content: close-quote;
 }
 
 .mdx > :has(+ :where(ul, ol)) {

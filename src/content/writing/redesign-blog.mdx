@@ -10,7 +10,7 @@ tags:
 ---
 
 심혈을 기울려 만든 ["나만의 블로그"](https://bepyan.github.io/)를 1년이 안된 채, _redesign_ 하게 되었다.
-그 과정을 단백하게 회고하고자 한다.
+그 과정을 단백하게 기록하고자 한다.
 
 ## 내가 하고 싶은 것을 다시 발견하다.
 
@@ -57,6 +57,7 @@ tags:
 - [`shadcn/ui`](https://github.com/shadcn-ui/ui)의 탄탄한 Next.js 13 프로젝트 구조 참고
 - [`rehype-pretty-code`](https://rehype-pretty-code.netlify.app/) 도입
   - 훨씬 vscode 스러운 syntax highlighter, [`shiki`](https://github.com/shikijs/shiki) 기반 `rehype` 플러그인
+- [`vercel`](https://vercel.com/)에 배포
 - ...
 
 7월, 8월이 흘러 어느새 블로그 형태가 잡혔다.
@@ -70,30 +71,37 @@ https://bepyan-me.vercel.app/
 ## Astro로 이전하다.
 
 만들자마자 이사를 결심하게 되었다.
-사이트에 글 뿐만이 아니라 [dnd-playground](https://github.com/bepyan/dnd-playground) 같이 무언가 흥미로운 것(**craft**)도 담고 싶었다.
+사이트에 글 뿐만이 아니라 [dnd-playground](https://github.com/bepyan/dnd-playground) 같이 무언가 흥미로운 것(**craft**)도 담고 싶었다. 회사에서 열심히 사용하고 있는 `Svelte`로도 무언가 끄적여 보고 싶지만 `Next.js`은 `React`에 중점을 두고 있어 다양한 언어의 코드를 다루기 어렵다.
 
-하지만 `Next.js`은 `React`만을 다루기에 다양한 언어의 코드를 다룰 수 없다.
-회사에서 열심히 사용하고 있는 `Svelte`
-때마침 회사 동료가 [`Astro`](https://astro.build/)에 대해서 소개해준 기억이 떠올라 이를 진지하게 고민하게 되었다.
+때마침 회사 동료로부터 [`Astro`](https://astro.build/)을 알게 되었다.
 
-- **콘텐츠 전달**에 최적화되어 있다.
-- 그냥 빠르다.
+- **콘텐츠 전달**에 최적화되어 있어 그냥 빠르다.
 - `markdown` 관련 설정이 프레임워크 단에서 탑재하고 있다.
-- `html`
+- `html`을 더 직관적으로 다룬다.
+- [`Astro Islands`](https://docs.astro.build/en/concepts/islands/)을 통해 다양한 언어를 쉽게 탑재할 수 있다.
 
-그렇게 또 9월, 10월이 흘러 마침네 블로그가 `Astro`로 새롭게 단장했다.
-멀쩡한 도자기를 거침없이 깨트리는 장인의 마음을 조금 이해할 수 있을 것 같았다.
+**"바로 이거다"** 싶었다.
+만약 브런치를 최신 프레임워크로 이전시킨다면 `Astro`가 가장 매력적이지 않을까 생각이 들기도 했다. ~하지만 그런 날은 오지 않을 듯하다~
+
+그렇게 작업이 시작되었고 9월, 10월이 흘러 마침네 새롭게 단장되었다.
+관련 후기는 별도로 글을 정리 해볼까 한다.
+덤으로 핫한 [`bun`](https://bun.sh/package-manager)을 패키지 매니저로 처음 써보게 되었다. 체감이 될 정도로 빠르긴 하다.
 
 https://bepyan-me-v2.vercel.app/
 
-글 레이아웃의에 대한 철학과 사소한 디테일은 [글 예시](./example)에 기록했다.
+추가로 글 레이아웃의에 대한 철학과 디테일은 [글 예시](https://bepyan-me-v2.vercel.app/post/example)에 추가했다.
 
 ## 마침내 도메인을 구매하다.
+
+도메인은 [가비아](https://www.gabia.com/)에서 구매했다. 타 사이트와 비교했을 때 가격도 저렴하고 UI도 깔끔했던 것 같았다. 자켓 하나 산다고 생각하고 3년에 7만원으로 결재했다.
 
 https://bepyan.me/
 
 사실 처음 도메인을 구매해 서비스에 연결하는거라 조금 겁났었다.
 하지만 `vercel`은 신이었다.
+DNS 정보만 붙여놨더니 바로 도메인이 연결되었다.
+
+룰루랄라,이제
 
 ## 글에 대해서 다시 생각하다.
 

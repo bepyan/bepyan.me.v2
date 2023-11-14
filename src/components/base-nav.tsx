@@ -22,7 +22,12 @@ export default function BaseNav({ href, children }: Props) {
       )}
     >
       <div className="flex items-center">
-        <Button onClick={() => onNavigate(href)} variant="ghost" size="icon">
+        <Button
+          onClick={() => onNavigate(href)}
+          variant="ghost"
+          size="icon"
+          aria-label="go back"
+        >
           <UndoIcon className="h-5 w-5" />
         </Button>
       </div>

@@ -56,4 +56,16 @@ export const externalWritings = [
     date: '2023-01-16',
     link: 'https://velog.io/@bepyan/이건-물경력일까-불경력일까',
   },
+  {
+    title: '차세대 번들러 비교 및 분석 (feat. webpack, rollup, esbuild, vite)',
+    description: '번들러가 왜 필요하고 어떻게 발전되고 가고 있을까?',
+    date: '2023-02-21',
+    link: 'https://bepyan.github.io/blog/2023/bundlers',
+  },
+  {
+    title: '다크모드, 더 프로처럼 활용하기',
+    description: '번들러가 왜 필요하고 어떻게 발전되고 가고 있을까?',
+    date: '2023-05-23',
+    link: 'https://bepyan.github.io/blog/2023/darkmode',
+  },
 ];

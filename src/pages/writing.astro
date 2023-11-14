@@ -36,7 +36,7 @@ const yearList = Object.entries(
       yearList.map(([year, postList], index) => {
         return (
           <div class="relative border-t last-of-type:border-b">
-            <h3 class="absolute top-3 -z-10 text-sm text-second">{year}</h3>
+            <h3 class="absolute top-5 -z-10 text-sm text-second">{year}</h3>
             <ul data-animate>
               {postList.sort(sortDateDesc).map((post) => {
                 return (

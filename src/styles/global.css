@@ -78,6 +78,8 @@
   @media (max-width: 768px) {
     :root {
       --page-top: 64px;
+      --body-margin-left: max(16px, env(safe-area-inset-left));
+      --body-margin-right: max(16px, env(safe-area-inset-right));
     }
   }
 }

@@ -26,6 +26,7 @@
     "date-fns": "^2.30.0",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.279.0",
+    "medium-zoom": "^1.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },

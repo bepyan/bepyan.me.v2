@@ -162,8 +162,11 @@
 .mdx img + em p {
   display: inline-block;
   margin-top: 8px;
+  color: var(--shiki-token-comment);
+  font-family: var(--font-sans);
   font-size: 14px;
   font-style: normal;
+  font-weight: 400;
   line-height: 20px;
 }
 

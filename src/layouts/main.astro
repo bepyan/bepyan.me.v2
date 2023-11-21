@@ -17,6 +17,7 @@ const { seo, ...props } = Astro.props;
   <head>
     <BaseHead {...seo} />
     <ThemeScript />
+    <MonitoringScript />
   </head>
   <body>
     <div class="blur-layer" aria-hidden="true"></div>
@@ -25,7 +26,6 @@ const { seo, ...props } = Astro.props;
         <slot />
       </main>
     </div>
-    <MonitoringScript />
     <MediumZoomScript />
   </body>
 </html>

@@ -5,6 +5,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseNav from '~/components/base-nav';
+import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import TableOfContent from '~/components/table-of-content';
 import ThemeToggle from '~/components/theme-toggle';
@@ -71,7 +72,7 @@ const toc = parseToc(post.body);
   </article>
   <footer class="mt-page">
     <hr class="mb-7" />
-    <footer class="text-tx flex items-stretch justify-between gap-1 text-sm">
+    <section class="text-tx flex items-stretch justify-between gap-1 text-sm">
       {
         !!prevPost && (
           <a class="group flex flex-col gap-1" href={`/post/${prevPost.slug}`}>
@@ -99,7 +100,8 @@ const toc = parseToc(post.body);
           </a>
         )
       }
-    </footer>
+    </section>
+    <GiscusSection className="mx-auto mt-20" client:load />
   </footer>
   <MediumZoomScript />
 </Main>

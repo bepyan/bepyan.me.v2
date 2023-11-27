@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { changeGiscusTheme } from '~/components/giscus';
 import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
@@ -13,15 +14,21 @@ import { DotIcon, MoonIcon, SunIcon } from './ui/icons';
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<string>();
 
+  const changeTheme = (theme: 'light' | 'dark') => {
+    if (theme === 'dark') {
+      changeGiscusTheme('dark');
+      document.documentElement.classList.add('dark');
+    } else {
+      changeGiscusTheme('light');
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
   const listenDarkMode = () => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     const handle = (query: { matches: boolean }) => {
-      if (query.matches) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      changeTheme(query.matches ? 'dark' : 'light');
     };
 
     const hasEventListener = !!mediaQuery.addEventListener;
@@ -42,10 +49,10 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
+      changeTheme('light');
       localStorage.setItem('theme', theme);
     } else if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      changeTheme('dark');
       localStorage.setItem('theme', theme);
     } else if (theme === 'system') {
       localStorage.removeItem('theme');

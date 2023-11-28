@@ -92,6 +92,10 @@
   @apply mb-3;
 }
 
+.mdx li:has([data-rehype-pretty-code-fragment])::marker {
+  content: none;
+}
+
 .mdx ol {
   --counter-space: 12px;
   padding: 0;

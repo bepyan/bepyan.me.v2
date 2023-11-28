@@ -1,0 +1,95 @@
+---
+title: '(Svelte) class properties 활용법'
+description: ''
+date: 2023-11-28 23:21:47
+draft: false
+tags:
+  - svelte
+---
+
+스벨트(Svelte)로 컴포넌트를 개발하면서,
+HTML Element의 class 속성을 다른 컴포넌트로 전달해야 하는 상황이 종종 있습니다.
+하지만 단순하게 접근하면 바로 문제가 발생합니다.
+
+```svelte
+<script>
+  export let class = "";
+  // 🚨 Parsing error: 'class' is not allowed as a variable declaration name. eslint
+  // 🚨 Variable declaration not allowed at this location. ts(1440)
+</script>
+```
+
+에러가 발생되는 이유는 `class`는 클래스 객체를 생성하기 위한 javascript의 [선언 명령어](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/class)이기 때문입니다. 명령어를 변수로 활용할 수 없는 노릇이죠! 이는 React에서 class가 아닌 className을 사용하는 이유와 같습니다.
+
+그렇다고 아래와 같이 `className`을 쓴다면, 통일성이 떨어지고 컴포넌트 사용 시 실수하기 쉬워집니다.
+
+```svelte
+<script>
+  export let className = "";
+</script>
+
+<Button className=""></Button>
+<!-- 내가 만든 컴포넌트는 className 써야한다고..? -->
+<button class=""></button>
+```
+
+이를 해결하기 위해 **조금의 노하우**가 필요한데요, 2가지 방법을 한번 살펴 보시죠.
+
+## 방법 1: `className`
+
+컴포넌트에서 `className`을 `class`로 별칭을 지어 내보내면 됩니다.
+
+```svelte
+<script>
+  let className = '';
+  export { className as class };
+</script>
+
+<div {...$$restProps} class={className}>...</div>
+```
+
+장점
+
+- 선언적인이다.
+  - 직관적이고 변수를 재활용하기 좋다.
+
+단점
+
+- 구문 형태가 조금 생소하다.
+- 코드가 길다. ~~세련되지 못하다.~~
+
+오픈소스 예시
+
+- [svelte-material-ui](https://github.com/hperrin/svelte-material-ui/blob/4d68905acde0d885a44143738246a7a3d2588bba/packages/button/src/Button.svelte#L97-L98)
+- [shadcn-svelte](https://github.com/huntabyte/shadcn-svelte/blob/main/apps/www/src/lib/registry/default/ui/button/button.svelte)
+
+## 방법 2: `$$props.class`
+
+svelte의 `$$props`는 컴포넌트에 전달된 모든 속성(props)을 포함하는 특별한 변수입니다.
+이를 활용하여 간편하게 `class` 속성을 활용할 수 있습니다.
+
+```svelte
+<div {...$$restProps} class={$$props.class}>...</div>
+```
+
+장점
+
+- 코드가 간결하다.
+
+단점
+
+- `$$restProps`의 사용 위치에 제약이 있다.
+- ```svelte
+  <div class="btn {$$props.class}" {...$$restProps}>...</div>
+  <!-- 🚨 `$$restProps`에 `class` 속성이 남아 있어 기존 내용를 덮어 씌우게 된다. -->
+  ```
+
+오픈소스 예시
+
+- [flowbite-svelte](https://github.com/themesberg/flowbite-svelte/blob/de4682ef7ad4359e68b435252efc4efc37f25867/src/lib/buttons/Button.svelte#L106-L138)
+- [carbon-components-svelte](https://github.com/carbon-design-system/carbon-components-svelte/blob/6c9cf9e043b3c963a257a28fa8dd29c8acd4b2ce/src/Button/Button.svelte#L97-L125)
+
+## 맺으면서
+
+코딩은 언제나 그렇듯 정답은 없습니다.
+개발 환경과 팀의 입맛에 맞게 사용 컨벤션을 정하면 될 것 같습니다. 위 예시를 [svelte REPL](https://svelte.dev/repl/4fb8404156a34bb4b9bc2416abf6cd7b?version=4.2.7)에서 직접 사용해보고, 오픈소스 코드도 참고 해서 결정해보세요!

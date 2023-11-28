@@ -10,7 +10,11 @@ import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import TableOfContent from '~/components/table-of-content';
 import ThemeToggle from '~/components/theme-toggle';
 import Main from '~/layouts/main.astro';
-import { parseToc, sortCollectionDateAsc } from '~/libs/mdx';
+import {
+  contentToDescription,
+  parseToc,
+  sortCollectionDateAsc,
+} from '~/libs/mdx';
 import { isDev } from '~/libs/utils';
 
 export async function getStaticPaths() {
@@ -43,7 +47,8 @@ type Props = {
 const { post, prevPost, nextPost } = Astro.props;
 
 const { Content } = await post.render();
-const { title, description, date } = post.data;
+const { title, date } = post.data;
+const description = post.data.description || contentToDescription(post.body);
 const toc = parseToc(post.body);
 ---
 

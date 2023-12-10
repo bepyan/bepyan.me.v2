@@ -1,0 +1,118 @@
+---
+title: 'Svelte Compiler는 어떻게 동작할까?'
+description: ''
+date: 2023-12-10 23:10:00
+draft: true
+tags:
+  - svelte
+  - compiler
+---
+
+## 도입부
+
+- 요즘 React, Vue 다음으로 Svelte가 많이 언급되고 있음
+- 실제로 구글에 React, Vue를 치면 Angular 대신 Svelte가 추천 됨
+
+![231210-211816](/img/svelte-compiler-operation/231210-211816.png)
+
+- Svelte는 DOM을 효율적으로 조작하는 코드를 생성하는 컴파일러임
+
+- React를 제대로 알기 위해선 VDOM을 알아야하는 것 같이, Svelte를 제대로 알려면 Svelte Compiler를 제대로 알아야 함
+
+## Svelte Compiler의 동작 방식
+
+Svelte의 컴파일 단계는 크게 4가지 단계로 나눌 수 있음
+
+- Parsing source code into Abstract Syntax Tree (AST)
+- Tracking references and dependencies
+- Creating code blocks and fragments
+- Generate code
+
+[Svelte 오픈소스 코드](https://github.com/sveltejs/svelte/blob/aa3dcc06d6b0fcb079ccd993fa6e3455242a2a96/src/compiler/compile/index.ts#L70-L100)에서 바로 직관적으로 힌트를 얻을 수 있음
+
+```js
+const source = fs.readFileSync('App.svelte');
+
+// 1. parse source code into AST
+const ast = parse(source);
+
+// 2. tracking references and dependencies
+const component = new Component(ast);
+
+// 3. creating code blocks and fragments
+const renderer =
+  options.generate === 'ssr' ? SSRRenderer(component) : DomRenderer(component);
+
+// 4. Generate code
+const { js, css } = renderer.render();
+
+fs.writeFileSync('App.js', js);
+fs.writeFileSync('App.css', css);
+```
+
+### 1. AST
+
+- AST의 정의
+  - Abstract Syntax Tree
+- AST의 의의
+  - Svelte 문법에서 유효한 JS, CSS, HTML을 추출
+- AST를 만드는 방법
+  - `script` 태그를 만나면 `acorn`로 내용을 파싱함
+  - `style` 태그를 만나면 `css-tree`로 내용을 파싱함
+
+### 2. 의존성 추적
+
+- AST 바탕으로 Component 객체를 생성함
+- Component의 핵심 구성요소
+  - fragment
+  - instance_scope, module_scope
+  - vars
+  - ...
+- Component의 생성 과정
+  - instance script와 module script AST을 순회하면서 선언되고 변경되는 모든 변수를 파악함
+  - template AST에서 Fragment tree를 생성함
+    - `{#if}` `{data}` `{#each}` 등 문법에 따라 다른 Fragment node가 생성됨
+  - template AST을 순회하면서 사용되는 변수를 체크함
+  - 확인된 정보를 통해서 최적화를 진행함
+    - determine which variables or functions can be safely hoisted out of the instance function.
+    - determine reactive declarations that does not need to be reactive
+    - ...
+  - CSS selector를 변환하여 Component Scope 안에서만 유효하도록 만듦
+    - 기본적으로 `.svelte-xxx`을 붙임
+
+### 3. 코드 블록 및 조각 생성
+
+`Renderer` 객체 생성
+
+- DOM Renderer
+  - DOM Renderer keeps track of a list of blocks and context.
+  - A Block contains code fragments for generate the create_fragment function.
+  - Context tracks a list of instance variables which will be presented in the $$.ctx in the compiled output.
+  - In the renderer, Svelte creates a render tree out of the Fragment tree.
+  - Each node in the render tree implements the render function which generate codes that create and update the DOM for the node.
+- SSR Renderer
+  - provide helpers to generate template literals in the compiled output, such as add_string(str) and add_expression(node).
+  - relies on different node handlers to insert strings or expressions into the final template literal.
+
+### 4. JavaScript 및 CSS 파일 생성
+
+```js
+// Generate code
+const { js, css } = renderer.render();
+```
+
+- Renderer 객체의 render 함수를 실행함으로 js, css 코드를 생성함
+- 생성된 js, css 코드는 번들러에게 전달됨
+- 번들러는 [`svelte-loader`](https://github.com/sveltejs/svelte-loader), [`vite-plugin-svelte`](https://github.com/sveltejs/vite-plugin-svelte/) 플러그인을 통해서 브라우저에서 사용될 번들을 생성함
+
+## 맺으면서
+
+- Svelte는 컴파일 단계에서 코드간의 의존성을 분석함
+- 그래서 Svelte는 효율적으로 DOM을 다루는 코드를 생성
+- VDOM 기반인 React, Vue 다음으로 주목을 받게됨
+
+- 다음 글에서 컴파일된 코드가 어떻게 동작하는지 파헤쳐보자
+
+### 참고
+
+- https://lihautan.com/the-svelte-compiler-handbook/

@@ -1,34 +1,32 @@
 ---
 title: 'Svelte Compiler는 어떻게 동작할까?'
 description: ''
-date: 2023-12-10 23:10:00
+date: 2023-12-11 23:58:00
 draft: true
 tags:
   - svelte
   - compiler
 ---
 
-## 도입부
-
-- 요즘 React, Vue 다음으로 Svelte가 많이 언급되고 있음
-- 실제로 구글에 React, Vue를 치면 Angular 대신 Svelte가 추천 됨
+최근 웹 개발 분야 분야에서는 React와 Vue에 이어 Svelte가 크게 주목받고 있습니다. 흥미롭게도, 구글 검색에서 'React Vue'를 입력하면, 늘 같이 거론되었던 Angular 대신 Svelte가 상단에 추천되는 것을 볼 수 있습니다.
 
 ![231210-211816](/img/svelte-compiler-operation/231210-211816.png)
 
-- Svelte는 DOM을 효율적으로 조작하는 코드를 생성하는 컴파일러임
+Svelte의 핵심은 **효율적인 컴파일**에 있습니다.
+DOM을 조작하는 JavaScript 코드를 최적화하여 생성하는 것이죠.
 
-- React를 제대로 알기 위해선 VDOM을 알아야하는 것 같이, Svelte를 제대로 알려면 Svelte Compiler를 제대로 알아야 함
+React를 이해하기 위해 Virtual DOM을 알아야하는 것과 같이, Svelte를 제대로 이해하기 위해서는 Svelte Compiler가 어떻게 동작하는지 알아야 합니다.
 
 ## Svelte Compiler의 동작 방식
 
-Svelte의 컴파일 단계는 크게 4가지 단계로 나눌 수 있음
+Svelte의 컴파일 단계는 크게 4가지 단계로 나눌 수 있습니다.
 
-- Parsing source code into Abstract Syntax Tree (AST)
-- Tracking references and dependencies
-- Creating code blocks and fragments
-- Generate code
+1. 해부 Parse
+2. 분석 Analyze
+3. 변환 Transform
+4. 생성 Generate
 
-[Svelte 오픈소스 코드](https://github.com/sveltejs/svelte/blob/aa3dcc06d6b0fcb079ccd993fa6e3455242a2a96/src/compiler/compile/index.ts#L70-L100)에서 바로 직관적으로 힌트를 얻을 수 있음
+[`packages/svelte/src/compiler/index.js`](https://github.com/sveltejs/svelte/blob/aa3dcc06d6b0fcb079ccd993fa6e3455242a2a96/src/compiler/compile/index.ts#L70-L100)에서 직관적으로 힌트를 얻을 수 있는데요. 전체적인 흐름을 정리하면 아래와 같습니다.
 
 ```js
 const source = fs.readFileSync('App.svelte');
@@ -41,7 +39,7 @@ const component = new Component(ast);
 
 // 3. creating code blocks and fragments
 const renderer =
-  options.generate === 'ssr' ? SSRRenderer(component) : DomRenderer(component);
+  options.generate === 'ssr' ? render_ssr(component) : render_dom(component);
 
 // 4. Generate code
 const { js, css } = renderer.render();
@@ -49,6 +47,8 @@ const { js, css } = renderer.render();
 fs.writeFileSync('App.js', js);
 fs.writeFileSync('App.css', css);
 ```
+
+`*.svelte` 소스코드를 읽고 일련의 과정을 거쳐서 js, css 파일을 생성합니다.
 
 ### 1. AST
 
@@ -115,4 +115,5 @@ const { js, css } = renderer.render();
 
 ### 참고
 
+- https://svelte.dev/docs/svelte-compiler
 - https://lihautan.com/the-svelte-compiler-handbook/

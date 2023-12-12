@@ -1,14 +1,14 @@
 ---
 title: 'Svelte Compiler는 어떻게 동작할까?'
 description: ''
-date: 2023-12-11 23:58:00
+date: 2023-12-13 03:25:00
 draft: true
 tags:
   - svelte
   - compiler
 ---
 
-최근 웹 개발 분야 분야에서는 React와 Vue에 이어 Svelte가 크게 주목받고 있습니다. 흥미롭게도, 구글 검색에서 'React Vue'를 입력하면, 늘 같이 거론되었던 Angular 대신 Svelte가 상단에 추천되는 것을 볼 수 있습니다.
+최근 프론트엔드 분야에서 React와 Vue에 이어 Svelte가 종종 거론되고 있습니다. 흥미롭게도, 구글 검색에서 'React Vue'를 입력하면, 늘 같이 거론되었던 Angular 대신 Svelte가 상단에 추천되는 것을 볼 수 있습니다.
 
 ![231210-211816](/img/svelte-compiler-operation/231210-211816.png)
 
@@ -19,48 +19,101 @@ React를 이해하기 위해 Virtual DOM을 알아야하는 것과 같이, Svelt
 
 ## Svelte Compiler의 동작 방식
 
-Svelte의 컴파일 단계는 크게 4가지 단계로 나눌 수 있습니다.
+Svelte의 컴파일 단계는 크게 3가지 단계로 나눌 수 있습니다.
 
-1. 해부 Parse
-2. 분석 Analyze
-3. 변환 Transform
-4. 생성 Generate
+1. Parse (분해)
+2. Analyze (분석)
+3. Transform (변환)
 
-[`packages/svelte/src/compiler/index.js`](https://github.com/sveltejs/svelte/blob/aa3dcc06d6b0fcb079ccd993fa6e3455242a2a96/src/compiler/compile/index.ts#L70-L100)에서 직관적으로 힌트를 얻을 수 있는데요. 전체적인 흐름을 정리하면 아래와 같습니다.
+[Svelte 소스코드](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/index.js#L11-L43)에서 직관적으로 힌트를 얻을 수 있는데요. [버전 3 기준은 여기](https://github.com/sveltejs/svelte/blob/5e151e5efb0ec65ffdf0dde40e1d9ed9bc9feedf/src/compiler/compile/index.ts#L113-L143)
+전체적인 흐름을 정리하면 아래와 같습니다.
 
 ```js
 const source = fs.readFileSync('App.svelte');
 
-// 1. parse source code into AST
+// 1. Svelte 코드를 AST로 파싱하기
 const ast = parse(source);
 
 // 2. tracking references and dependencies
-const component = new Component(ast);
+const analysis = analyze_component(ast);
 
 // 3. creating code blocks and fragments
-const renderer =
-  options.generate === 'ssr' ? render_ssr(component) : render_dom(component);
+const compiled = transform_component(analysis, source);
 
-// 4. Generate code
-const { js, css } = renderer.render();
-
-fs.writeFileSync('App.js', js);
-fs.writeFileSync('App.css', css);
+fs.writeFileSync('App.js', compiled.js.code);
+fs.writeFileSync('App.css', compiled.css.code);
 ```
 
-`*.svelte` 소스코드를 읽고 일련의 과정을 거쳐서 js, css 파일을 생성합니다.
+`App.svelte` 소스코드를 읽고 일련의 과정을 거쳐서 최종적으로 `App.js`, `App.css` 파일을 생성합니다. 이 과정은 마치 마법처럼 느껴지는데요, 도대체 어떤 일이 벌어지고 있는지 한 단계씩 자세히 살펴보도록 합시다!
 
-### 1. AST
+## 1. Svelte 코드를 AST로 파싱하기
 
-- AST의 정의
-  - Abstract Syntax Tree
-- AST의 의의
-  - Svelte 문법에서 유효한 JS, CSS, HTML을 추출
-- AST를 만드는 방법
-  - `script` 태그를 만나면 `acorn`로 내용을 파싱함
-  - `style` 태그를 만나면 `css-tree`로 내용을 파싱함
+```js
+const ast = parse(source);
+```
 
-### 2. 의존성 추적
+[추상 구문 트리(abstract syntax tree, AST)](https://ko.wikipedia.org/wiki/%EC%B6%94%EC%83%81_%EA%B5%AC%EB%AC%B8_%ED%8A%B8%EB%A6%AC)는 컴파일러에서 널리 쓰이는 자료구조입니다.
+간단하게 설명하자면, 코드 간의 관계를 표현하기 위한 [트리 구조](https://ko.wikipedia.org/wiki/%ED%8A%B8%EB%A6%AC_%EA%B5%AC%EC%A1%B0)입니다.
+
+`parse` 함수를 실행하면, [`Parser`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/index.js#L13) 객체가 생성되면서 AST를 반환합니다.
+
+```js
+const ast = new Parser(source).root;
+```
+
+`Parser` 생성자 내부에는 [`fragment`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/fragment.js) 함수를 활용해 스스로를 반복적으로 파싱하게 됩니다.
+
+```js /fragment/#i
+/** @type {ParserState} */
+let state = fragment;
+
+while (this.index < this.template.length) {
+  state = state(this) || fragment;
+}
+```
+
+`fragment` 내부에서는 [`element`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/element.js), [`tag`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/tag.js), [`text`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/text.js) 함수가 조건에 따라 실행되면서 소스코드 정보를 추출합니다.
+
+```js /fragment/#i
+import element from './element.js';
+import tag from './tag.js';
+import text from './text.js';
+
+export default function fragment(parser) {
+  if (parser.match('<')) {
+    return element;
+  }
+
+  if (parser.match('{')) {
+    return tag;
+  }
+
+  return text;
+}
+```
+
+`<script>` 태그로 감싸진 영역은 [`read_script`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/read/script.js#L37),
+`<style>` 태그로 감싸진 영역은 [`read_style`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/read/style.js#L23),
+
+`script` 태그를 만나면 [`acorn`](https://github.com/acornjs/acorn)로 내용을 파싱함
+
+- `div` 같인 일반적인 HTML 문법을 넘어서, `{#each list as item}` `svelte:component` 같은 Svelte 만의 문법도 파싱할 수 있게 됨
+- JS는 내부적으로 `acorn`을 사용
+- `acorn`은 webpack, rollup 같은 번들러에서도 사용
+- 이외는 모두 자체 파싱로직을 사용
+
+컴파일러는 AST를 만들면서 유효하지 않는 코드에 대해 알게 됩니다.
+아래 그림처럼
+
+![231213-030554](/img/svelte-compiler-operation/231213-030554.png)
+
+더 자세한 AST 구조 [REPL](https://svelte.dev/repl/hello-world)의 `AST output` 탭 확인할 수 있습니다.
+
+## 2. 의존성 추적
+
+```js
+const analysis = analyze_component(ast);
+```
 
 - AST 바탕으로 Component 객체를 생성함
 - Component의 핵심 구성요소
@@ -80,7 +133,7 @@ fs.writeFileSync('App.css', css);
   - CSS selector를 변환하여 Component Scope 안에서만 유효하도록 만듦
     - 기본적으로 `.svelte-xxx`을 붙임
 
-### 3. 코드 블록 및 조각 생성
+## 3. 코드 블록 및 조각 생성
 
 `Renderer` 객체 생성
 
@@ -94,7 +147,7 @@ fs.writeFileSync('App.css', css);
   - provide helpers to generate template literals in the compiled output, such as add_string(str) and add_expression(node).
   - relies on different node handlers to insert strings or expressions into the final template literal.
 
-### 4. JavaScript 및 CSS 파일 생성
+## 4. JavaScript 및 CSS 파일 생성
 
 ```js
 // Generate code

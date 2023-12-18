@@ -1,7 +1,7 @@
 ---
 title: 'Svelte Compiler는 어떻게 동작할까?'
 description: ''
-date: 2023-12-16 23:29:00
+date: 2023-12-19 02:29:00
 draft: true
 tags:
   - svelte
@@ -125,10 +125,10 @@ export default function fragment(parser) {
 const analysis = analyze_component(ast);
 ```
 
-AST에서 **컴포넌트의 다양한 동작을 수행하기 위한 정보를 추출**합니다.
+다음 단계로 만들어진 AST에서 **컴포넌트의 다양한 동작을 수행하기 위한 정보를 추출**합니다.
 참고로 하나의 Svelte 파일이 곧 하나의 컴포넌트입니다.
 
-컴포넌트가 갖는 주요 속성을 정리하면 아래와 같습니다. [원본 코드 참고](https://github.com/sveltejs/svelte/blob/b8f3c49e5ff7378df2196d0c9ae24a58e282bb0a/packages/svelte/src/compiler/phases/2-analyze/index.js#L328)
+컴포넌트가 갖는 주요 속성을 정리하면 아래와 같습니다. [원본 코드 참고](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/index.js#L292)
 
 ```js
 const analysis = {
@@ -137,61 +137,131 @@ const analysis = {
   instance,
   template,
   stylesheet: new Stylesheet({...}),
+  // 다양한 컴퍼일 옵션
   runes,
   warnings,
-  // 다양한 컴퍼일 옵션
-  ...
   reactive_statements: new Map(),
   binding_groups: new Map(),
   slot_names: new Set(),
+  ...
 };
 ```
 
-a. `scope_root`
+### a. `scope_root`
 
 ```js
 const scope_root = new ScopeRoot();
 ```
 
-b. `module`, `instance`
+`ScopeRoot`는 이름 그대로 컴포넌트의 최상위 [스코프](https://developer.mozilla.org/ko/docs/Glossary/Scope)으로서 역할을 하는 객체입니다. 내부적으로 `Set` 자료구조를 활용하여 변수, 함수 등의 식별자의 고유성을 보장합니다.
 
-- module: 컴포넌트 간에 공유되는 상태와 로직을 정의합니다. `<script context="module">`로 정의를 하죠.
-- instance: 컴포넌트의 고유 상태와 로직을 정의합니다. 일반적으로 코드를 작성하는 방식
+### b. `module`, `instance`
 
 ```js
+function js(...) {
+  const { scope, scopes } = create_scopes(...);
+  return { ast, scope, scopes };
+}
+
 const module = js(root.module, scope_root, false, null);
 const instance = js(root.instance, scope_root, true, module.scope);
 ```
 
-- instance script와 module script AST을 순회하면서 선언되고 변경되는 모든 변수를 파악함
+instance script와 module script의 AST을 순회하면서 **변수가 참조되는 모든 영역을 파악**합니다. 이로써 변수의 변경이 발생될 수 있는 모든 상황을 알 수 있게 됩니다. 과정에서 `scope_root`를 참고하여 스크립트의 하위 스코프를 생성하면서 변수들의 고유 식별자를 부여합니다.
 
-c. `template`
+여기서 Svelte에서 module과 instance의 차이도 간단하게 짚고 넘어갑시다.
+
+- module
+  - 컴포넌트 간에 공유되는 상태와 로직을 정의합니다.
+  - [`<script context="module">`](https://learn.svelte.dev/tutorial/sharing-code)로 해당 영역을 선언할 수 있습니다.
+  - 간단하게 전역 변수가 선언되는 영역이라고 생각하면 됩니다.
+  - 영역 안에서 `reactive` 코드를 작성할 수 없습니다.
+- instance
+  - 컴포넌트의 고유 상태와 로직을 정의합니다.
+  - 일반적으로 작성되는 스크립트 영역입니다.
+
+### c. `template`
 
 ```js
-const { scope, scopes } = create_scopes(
-  root.fragment,
-  scope_root,
-  false,
-  instance.scope,
-);
-
+const { scope, scopes } = create_scopes(root.fragment, ...);
 const template = { ast: root.fragment, scope, scopes };
 ```
 
-- template AST에서 Fragment tree를 생성함
-  - `{#if}` `{data}` `{#each}` 등 문법에 따라 다른 Fragment node가 생성됨
-  - template AST을 순회하면서 사용되는 변수를 체크함
-  - 확인된 정보를 통해서 최적화를 진행함
-    - determine which variables or functions can be safely hoisted out of the instance function.
-    - determine reactive declarations that does not need to be reactive
-    - ...
+`root.fragment`는 HTML AST를 지칭하는 변수로 이를 순회하면서 마크업 영역에서의 스코프를 파악합니다. `{data}` `{#if}` `{#each}` `{@const}` `class:` 등 문법이 이에 해당 됩니다.
 
-d. `stylesheet`
+이후에 `instance`에 정의된 변수와 함수를 DOM에
 
-- CSS selector를 변환하여 Component Scope 안에서만 유효하도록 만듦
-  - 기본적으로 `.svelte-xxx`을 붙임
+### d. `stylesheet`
 
-## 3. 코드 블록 및 조각 생성
+```js
+const stylesheet = new Stylesheet({
+  ast: root.css,
+  filename: options.filename ?? '<unknown>',
+  component_name,
+  get_css_hash: options.cssHash,
+});
+```
+
+[`Stylesheet`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/css/Stylesheet.js#L338) 객체는 CSS AST를 순회하면서 컴포넌트 스코프 안에서 사용되는 CSS selector를 선별합니다. 만약 `:global(...)`, `-global-`로 CSS selector가 선언되어 있다면 별도로 기록해둡니다. 이러한 문법에 대해 더 알고 싶다면 [공식문서](https://svelte.dev/docs/svelte-components#style) 참고 바랍니다.
+
+이후에 전반적으로 수집된 `analysis` 정보 바탕으로 여러 최적화 작업을 진행합니다.
+
+```js
+analysis.stylesheet.validate(analysis);
+
+for (const element of analysis.elements) {
+  analysis.stylesheet.apply(element);
+}
+
+analysis.stylesheet.reify(options.generate === 'client');
+```
+
+- 중복된 전역 CSS selector와 컴포넌트 스코프 안에서 사용되지 않는 CSS selector를 제거합니다.
+- 컴포넌트 스코프 안에서 사용되는 CSS selector를 `.svelte-xxx` 형태로 해싱합니다. 이로써 같은 이름의 selector가 충돌되지 않게 됩니다.
+
+### e. 최종 순회
+
+이렇게 얻게된 `analysis` 정보를 바탕으로 AST를 다시 순회하면서 컴포넌트의 상태를 최적화합니다.
+
+```js
+walk(
+  /** @type {import('#compiler').SvelteNode} */ (ast),
+  /** @type {import('./types').AnalysisState} */ (state),
+  merge(
+    set_scope(scopes),
+    validation_runes,
+    runes_scope_tweaker,
+    common_visitors,
+  ),
+);
+```
+
+- validation_runes
+  - 잘못된 할당이나 업데이트 표현식을 검사합니다.
+  - 변수의 선언과 내보내기 관련 유효성을 검사합니다.
+  - 신규 `reactive` 문법인 `runes` 구문의 유효성을 검사합니다.
+- runes_scope_tweaker
+  - 스코프 조정을 수행합니다.
+  - 특정 패턴을 사용하는 변수 선언에 대해 스코프 및 바인딩의 종류를 설정합니다.
+  - 상태 변동이 없는 변수나 함수를 instance 외부로 옮깁니다.
+- common_visitors
+  - `directive`, `binding` 관련 지시어를 처리합니다.
+  - 변수 및 이벤트 바인딩
+  - 일반 HTML 및 Svelte 특정 엘리먼트의 처리를 수행합니다.
+  - 이벤트 관련 속성을 처리하고, 이벤트 위임 또는 호이스팅 여부를 결정합니다.
+
+## 3. 변환, 코드 블록 및 조각 생성
+
+```js
+const compiled = transform_component(analysis, source);
+```
+
+```js
+const program =
+  options.generate === 'server'
+    ? server_component(analysis, options)
+    : client_component(source, analysis, options);
+```
 
 `Renderer` 객체 생성
 

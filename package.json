@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "lint": "bunx eslint --fix --ext .js,.ts,.tsx,.astro . & bunx prettier --write .",
-    "ui": "bunx shadcn-ui@latest"
+    "ui": "bunx shadcn-ui@latest",
+    "sharp": "bun scripts/sharp.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^2.0.1",
@@ -35,7 +36,7 @@
     "@types/react": "^18.0.21",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "bun-types": "latest",
+    "bun-types": "^1.0.19",
     "eslint": "^8.49.0",
     "eslint-plugin-astro": "^0.29.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
@@ -49,6 +50,7 @@
     "rehype-slug": "^6.0.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
+    "sharp": "^0.33.1",
     "shiki": "^0.14.4",
     "stylelint": "^15.10.3",
     "stylelint-config-idiomatic-order": "^9.0.0",

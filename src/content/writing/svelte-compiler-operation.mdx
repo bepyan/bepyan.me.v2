@@ -1,8 +1,8 @@
 ---
 title: 'Svelte Compiler는 어떻게 동작할까?'
 description: ''
-date: 2023-12-19 02:29:00
-draft: true
+date: 2023-12-24 17:55:00
+draft: false
 tags:
   - svelte
   - compiler
@@ -40,7 +40,7 @@ const ast = parse(source);
 // 2. 분석, 컴포넌트 내부 의존성 추적
 const analysis = analyze_component(ast);
 
-// 3. 변환, creating code blocks and fragments
+// 3. 변환, 코드 블록 및 조각 생성
 const compiled = transform_component(analysis, source);
 
 fs.writeFileSync('App.js', compiled.js.code);
@@ -128,6 +128,8 @@ const analysis = analyze_component(ast);
 다음 단계로 만들어진 AST에서 **컴포넌트의 다양한 동작을 수행하기 위한 정보를 추출**합니다.
 참고로 하나의 Svelte 파일이 곧 하나의 컴포넌트입니다.
 
+![231222-173628](/img/svelte-compiler-operation/231222-173628.png)
+
 컴포넌트가 갖는 주요 속성을 정리하면 아래와 같습니다. [원본 코드 참고](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/index.js#L292)
 
 ```js
@@ -188,8 +190,6 @@ const template = { ast: root.fragment, scope, scopes };
 ```
 
 `root.fragment`는 HTML AST를 지칭하는 변수로 이를 순회하면서 마크업 영역에서의 스코프를 파악합니다. `{data}` `{#if}` `{#each}` `{@const}` `class:` 등 문법이 이에 해당 됩니다.
-
-이후에 `instance`에 정의된 변수와 함수를 DOM에
 
 ### d. `stylesheet`
 
@@ -256,6 +256,12 @@ walk(
 const compiled = transform_component(analysis, source);
 ```
 
+마지막으로, Svelte 컴파일러는 변환 과정을 거쳐 렌더링 코드을 생성합니다.
+
+![231222-173647](/img/svelte-compiler-operation/231222-173647.png)
+
+이 과정에서 SSR(Server-Side Rendering), CSR(Client-Side Rendering)를 위한 코드 생성 로직이 각각 다릅니다. 컴파일러는 `server_component`, `client_component` 두 함수를 사용하여 각각의 상황에 최적화된 코드를 생성합니다.
+
 ```js
 const program =
   options.generate === 'server'
@@ -263,30 +269,46 @@ const program =
     : client_component(source, analysis, options);
 ```
 
-`Renderer` 객체 생성
+### SSR의 특성과 `server_component`
 
-- DOM Renderer
-  - DOM Renderer keeps track of a list of blocks and context.
-  - A Block contains code fragments for generate the create_fragment function.
-  - Context tracks a list of instance variables which will be presented in the $$.ctx in the compiled output.
-  - In the renderer, Svelte creates a render tree out of the Fragment tree.
-  - Each node in the render tree implements the render function which generate codes that create and update the DOM for the node.
-- SSR Renderer
+SSR에서는 컴포넌트가 단 한 번만 렌더링되며, 컴포넌트의 생명주기가 존재하지 않습니다.
+따라서 `server_component`는 [`template literals`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)을 생성하는 것에 초점이 맞춰져 있습니다.
 
-  - provide helpers to generate template literals in the compiled output, such as add_string(str) and add_expression(node).
-  - relies on different node handlers to insert strings or expressions into the final template literal.
+- server_component는 컴파일된 출력에서 template literals을 생성하기 위한 helpers 함수들을 제공합니다. 예를 들어, add_string(str)과 add_expression(node) 같은 함수들이 있습니다.
+- 이 함수는 최종 template literals에 문자열이나 표현식을 삽입하기 위해 다양한 노드 핸들러에 의존합니다.
 
-- Renderer 객체의 render 함수를 실행함으로 js, css 코드를 생성함
-- 생성된 js, css 코드는 번들러에게 전달됨
-- 번들러는 [`svelte-loader`](https://github.com/sveltejs/svelte-loader), [`vite-plugin-svelte`](https://github.com/sveltejs/vite-plugin-svelte/) 플러그인을 통해서 브라우저에서 사용될 번들을 생성함
+### CSR의 특성과 `client_component`
+
+반면 CSR에서는 DOM과 지속적인 상호작용을 요구되며 컴포넌트의 생명주기를 갖춰야 합니다.
+`client_component`
+
+- DOM 렌더러는 blocks과 context를 추적합니다.
+- 각 block은 create_fragment 함수를 생성하기 위한 코드 조각을 포함합니다.
+- 컨텍스트는 컴파일된 출력물에서 $$.ctx로 표현될 인스턴스 변수 목록을 추적합니다.
+- 렌더러는 Fragment 트리에서 렌더 트리를 생성하며, 렌더 트리의 각 노드는 노드에 대한 DOM을 생성하고 업데이트하는 코드를 생성하는 render 함수를 구현합니다.
+
+### 코드 생성
+
+```js
+return {
+  js: print(program, { sourceMapSource: options.filename }),
+  css:
+    analysis.stylesheet.has_styles && !analysis.inject_styles
+      ? analysis.stylesheet.render(options.filename, source, options.dev)
+      : null,
+  // ...
+};
+```
+
+최종적으로, `print` `render` 함수를 실행하여 js, css 코드를 생성합니다.
+이렇게 생성된 코드는 번들러에게 전달되며 [`vite-plugin-svelte`](https://github.com/sveltejs/vite-plugin-svelte/), [`svelte-loader`](https://github.com/sveltejs/svelte-loader) 같은 플러그인을 통해 브라우저에서 사용될 번들로 변환됩니다.
 
 ## 맺으면서
 
-- Svelte는 컴파일 단계에서 코드간의 의존성을 분석함
-- 그래서 Svelte는 효율적으로 DOM을 다루는 코드를 생성
-- VDOM 기반인 React, Vue 다음으로 주목을 받게됨
+Svelte는 이러듯 컴파일러를 통해서 빌드 단계에서 코드 간의 의존성을 파악합니다.
+소스코드를 여러 번 순회하면서 html, js, css간의 의존성을 분석하고 이를 바탕으로 효율적으로 DOM을 다루는 코드를 생성하게 됩니다. 이것이 런타임에서 의존성을 파악 해야 하는 VDOM 기반 프레임워크인 React, Vue 다음으로 주목을 받게되는 요인인 것 같습니다.
 
-- 다음 글에서 컴파일된 코드가 어떻게 동작하는지 파헤쳐보자
+컴파일러 소스코드를 열심히 팔로웝해서 글을 작성했지만 사실 컴파일러 동작 원리의 겉 핥기한 것에 불과했던 것 같습니다. 기회가 된다면 컴파일된 Svelte 코드가 어떻게 동작하는지 더 파헤쳐보고 싶네요.
 
 ### 참고
 

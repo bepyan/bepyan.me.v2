@@ -64,7 +64,8 @@ export const externalWritings = [
   },
   {
     title: '다크모드, 더 프로처럼 활용하기',
-    description: '번들러가 왜 필요하고 어떻게 발전되고 가고 있을까?',
+    description:
+      '개인적으로 다크모드를 접하면서 경험한 것을 전체적으로 정리해 보았습니다.',
     date: '2023-05-23',
     link: 'https://bepyan.github.io/blog/2023/darkmode',
   },

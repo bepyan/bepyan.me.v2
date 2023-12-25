@@ -28,7 +28,7 @@ Svelte의 컴파일 단계는 크게 3가지 단계로 나눌 수 있습니다.
 2. **Analyze** (**분석**)
 3. **Transform** (**변환**)
 
-[Svelte 소스코드](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/index.js#L11-L43)에서 직관적으로 힌트를 얻을 수 있는데요. [버전 3 기준은 여기](https://github.com/sveltejs/svelte/blob/5e151e5efb0ec65ffdf0dde40e1d9ed9bc9feedf/src/compiler/compile/index.ts#L113-L143)
+[Svelte Compiler 소스코드](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/index.js#L11-L43)([버전 3 기준은 여기](https://github.com/sveltejs/svelte/blob/5e151e5efb0ec65ffdf0dde40e1d9ed9bc9feedf/src/compiler/compile/index.ts#L113-L143))에서 직관적으로 힌트를 얻을 수 있는데요.
 전체적인 흐름을 정리하면 아래와 같습니다.
 
 ```js
@@ -246,7 +246,6 @@ walk(
   - 상태 변동이 없는 변수나 함수를 instance 외부로 옮깁니다.
 - common_visitors
   - `directive`, `binding` 관련 지시어를 처리합니다.
-  - 변수 및 이벤트 바인딩
   - 일반 HTML 및 Svelte 특정 엘리먼트의 처리를 수행합니다.
   - 이벤트 관련 속성을 처리하고, 이벤트 위임 또는 호이스팅 여부를 결정합니다.
 
@@ -269,23 +268,15 @@ const program =
     : client_component(source, analysis, options);
 ```
 
-### SSR의 특성과 `server_component`
+### SSR의 특성
 
 SSR에서는 컴포넌트가 단 한 번만 렌더링되며, 컴포넌트의 생명주기가 존재하지 않습니다.
-따라서 `server_component`는 [`template literals`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)을 생성하는 것에 초점이 맞춰져 있습니다.
+따라서 `server_component`는 [`template literals`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)을 생성하는 것에 초점이 맞춰져 있습니다. `javascript_visitors`, `template_visitors` 등 visitor를 활용해 코드 블럭을 추가합니다.
 
-- server_component는 컴파일된 출력에서 template literals을 생성하기 위한 helpers 함수들을 제공합니다. 예를 들어, add_string(str)과 add_expression(node) 같은 함수들이 있습니다.
-- 이 함수는 최종 template literals에 문자열이나 표현식을 삽입하기 위해 다양한 노드 핸들러에 의존합니다.
+### CSR의 특성
 
-### CSR의 특성과 `client_component`
-
-반면 CSR에서는 DOM과 지속적인 상호작용을 요구되며 컴포넌트의 생명주기를 갖춰야 합니다.
-`client_component`
-
-- DOM 렌더러는 blocks과 context를 추적합니다.
-- 각 block은 create_fragment 함수를 생성하기 위한 코드 조각을 포함합니다.
-- 컨텍스트는 컴파일된 출력물에서 $$.ctx로 표현될 인스턴스 변수 목록을 추적합니다.
-- 렌더러는 Fragment 트리에서 렌더 트리를 생성하며, 렌더 트리의 각 노드는 노드에 대한 DOM을 생성하고 업데이트하는 코드를 생성하는 render 함수를 구현합니다.
+CSR에서는 DOM과 지속적인 상호작용이 요구되며 컴포넌트의 생명주기를 갖춰야 합니다.
+따라서 `client_component`은 더 다양하고 복잡한 visitor로 구성되어 있습니다. 같은 이름의 `javascript_visitors` 라도 함수에 대한 처리 로직이 추가되어 순회합니다.
 
 ### 코드 생성
 
@@ -305,10 +296,10 @@ return {
 
 ## 맺으면서
 
-Svelte는 이러듯 컴파일러를 통해서 빌드 단계에서 코드 간의 의존성을 파악합니다.
-소스코드를 여러 번 순회하면서 html, js, css간의 의존성을 분석하고 이를 바탕으로 효율적으로 DOM을 다루는 코드를 생성하게 됩니다. 이것이 런타임에서 의존성을 파악 해야 하는 VDOM 기반 프레임워크인 React, Vue 다음으로 주목을 받게되는 요인인 것 같습니다.
+Svelte는 이렇게 컴파일러를 통해서 빌드 단계에서 코드 간의 의존성을 파악합니다.
+소스코드를 여러 번 순회하면서 html, js, css간의 의존성을 분석하고 효율적으로 DOM을 다루는 코드를 생성합니다. 이것이 런타임에서 의존성을 파악 해야 하는 VDOM 기반 프레임워크인 React, Vue 다음으로 주목을 받게되는 요인인 것 같습니다.
 
-컴파일러 소스코드를 열심히 팔로웝해서 글을 작성했지만 사실 컴파일러 동작 원리의 겉 핥기한 것에 불과했던 것 같습니다. 기회가 된다면 컴파일된 Svelte 코드가 어떻게 동작하는지 더 파헤쳐보고 싶네요.
+컴파일러 소스코드를 열심히 팔로업해서 글을 작성했지만 사실 컴파일러 동작 원리의 겉 핥기한 것에 불과했던 것 같습니다. 기회가 된다면 컴파일된 Svelte 코드가 어떻게 동작하는지 더 파헤쳐보고 싶네요.
 
 ### 참고
 

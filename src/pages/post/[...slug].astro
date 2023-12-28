@@ -5,6 +5,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseNav from '~/components/base-nav';
+import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import TableOfContent from '~/components/table-of-content';
@@ -75,8 +76,9 @@ const toc = parseToc(post.body);
   <article data-animate data-animate-speed="fast" class="mdx">
     <Content />
   </article>
-  <footer class="mt-page">
-    <hr class="mb-7" />
+  <footer>
+    <CopyRight class="mt-page text-right text-xs" />
+    <hr class="mb-7 mt-4" />
     <section class="text-tx flex items-stretch justify-between gap-1 text-sm">
       {
         !!prevPost && (

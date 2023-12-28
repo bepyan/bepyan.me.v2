@@ -1,0 +1,31 @@
+---
+// @ts-nocheck
+const { props } = Astro;
+
+const year = new Date().getFullYear();
+---
+
+<p {...props} xmlns:cc="http://creativecommons.org/ns#">
+  © {year} by
+  <a
+    class="link"
+    rel="cc:attributionURL dct:creator"
+    property="cc:attributionName"
+    href="https://bepyan.me/"
+  >
+    Edward Kim
+  </a>
+   is licensed under <a
+    class="link"
+    href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1"
+    target="_blank"
+    rel="license noopener noreferrer"
+    >CC BY 4.0<img
+      src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
+      style="height:12px!important;display:inline-block;margin-left:3px;"
+    /><img
+      src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
+      style="height:12px!important;display:inline-block;margin-left:1px;"
+    />
+  </a>
+</p>

@@ -2,6 +2,7 @@
 import BaseHead from '~/components/base-head.astro';
 import MonitoringScript from '~/components/monitoring-script.astro';
 import ThemeScript from '~/components/theme-script.astro';
+import { getLangFromUrl } from '~/i18n/utils';
 import type { SEOProps } from '~/types';
 
 type Props = {
@@ -10,9 +11,11 @@ type Props = {
 };
 
 const { seo, ...props } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
 ---
 
-<html lang="ko">
+<html {lang}>
   <head>
     <BaseHead {...seo} />
     <ThemeScript />

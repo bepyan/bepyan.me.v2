@@ -9,6 +9,7 @@ export const defaultLang = 'ko';
 
 export const ui = {
   en: {
+    '404.desc': 'Cannot find the related document.',
     'nav.title': 'My Space',
     'nav.writing': 'Writing',
     'nav.writing.desc': 'A space for storing insights',
@@ -36,6 +37,7 @@ export const ui = {
     </p>`,
   },
   ko: {
+    '404.desc': '관련된 문서를 찾을 수 없습니다.',
     'nav.title': '나의 공간',
     'nav.writing': '서재',
     'nav.writing.desc': '인사이트를 보관하는 공간',

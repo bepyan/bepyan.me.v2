@@ -1,13 +1,17 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
+import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
+
+const { url } = Astro;
+const { t, p } = useI18n(url);
 ---
 
 <Main data-animate data-animate-speed="slow" class="font-serif">
   <BaseHeader title="404">
-    <p class="text-sm text-second">관련된 문서를 찾을 수 없습니다.</p>
+    <p class="text-sm text-second">{t('404.desc')}</p>
   </BaseHeader>
   <section class="my-14">
-    <a href="/" class="link">cd ..</a>
+    <a href={p('/')} class="link">cd ..</a>
   </section>
 </Main>

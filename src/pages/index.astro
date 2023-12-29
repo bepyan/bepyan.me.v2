@@ -31,9 +31,10 @@ const t = useTranslations(lang);
   <div data-animate data-animate-speed="slow">
     <!-- 소개 -->
     <div class="my-7" set:html={t('index.desc')} />
-    <!-- 현재 -->
     <div class="my-7">
+      <!-- 현재 -->
       <p set:html={t('index.currentWork')} />
+      <!-- SNS -->
       <div data-animate class="mt-1 flex gap-0.5">
         <a
           style="--lv-wait: 1;"

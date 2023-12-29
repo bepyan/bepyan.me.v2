@@ -62,5 +62,3 @@ export const ui = {
     </p>`,
   },
 } satisfies Record<Language, { [key: string]: string }>;
-
-export const showDefaultLang = false;

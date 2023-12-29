@@ -5,13 +5,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { type Language, languages } from '~/i18n/ui';
-import { useTranslatedPath } from '~/i18n/utils';
+import { languages } from '~/i18n/ui';
+import { getCurrentPathname, useI18n } from '~/i18n/utils';
 
 import { DotIcon, HeroiconsLanguage } from './ui/icons';
 
-export default function LanguageDropdown({ lang }: { lang: Language }) {
-  const translatePath = useTranslatedPath(lang);
+export default function LanguageDropdown({ url }: { url: URL }) {
+  const { lang, p } = useI18n(url);
+
+  const pathname = getCurrentPathname(url);
 
   return (
     <DropdownMenu>
@@ -24,7 +26,7 @@ export default function LanguageDropdown({ lang }: { lang: Language }) {
       <DropdownMenuContent align="end">
         {Object.entries(languages).map(([language, label]) => (
           <DropdownMenuItem key={language} className="justify-between" asChild>
-            <a href={translatePath('/', language)}>
+            <a href={p(pathname, language)}>
               {label}
               {language === lang && <DotIcon />}
             </a>

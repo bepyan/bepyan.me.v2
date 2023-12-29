@@ -8,23 +8,18 @@ import {
   NotionIcon,
   TwitterXIcon,
 } from '~/components/ui/icons';
-import {
-  getLangFromUrl,
-  useTranslatedPath,
-  useTranslations,
-} from '~/i18n/utils';
+import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
 
-const lang = getLangFromUrl(Astro.url);
-const p = useTranslatedPath(lang);
-const t = useTranslations(lang);
+const { url } = Astro;
+const { p, t } = useI18n(url);
 ---
 
 <Main class="font-serif">
   <div class="flex items-center">
     <h1 class="-mb-0.5">{t('index.name')} ﹒ bepyan</h1>
     <div class="ml-auto flex gap-1">
-      <LanguageDropdown client:load {lang} />
+      <LanguageDropdown client:load {url} />
       <ThemeToggle client:load />
     </div>
   </div>

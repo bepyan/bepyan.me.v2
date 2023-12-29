@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function BaseNav({ href, children }: Props) {
-  const onNavigate = (href: string) => {
+  const onNavigate = () => {
     window.location.href = href;
   };
 
@@ -23,7 +23,7 @@ export default function BaseNav({ href, children }: Props) {
     >
       <div className="flex items-center">
         <Button
-          onClick={() => onNavigate(href)}
+          onClick={onNavigate}
           variant="ghost"
           size="icon"
           aria-label="go back"

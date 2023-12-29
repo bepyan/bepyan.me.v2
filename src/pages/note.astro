@@ -4,10 +4,9 @@ import { format } from 'date-fns';
 
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav';
+import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
 import { sortCollectionDateDesc } from '~/libs/mdx';
-
-const TITLE = '수첩';
 
 const allNotes = await getCollection('note');
 
@@ -22,11 +21,15 @@ const yearList = Object.entries(
     return ac;
   }, {}),
 ).sort(([yearA], [yearB]) => +yearB - +yearA);
+
+const { p, t } = useI18n(Astro.url);
+
+const title = t('nav.note');
 ---
 
-<Main seo={{ title: TITLE }} class="font-serif">
-  <BaseNav href="/" client:visible />
-  <BaseHeader title={TITLE} />
+<Main seo={{ title }} class="font-serif">
+  <BaseNav href={p('/')} client:visible />
+  <BaseHeader {title} />
   <div
     data-animate
     data-animate-speed="slow"

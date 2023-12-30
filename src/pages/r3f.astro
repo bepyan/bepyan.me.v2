@@ -1,0 +1,14 @@
+---
+import BaseHeader from '~/components/base-header.astro';
+import BaseNav from '~/components/base-nav';
+import R3FComponent from '~/components/r3f';
+import Main from '~/layouts/main.astro';
+
+const title = 'r3f';
+---
+
+<Main>
+  <BaseNav href="/" client:visible />
+  <BaseHeader {title} />
+  <R3FComponent />
+</Main>

@@ -20,6 +20,9 @@
     "@astrojs/tailwind": "^5.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-slot": "^1.0.2",
+    "@react-three/drei": "^9.92.7",
+    "@react-three/fiber": "^8.15.12",
+    "@react-three/rapier": "^1.2.1",
     "@types/react-dom": "^18.0.6",
     "astro": "^4.0.6",
     "class-variance-authority": "^0.7.0",
@@ -29,11 +32,13 @@
     "lucide-react": "^0.279.0",
     "medium-zoom": "^1.1.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.10",
     "@types/react": "^18.0.21",
+    "@types/three": "^0.160.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "bun-types": "^1.0.19",

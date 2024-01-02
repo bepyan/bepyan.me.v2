@@ -12,21 +12,20 @@ import {
   sortDateDesc,
 } from '~/libs/mdx';
 
+const { lang, p, t } = useI18n(Astro.url);
+
 const posts = await getWritingPostInfoList();
 
 const yearList = Object.entries(
-  posts.reduce<{ [year: string]: PostInfo[] }>((ac, post) => {
-    const year = new Date(post.date).getFullYear();
-    if (!ac[year]) {
-      ac[year] = [];
-    }
-
-    ac[year].push(post);
-    return ac;
-  }, {}),
+  posts
+    .filter((post) => post.lang === lang)
+    .reduce<{ [year: string]: PostInfo[] }>((ac, post) => {
+      const year = new Date(post.date).getFullYear();
+      if (!ac[year]) ac[year] = [];
+      ac[year].push(post);
+      return ac;
+    }, {}),
 ).sort((a, b) => +b[0] - +a[0]);
-
-const { p, t } = useI18n(Astro.url);
 
 const title = t('nav.writing');
 ---

@@ -1,13 +1,36 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 
 import { externalWritings } from '~/content/_constants';
+import type { Language } from '~/i18n/ui';
+import { getLangFromSlug } from '~/i18n/utils';
 
 import { isDev } from './utils';
 
-/** 최신순 */
+/** utils */
+
+export const isDraft = (post: CollectionEntry<'post'>) => {
+  return isDev || !post.data.draft;
+};
+
+export const isWriting = (post: { slug: string }) => {
+  return post.slug.includes('/writing/');
+};
+
+export const isNote = (post: { slug: string }) => {
+  return post.slug.includes('/note/');
+};
+
+export const getPostType = (post: { slug: string }) => {
+  if (isWriting(post)) return 'writing';
+  if (isNote(post)) return 'note';
+
+  Error('post slug is invalid...');
+};
+
+// 최신순
 export const sortCollectionDateDesc = (
-  a: CollectionEntry<'writing' | 'note'>,
-  b: CollectionEntry<'writing' | 'note'>,
+  a: CollectionEntry<'post'>,
+  b: CollectionEntry<'post'>,
 ) => {
   return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
 };
@@ -20,39 +43,73 @@ export const sortDateDesc = (
 };
 
 export const sortCollectionDateAsc = (
-  a: CollectionEntry<'writing' | 'note'>,
-  b: CollectionEntry<'writing' | 'note'>,
+  a: CollectionEntry<'post'>,
+  b: CollectionEntry<'post'>,
 ) => {
   return new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf();
 };
 
+/**
+ * 글 경로 조정
+ * @example ko/note/svelte-useEffect -> svelte-useEffect
+ * @example en/note/svelte-useEffect -> en/svelte-useEffect
+ */
+export const resolveSlug = (slug: string) => {
+  let result = slug.replace('/writing', '').replace('/note', '');
+
+  if (slug.startsWith('ko/')) {
+    result = result.replace('ko/', '');
+  }
+
+  return result;
+};
+
 /** 전체 글 정보 */
+export const getPostCollection = async () => {
+  return (await getCollection('post'))
+    .filter(isDraft)
+    .sort(sortCollectionDateDesc);
+};
+
 export type PostInfo = {
   title: string;
   description: string;
   href: string;
   date: string | Date;
+  lang: Language;
   isExternal?: boolean;
 };
 
-export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
-  const posts = await getCollection('writing');
+export const getPostInfoList = async (
+  type: 'all' | 'writing' | 'note' = 'all',
+) => {
+  const posts = await getPostCollection();
 
+  return posts
+    .filter((post) => {
+      if (type === 'writing') return isWriting(post);
+      if (type === 'note') return isNote(post);
+      return true;
+    })
+    .map<PostInfo>((post) => ({
+      title: post.data.title,
+      description: post.data.description,
+      href: `/post/${resolveSlug(post.slug)}`,
+      date: post.data.date,
+      lang: getLangFromSlug(post.slug),
+    }));
+};
+
+export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
   const postList: PostInfo[] = [
-    ...posts
-      .filter((post) => isDev || !post.data.draft)
-      .map<PostInfo>((post) => ({
-        title: post.data.title,
-        description: post.data.description,
-        href: `/post/${post.slug}`,
-        date: post.data.date,
-      })),
+    ...(await getPostInfoList('writing')),
     ...externalWritings.map<PostInfo>((post) => ({
       title: post.title,
       description: post.description,
       href: post.link,
       date: post.date,
       isExternal: true,
+      lang: getLangFromSlug(post.link),
     })),
   ];
 

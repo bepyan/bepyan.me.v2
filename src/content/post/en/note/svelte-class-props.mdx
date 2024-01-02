@@ -1,0 +1,92 @@
+---
+title: '(Svelte) Utilizing Class Properties'
+description: ''
+date: 2023-11-28 23:21:47
+draft: false
+tags:
+  - svelte
+---
+
+When developing components with Svelte, there are often situations where you need to pass HTML Element's class attributes to other components. However, a straightforward approach can lead to issues.
+
+```svelte
+<script>
+  export let class = "";
+  // 🚨 Parsing error: 'class' is not allowed as a variable declaration name. eslint
+  // 🚨 Variable declaration not allowed at this location. ts(1440)
+</script>
+```
+
+The error occurs because `class` is a JavaScript [declaration command](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/class) used to create class objects. It's not meant to be used as a variable! This is similar to why React uses className instead of class.
+
+Using `className` as below can lead to inconsistency and mistakes when using components:
+
+```svelte
+<script>
+  export let className = "";
+</script>
+
+<Button className=""></Button>
+<!-- I have to use className for my components..? -->
+<button class=""></button>
+```
+
+To solve this, a bit of know-how is needed. Let's look at two methods.
+
+## Method 1: `className`
+
+In the component, alias `className` as `class` and export it.
+
+```svelte
+<script>
+  let className = '';
+  export { className as class };
+</script>
+
+<div {...$$restProps} class={className}>...</div>
+```
+
+Advantages
+
+- It's declarative.
+  - Intuitive and good for reusing variables.
+
+Disadvantages
+
+- The syntax can seem a bit unfamiliar.
+- The code is longer. ~~Not very elegant.~~
+
+Open Source Examples
+
+- [svelte-material-ui](https://github.com/hperrin/svelte-material-ui/blob/4d68905acde0d885a44143738246a7a3d2588bba/packages/button/src/Button.svelte#L97-L98)
+- [shadcn-svelte](https://github.com/huntabyte/shadcn-svelte/blob/main/apps/www/src/lib/registry/default/ui/button/button.svelte)
+
+## Method 2: `$$props.class`
+
+Svelte's `$$props` is a special variable that contains all properties passed to the component. It can be used to easily handle the `class` attribute.
+
+```svelte
+<div {...$$restProps} class={$$props.class}>...</div>
+```
+
+Advantages
+
+- The code is concise.
+
+Disadvantages
+
+- There are constraints on where `$$restProps` can be used.
+- ```svelte
+  <div class="btn {$$props.class}" {...$$restProps}>...</div>
+  <!-- 🚨 The `class` attribute in `$$restProps` remains, overriding the original content. -->
+  ```
+
+Open Source Examples
+
+- [flowbite-svelte](https://github.com/themesberg/flowbite-svelte/blob/de4682ef7ad4359e68b435252efc4efc37f25867/src/lib/buttons/Button.svelte#L106-L138)
+- [carbon-components-svelte](https://github.com/carbon-design-system/carbon-components-svelte/blob/6c9cf9e043b3c963a257a28fa8dd29c8acd4b2ce/src/Button/Button.svelte#L97-L125)
+
+## In Conclusion
+
+As always in coding, there is no single right answer.
+You can establish conventions that suit your development environment and team's preferences. Try out the examples on [svelte REPL](https://svelte.dev/repl/4fb8404156a34bb4b9bc2416abf6cd7b?version=4.2.7), and refer to open-source codes to make your decision!

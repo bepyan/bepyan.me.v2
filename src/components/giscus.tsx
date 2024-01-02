@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+import { defaultLang, type Language } from '~/i18n/ui';
+
 const giscusThemes = {
   light: 'https://giscus.app/themes/noborder_light.css',
   dark: 'https://giscus.app/themes/noborder_gray.css',
@@ -24,7 +26,9 @@ export const changeGiscusTheme = (theme: keyof typeof giscusThemes) => {
   });
 };
 
-export const GiscusSection = (props: React.HTMLAttributes<HTMLElement>) => {
+export const GiscusSection = (
+  props: React.HTMLAttributes<HTMLElement> & { lang?: Language },
+) => {
   useEffect(() => {
     const theme: keyof typeof giscusThemes =
       document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -40,7 +44,7 @@ export const GiscusSection = (props: React.HTMLAttributes<HTMLElement>) => {
       'data-reactions-enabled': '1',
       'data-emit-metadata': '0',
       'data-input-position': 'bottom',
-      'data-lang': 'ko',
+      'data-lang': props.lang ?? defaultLang,
       'data-theme': giscusThemes[theme],
       crossorigin: 'anonymous',
       async: '',

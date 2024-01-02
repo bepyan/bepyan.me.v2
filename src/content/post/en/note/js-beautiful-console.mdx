@@ -1,0 +1,51 @@
+---
+title: '(JS) Prettifying console.log Output'
+description: ''
+date: 2022-09-23 20:09:57
+draft: false
+tags:
+  - javascript
+---
+
+Console logging is an essential tool for developers. Let's explore some advanced techniques to enhance debugging and code development using the `console.log()` function. We'll cover **color coding**, **information grouping**, and **time measurement**.
+
+## Using Colors to Distinguish Messages
+
+When debugging code and wanting to highlight specific messages, you can apply styles to the `console.log()` function. Write the code as follows to apply color and style to your messages:
+
+```js
+const message = 'hello world';
+console.log(
+  `%c${message}`,
+  'padding: 4px 8px; background: #C2E0C6; color: #000000;',
+);
+```
+
+Here, `%c` is a special placeholder that allows you to apply CSS styles. In the above code, the message is displayed with a lime green background and black text. You can make your messages stand out by applying the necessary styles.
+
+## Grouping Information
+
+To logically group multiple pieces of information and display them in a structured way, you can use `console.groupCollapsed()` and `console.groupEnd()` functions.
+
+```js {1,6}
+console.groupCollapsed('[Grouped Information]');
+
+console.log('>>> location', window.location);
+console.log('>>> Astro', window.Astro);
+
+console.groupEnd();
+```
+
+This helps to structure complex log messages, making it easier to understand the flow of code execution.
+
+## Measuring Time
+
+Measuring time helps in precisely timing the execution of code blocks and assessing performance. The following code allows you to measure the execution time of a code block:
+
+```jsx {2,4}
+(async () => {
+  console.time();
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.timeEnd();
+})();
+```

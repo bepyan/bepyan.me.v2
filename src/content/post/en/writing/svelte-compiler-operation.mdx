@@ -1,0 +1,300 @@
+---
+title: 'How Does the Svelte Compiler Work?'
+description: ''
+date: 2023-12-24 17:55:00
+draft: false
+tags:
+  - svelte
+  - compiler
+---
+
+Recently, in the frontend development field, Svelte is increasingly being mentioned alongside React and Vue. Interestingly, when you search 'React Vue' on Google, Svelte is now often recommended at the top, instead of the traditionally mentioned Angular.
+
+![231210-211816](/img/svelte-compiler-operation/231210-211816.png)
+
+The essence of Svelte lies in **efficient compilation**, creating optimized JavaScript code for manipulating the DOM.
+
+Understanding Svelte properly, much like understanding React requires knowledge of the Virtual DOM, necessitates knowing how the Svelte Compiler works.
+
+This article explains based on the source code of [Svelte@5.0.0-next.25](https://github.com/sveltejs/svelte/releases/tag/svelte%405.0.0-next.25). Although the internal codebase has changed a lot since v5, the overall flow is similar to v3 and v4, so it should be a relevant reference.
+
+## How the Svelte Compiler Works
+
+The compilation process of Svelte can be divided into three main stages:
+
+1. **Parse**
+2. **Analyze**
+3. **Transform**
+
+The [Svelte Compiler source code](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/index.js#L11-L43) ([for version 3 here](https://github.com/sveltejs/svelte/blob/5e151e5efb0ec65ffdf0dde40e1d9ed9bc9feedf/src/compiler/compile/index.ts#L113-L143)) gives us intuitive hints. The overall flow is as follows:
+
+```js
+const source = fs.readFileSync('App.svelte');
+
+// 1. Parse, converting Svelte code into AST
+const ast = parse(source);
+
+// 2. Analyze, tracking internal dependencies within the component
+const analysis = analyze_component(ast);
+
+// 3. Transform, creating code blocks and fragments
+const compiled = transform_component(analysis, source);
+
+fs.writeFileSync('App.js', compiled.js.code);
+fs.writeFileSync('App.css', compiled.css.code);
+```
+
+Reading the `App.svelte` source code, it goes through a series of processes to ultimately generate `App.js` and `App.css` files. Let's take a detailed look at each step.
+
+## 1. Parsing, Converting Svelte Code into AST
+
+```js
+const ast = parse(source);
+```
+
+[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree) is a widely used data structure in compilers. Simply put, it's a [tree structure](https://en.wikipedia.org/wiki/Tree_structure) representing the relationships between codes.
+
+By converting the Svelte source code into an AST, **the compiler understands the relationships between the codes**. The Svelte file's script, HTML, and CSS codes are separated to form a single component object (root). Below is a diagram for easy understanding.
+
+![231213-030554](/img/svelte-compiler-operation/231213-030554.png)
+
+Let's examine what happens at the compiler source code level.
+Executing `parse(source)` creates a [`Parser`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/index.js#L13) object, returning an AST.
+
+```js
+const ast = new Parser(source).root;
+```
+
+Inside the `Parser` constructor, the [`fragment`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/fragment.js) function is used to recursively parse itself.
+
+```js /fragment/#i
+/** @type {ParserState} */
+let state = fragment;
+
+while (this.index < this.template.length) {
+  state = state(this) || fragment;
+}
+```
+
+Inside the `fragment`, functions like [`element`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/element.js), [`tag`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/tag.js), and [`text`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/text.js) are executed based on conditions to extract information from the source code.
+
+```js /fragment/#i
+import element from './element.js';
+import tag from './tag.js';
+import text from './text.js';
+
+export default function fragment(parser) {
+  if (parser.match('<')) {
+    return element;
+  }
+
+  if (parser.match('{')) {
+    return tag;
+  }
+
+  return text;
+}
+```
+
+Areas wrapped in `script` tags are parsed through [`read_script`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/read/script.js#L37), which internally uses the [`acorn`](https://github.com/acornjs/acorn) parser. `acorn`, known as "**A tiny, fast JavaScript parser**," is widely used in libraries that handle JS source code, such as `webpack` and `eslint`.
+
+Other areas use Svelte Compiler's own parsing logic. When encountering a `style` tag, [`read_style`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/read/style.js#L23) is used, and various utilities interpret Svelte's unique syntaxes like `{#each list as item}` and `<svelte:component>`. It also records warnings and errors for invalid code and accessibility (a11y) violations.
+
+The final result is a JSON structure like this:
+
+```python
+{
+  html: { type, start, end, children }
+  css: { type, start, end, attributes, children, content }
+  instance: { type, start, end, context, content }
+  module: { type, start, end, context, content }
+}
+```
+
+For more details, you can check the `AST output` tab on [Svelte REPL](https://svelte.dev/repl/hello-world).
+
+## 2. Analyzing and Tracking Component Internal Dependencies
+
+```js
+const analysis = analyze_component(ast);
+```
+
+The next step involves extracting information for performing various actions of a component from the created AST. It's worth noting that each Svelte file represents a single component.
+
+![231222-173628](/img/svelte-compiler-operation/231222-173628.png)
+
+The primary properties of a component can be summarized as follows, with reference to the [original code](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/index.js#L292):
+
+```js
+const analysis = {
+root: scope_root,
+module,
+instance,
+template,
+stylesheet: new Stylesheet({...}),
+// Various compile options
+runes,
+warnings,
+reactive_statements: new Map(),
+binding_groups: new Map(),
+slot_names: new Set(),
+...
+};
+```
+
+### a. `scope_root`
+
+```js
+const scope_root = new ScopeRoot();
+```
+
+`ScopeRoot` is an object that serves as the highest [scope](https://developer.mozilla.org/ko/docs/Glossary/Scope) of the component. Internally, it uses a `Set` data structure to ensure the uniqueness of identifiers such as variables and functions.
+
+### b. `module`, `instance`
+
+```js
+function js(...) {
+const { scope, scopes } = create_scopes(...);
+return { ast, scope, scopes };
+}
+
+const module = js(root.module, scope_root, false, null);
+const instance = js(root.instance, scope_root, true, module.scope);
+```
+
+The ASTs of the instance script and module script are traversed to identify **all areas where a variable is referenced**, thereby knowing all situations where a variable change might occur. During the process, lower scopes of the script are created, referencing `scope_root` to assign unique identifiers to the variables.
+
+Here's a quick overview of the differences between module and instance in Svelte:
+
+- module
+  - Defines the state and logic shared between components.
+  - Can be declared with [`<script context="module">`](https://learn.svelte.dev/tutorial/sharing-code).
+  - Think of it as an area where global variables are declared.
+  - You cannot write `reactive` code within this area.
+- instance
+  - Defines the unique state and logic of the component.
+  - This is where you typically write your script.
+
+### c. `template`
+
+```js
+const { scope, scopes } = create_scopes(root.fragment, ...);
+const template = { ast: root.fragment, scope, scopes };
+```
+
+`root.fragment` refers to the HTML AST and is traversed to understand the scope within the markup area. Syntax such as `{data}`, `{#if}`, `{#each}`, `{@const}`, `class:` and others are applicable here.
+
+### d. `stylesheet`
+
+```js
+const stylesheet = new Stylesheet({
+ast: root.css,
+filename: options.filename ?? '<unknown>',
+component_name,
+get_css_hash: options.cssHash,
+});
+```
+
+The [`Stylesheet`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/css/Stylesheet.js#L338) object traverses the CSS AST, selecting CSS selectors used within the component scope. If a CSS selector is declared using `:global(...)` or `-global-`, it is separately recorded. For more on these syntaxes, refer to the [official documentation](https://svelte.dev/docs/svelte-components#style).
+
+Several optimization tasks are carried out based on the collected `analysis` information:
+
+```js
+analysis.stylesheet.validate(analysis);
+
+for (const element of analysis.elements) {
+analysis.stylesheet.apply(element);
+}
+
+analysis.stylesheet.reify(options.generate === 'client');
+```
+
+- Duplicate global CSS selectors and those not used within the component scope are removed.
+- CSS selectors used within the component scope are hashed into the `.svelte-xxx` format, preventing collisions with selectors of the same name.
+
+### e. Final Traversal
+
+The component state is optimized by traversing the AST again, based on the obtained `analysis` information.
+
+```js
+walk(
+/** @type {import('#compiler').SvelteNode} \*/ (ast),
+/** @type {import('./types').AnalysisState} \*/ (state),
+merge(
+set_scope(scopes),
+validation_runes,
+runes_scope_tweaker,
+common_visitors,
+),
+);
+```
+
+- validation_runes
+  - Checks for incorrect assignments or update expressions.
+  - Verifies the declaration and exporting of variables.
+  - Checks the validity of the new `reactive` syntax, `runes`.
+- runes_scope_tweaker
+  - Adjusts the scope.
+  - Sets the scope and binding type for variable declarations that use specific patterns.
+  - Moves variables or functions without state changes outside the instance.
+- common_visitors
+  - Handles `directive` and `binding` related directives.
+  - Processes general HTML and Svelte-specific elements.
+  - Deals with event-related attributes and determines whether event delegation or hoisting is required.
+
+## 3. Transforming, Creating Code Blocks and Fragments
+
+```js
+const compiled = transform_component(analysis, source);
+```
+
+Finally, the Svelte compiler undergoes a transformation process to generate rendering code.
+
+![231222-173647](/img/svelte-compiler-operation/231222-173647.png)
+
+In this process, the logic for generating code for SSR (Server-Side Rendering) and CSR (Client-Side Rendering) differs. The compiler uses two functions, `server_component` and `client_component`, to create code optimized for each scenario.
+
+```js
+const program =
+  options.generate === 'server'
+    ? server_component(analysis, options)
+    : client_component(source, analysis, options);
+```
+
+### Characteristics of SSR
+
+In SSR, a component is rendered only once, and there is no lifecycle for the component.
+Thus, `server_component` focuses on creating [`template literals`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). It adds code blocks using visitors like `javascript_visitors` and `template_visitors`.
+
+### Characteristics of CSR
+
+In CSR, constant interaction with the DOM is required, and components need to have a lifecycle.
+Therefore, `client_component` consists of more varied and complex visitors. Even the same `javascript_visitors` includes additional processing logic for functions during traversal.
+
+### Generating Code
+
+```js
+return {
+  js: print(program, { sourceMapSource: options.filename }),
+  css:
+    analysis.stylesheet.has_styles && !analysis.inject_styles
+      ? analysis.stylesheet.render(options.filename, source, options.dev)
+      : null,
+  // ...
+};
+```
+
+Ultimately, the `print` and `render` functions are executed to generate js and css code.
+This generated code is passed to bundlers and transformed into browser-ready bundles through plugins like [`vite-plugin-svelte`](https://github.com/sveltejs/vite-plugin-svelte/) and [`svelte-loader`](https://github.com/sveltejs/svelte-loader).
+
+## In Conclusion
+
+Svelte identifies code dependencies at the build stage through its compiler.
+It traverses the source code multiple times, analyzing the dependencies between HTML, JS, and CSS, and generating code to efficiently handle the DOM. This is a key factor that makes it stand out following VDOM-based frameworks like React and Vue, which identify dependencies at runtime.
+
+While I have diligently followed up on the compiler source code to write this article, it feels like I have only scratched the surface of the compiler's workings. If given the chance, I would like to delve deeper into how the compiled Svelte code operates.
+
+### References
+
+- https://svelte.dev/docs/svelte-compiler
+- https://lihautan.com/the-svelte-compiler-handbook/

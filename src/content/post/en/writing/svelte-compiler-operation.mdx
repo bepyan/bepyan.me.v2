@@ -1,6 +1,6 @@
 ---
 title: 'How Does the Svelte Compiler Work?'
-description: ''
+description: 'Explore the inner workings of the Svelte Compiler, a pivotal tool in frontend development.'
 date: 2023-12-24 17:55:00
 draft: false
 tags:
@@ -188,10 +188,10 @@ const template = { ast: root.fragment, scope, scopes };
 
 ```js
 const stylesheet = new Stylesheet({
-ast: root.css,
-filename: options.filename ?? '<unknown>',
-component_name,
-get_css_hash: options.cssHash,
+  ast: root.css,
+  filename: options.filename ?? '<unknown>',
+  component_name,
+  get_css_hash: options.cssHash,
 });
 ```
 
@@ -203,7 +203,7 @@ Several optimization tasks are carried out based on the collected `analysis` inf
 analysis.stylesheet.validate(analysis);
 
 for (const element of analysis.elements) {
-analysis.stylesheet.apply(element);
+  analysis.stylesheet.apply(element);
 }
 
 analysis.stylesheet.reify(options.generate === 'client');
@@ -218,14 +218,14 @@ The component state is optimized by traversing the AST again, based on the obtai
 
 ```js
 walk(
-/** @type {import('#compiler').SvelteNode} \*/ (ast),
-/** @type {import('./types').AnalysisState} \*/ (state),
-merge(
-set_scope(scopes),
-validation_runes,
-runes_scope_tweaker,
-common_visitors,
-),
+  /** @type {import('#compiler').SvelteNode} \*/ (ast),
+  /** @type {import('./types').AnalysisState} \*/ (state),
+  merge(
+    set_scope(scopes),
+    validation_runes,
+    runes_scope_tweaker,
+    common_visitors,
+  ),
 );
 ```
 

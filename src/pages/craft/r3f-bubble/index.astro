@@ -15,9 +15,7 @@ const description = 'simple example of react-tree-fiber with rapier';
 
 <Main {lang} seo={{ title, description }}>
   <BaseNav href="/craft" client:visible />
-  <BaseHeader {title} noI18n>
-    <p class="text-sm text-second">{description}</p>
-  </BaseHeader>
+  <BaseHeader {title} {description} noI18n />
   <div class="h-96 w-full max-w-content">
     <App client:load />
   </div>

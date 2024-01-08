@@ -4,11 +4,12 @@ import ThemeToggle from './theme-toggle';
 
 type Props = {
   title: string;
+  description?: string;
   noI18n?: boolean;
 };
 
 const { props, url } = Astro;
-const { title, noI18n } = props;
+const { title, description, noI18n } = props;
 ---
 
 <div class="mb-7 font-serif">
@@ -19,5 +20,6 @@ const { title, noI18n } = props;
       <ThemeToggle client:load />
     </div>
   </div>
+  {description && <p class="text-sm text-second">{description}</p>}
   <slot />
 </div>

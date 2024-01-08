@@ -4,17 +4,18 @@ import ThemeToggle from './theme-toggle';
 
 type Props = {
   title: string;
+  noI18n?: boolean;
 };
 
 const { props, url } = Astro;
-const { title } = props;
+const { title, noI18n } = props;
 ---
 
 <div class="mb-7 font-serif">
   <div class="flex items-center">
     <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
     <div class="ml-auto flex gap-1">
-      <LanguageDropdown client:load {url} />
+      {!noI18n && <LanguageDropdown client:load {url} />}
       <ThemeToggle client:load />
     </div>
   </div>

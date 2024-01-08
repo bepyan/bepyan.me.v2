@@ -2,17 +2,19 @@
 import BaseHead from '~/components/base-head.astro';
 import MonitoringScript from '~/components/monitoring-script.astro';
 import ThemeScript from '~/components/theme-script.astro';
+import type { Language } from '~/i18n/ui';
 import { getLangFromUrl } from '~/i18n/utils';
 import type { SEOProps } from '~/types';
 
 type Props = {
+  lang?: Language;
   seo?: SEOProps;
   class?: string;
 };
 
 const { seo, ...props } = Astro.props;
 
-const lang = getLangFromUrl(Astro.url);
+const lang = props.lang ?? getLangFromUrl(Astro.url);
 ---
 
 <html {lang}>

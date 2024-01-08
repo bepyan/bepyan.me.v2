@@ -1,36 +1,93 @@
 // @see https://codesandbox.io/p/sandbox/bestservedbold-christmas-baubles-forked-klhzlz
 
-import { Canvas, useFrame } from '@react-three/fiber';
-import { EffectComposer, N8AO, SSAO } from '@react-three/postprocessing';
+import { Canvas, useFrame, type Vector3 } from '@react-three/fiber';
+import { EffectComposer, N8AO } from '@react-three/postprocessing';
 import {
   BallCollider,
-  CylinderCollider,
   Physics,
   type RapierRigidBody,
   RigidBody,
 } from '@react-three/rapier';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
-const baubleMaterial = new THREE.MeshLambertMaterial({
-  color: '#ececec',
-  emissive: 'gray',
-});
-const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
-
-const baubleScales = [0.5, 0.6, 0.75, 1, 1];
+const baubleScales = [0.6, 0.7, 0.75, 0.8, 0.85];
+const baubleColors = ['#fdfdfd', '#d5d5d5', '#b1b1b1', '#909090'];
 const baubles = [...Array(50)].map(() => ({
   scale: baubleScales[Math.floor(Math.random() * baubleScales.length)],
+  color: baubleColors[Math.floor(Math.random() * baubleColors.length)],
 }));
+
+export const App = () => {
+  return (
+    <Canvas
+      shadows
+      dpr={[1, 1.5]}
+      gl={{ antialias: false }}
+      camera={{ position: [0, 0, 15], fov: 17.5, near: 1, far: 20 }}
+      onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
+    >
+      <ambientLight intensity={1} />
+      <spotLight
+        position={[10, 10, 10]}
+        penumbra={1}
+        angle={0.15}
+        intensity={1}
+        castShadow
+      />
+      <Physics gravity={[0, 0, 0]}>
+        <Pointer />
+        {baubles.map((props, i) => (
+          <Bauble key={i} {...props} />
+        ))}
+      </Physics>
+      <EffectComposer disableNormalPass multisampling={0}>
+        <N8AO aoRadius={2} intensity={1} />
+      </EffectComposer>
+    </Canvas>
+  );
+};
+
+function Pointer({ vec = new THREE.Vector3() }) {
+  const ref = useRef<RapierRigidBody>(null);
+
+  useFrame(({ mouse, viewport }) => {
+    ref.current?.setNextKinematicTranslation(
+      vec.set(
+        (mouse.x * viewport.width) / 2,
+        (mouse.y * viewport.height) / 2,
+        0,
+      ),
+    );
+  });
+
+  return (
+    <RigidBody
+      position={[0, 0, 0]}
+      type="kinematicPosition"
+      colliders={false}
+      ref={ref}
+    >
+      <BallCollider args={[1]} />
+    </RigidBody>
+  );
+}
 
 function Bauble({
   vec = new THREE.Vector3(),
   scale = 1,
+  color = '#fff',
   r = THREE.MathUtils.randFloatSpread,
 }) {
   const api = useRef<RapierRigidBody>(null);
+  const pos = useMemo<Vector3>(() => [r(10), r(10), r(10)], []);
+  const sphereGeometry = useMemo(() => new THREE.SphereGeometry(1, 28, 28), []);
+  const baubleMaterial = useMemo(
+    () => new THREE.MeshLambertMaterial({ color }),
+    [color],
+  );
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     delta = Math.min(0.1, delta);
     api.current!.applyImpulse(
       vec
@@ -40,7 +97,7 @@ function Bauble({
           x: -50 * delta * scale,
           y: -150 * delta * scale,
           z: -50 * delta * scale,
-        } as any),
+        } as THREE.Vector3),
       false,
     );
   });
@@ -49,17 +106,12 @@ function Bauble({
     <RigidBody
       linearDamping={0.75}
       angularDamping={0.15}
-      friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
+      friction={0.1}
+      position={pos}
       ref={api}
       colliders={false}
     >
       <BallCollider args={[scale]} />
-      <CylinderCollider
-        rotation={[Math.PI / 2, 0, 0]}
-        position={[0, 0, 1.2 * scale]}
-        args={[0.15 * scale, 0.275 * scale]}
-      />
       <mesh
         castShadow
         receiveShadow
@@ -70,66 +122,3 @@ function Bauble({
     </RigidBody>
   );
 }
-
-function Pointer({ vec = new THREE.Vector3() }) {
-  const ref = useRef<RapierRigidBody>(null);
-
-  useFrame(({ mouse, viewport }) => {
-    vec.lerp(
-      {
-        x: (mouse.x * viewport.width) / 2,
-        y: (mouse.y * viewport.height) / 2,
-        z: 0,
-      } as THREE.Vector3,
-      0.2,
-    );
-    ref.current?.setNextKinematicTranslation(vec);
-  });
-
-  return (
-    <RigidBody
-      position={[100, 100, 100]}
-      type="kinematicPosition"
-      colliders={false}
-      ref={ref}
-    >
-      <BallCollider args={[2]} />
-    </RigidBody>
-  );
-}
-
-export const App = () => (
-  <Canvas
-    shadows
-    gl={{ alpha: true, stencil: false, depth: false }}
-    camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
-    onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
-  >
-    <ambientLight intensity={1} />
-    <spotLight
-      position={[20, 20, 25]}
-      penumbra={1}
-      angle={0.2}
-      color="white"
-      castShadow
-      shadow-mapSize={[512, 512]}
-    />
-    <directionalLight position={[0, 5, -4]} intensity={4} />
-    <directionalLight position={[0, -15, -0]} intensity={4} color="gray" />
-    <Physics gravity={[0, 0, 0]}>
-      <Pointer />
-      {baubles.map((props, i) => (
-        <Bauble key={i} {...props} />
-      ))}
-    </Physics>
-    <EffectComposer disableNormalPass multisampling={0}>
-      <N8AO color="gray" aoRadius={2} intensity={1} />
-      <SSAO
-        worldDistanceThreshold={0}
-        worldDistanceFalloff={0}
-        worldProximityThreshold={0}
-        worldProximityFalloff={0}
-      />
-    </EffectComposer>
-  </Canvas>
-);

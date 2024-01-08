@@ -1,52 +1,67 @@
 ---
 import '~/styles/mdx.css';
 
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { type CollectionEntry } from 'astro:content';
 import { format } from 'date-fns';
 
+import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav';
 import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import TableOfContent from '~/components/table-of-content';
-import ThemeToggle from '~/components/theme-toggle';
+import type { Language } from '~/i18n/ui';
+import { getLangFromSlug, useTranslatedPath } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
 import {
   contentToDescription,
+  getPostCollection,
+  getPostType,
+  isNote,
+  isWriting,
   parseToc,
-  sortCollectionDateAsc,
+  resolveSlug,
 } from '~/libs/mdx';
-import { isDev } from '~/libs/utils';
 
 export async function getStaticPaths() {
-  const [writings, notes] = await Promise.all([
-    getCollection('writing'),
-    getCollection('note'),
-  ]);
+  const posts = await getPostCollection();
 
-  return [
-    ...writings.sort(sortCollectionDateAsc),
-    ...notes.sort(sortCollectionDateAsc),
-  ]
-    .filter((post) => isDev || !post.data.draft)
-    .map((post, index, list) => ({
-      params: { slug: post.slug },
+  return posts.map((post, _, list) => {
+    const lang = getLangFromSlug(post.slug);
+
+    const postList = list
+      .filter((item) => {
+        if (isWriting(post)) return isWriting(item);
+        if (isNote(post)) return isNote(item);
+        return true;
+      })
+      .filter((item) => getLangFromSlug(item.slug) === lang);
+    const postIndex = postList.findIndex((item) => item.id === post.id);
+
+    return {
+      params: { slug: resolveSlug(post.slug) },
       props: {
+        lang,
         post,
-        prevPost: list[index - 1],
-        nextPost: list[index + 1],
+        prevPost: postList[postIndex + 1],
+        nextPost: postList[postIndex - 1],
       },
-    }));
+    };
+  });
 }
 
 type Props = {
-  post: CollectionEntry<'writing'>;
-  prevPost: CollectionEntry<'writing'>;
-  nextPost: CollectionEntry<'writing'>;
+  lang: Language;
+  post: CollectionEntry<'post'>;
+  prevPost: CollectionEntry<'post'>;
+  nextPost: CollectionEntry<'post'>;
 };
 
-const { post, prevPost, nextPost } = Astro.props;
+const { lang, post, prevPost, nextPost } = Astro.props;
 
+const p = useTranslatedPath(lang);
+
+const type = getPostType(post);
 const { Content } = await post.render();
 const { title, date } = post.data;
 const description = post.data.description || contentToDescription(post.body);
@@ -54,7 +69,7 @@ const toc = parseToc(post.body);
 ---
 
 <Main seo={{ title, description }}>
-  <BaseNav href={`/${post.collection}`} client:visible>
+  <BaseNav href={p(`/${type}`)} client:visible>
     <TableOfContent
       data-animate
       className="mt-[60px] px-2 text-sm md:hidden"
@@ -62,17 +77,11 @@ const toc = parseToc(post.body);
       client:load
     />
   </BaseNav>
-  <header class="mb-7 font-serif">
-    <div class="flex items-center">
-      <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
-      <div class="ml-auto">
-        <ThemeToggle client:load />
-      </div>
-    </div>
+  <BaseHeader {title}>
     <time class="text-sm text-second">
       {format(date, 'MMM dd, yyyy')}
     </time>
-  </header>
+  </BaseHeader>
   <article data-animate data-animate-speed="fast" class="mdx">
     <Content />
   </article>
@@ -82,7 +91,10 @@ const toc = parseToc(post.body);
     <section class="text-tx flex items-stretch justify-between gap-1 text-sm">
       {
         !!prevPost && (
-          <a class="group flex flex-col gap-1" href={`/post/${prevPost.slug}`}>
+          <a
+            class="group flex flex-col gap-1"
+            href={`/post/${resolveSlug(prevPost.slug)}`}
+          >
             <div class="text-disabled transition-colors group-hover:text-second">
               Previous
             </div>
@@ -96,7 +108,7 @@ const toc = parseToc(post.body);
         !!nextPost && (
           <a
             class="group ml-auto flex flex-col gap-1 text-right text-second hover:text-body"
-            href={`/post/${nextPost.slug}`}
+            href={`/post/${resolveSlug(nextPost.slug)}`}
           >
             <div class="text-disabled transition-colors group-hover:text-second">
               Next
@@ -108,7 +120,7 @@ const toc = parseToc(post.body);
         )
       }
     </section>
-    <GiscusSection className="mx-auto mt-20" client:load />
+    <GiscusSection className="mx-auto mt-20" {lang} client:load />
   </footer>
   <MediumZoomScript />
 </Main>

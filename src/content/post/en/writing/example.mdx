@@ -1,0 +1,145 @@
+---
+title: 'Example Post'
+description: ''
+date: 1997-12-23 21:36:03
+draft: false
+---
+
+**Markdown** is a lightweight markup language based on plain text. It's used for writing formatted documents in plain text and is known for its easy and simple syntax compared to traditional markup languages.
+
+This post documents how I utilize Markdown in this blog.
+
+## h2 Minimalism
+
+As a frontend developer, I want to convey something through layout.
+**I hope the text feels comfortable to the reader.**
+
+That's why I value the **beauty of whitespace**.
+Pages crammed with content make reading unpleasant. I often leave a page after just glancing at the title.
+
+Here are some hidden details of the layout:
+
+- The **size of the title and the body text is the same.**
+  - This avoids a feeling of disconnect between characters and brings calmness upon accessing the page.
+  - The text feels straightforward, reminiscent of reading a book.
+- The spacing between paragraphs is **wide.**
+  - It gives a breathing space.
+  - It helps focus more on the current paragraph.
+- The top area of the page is **left empty.**
+  - This draws the eyes towards the center of the page where the text is.
+- The color of the body text is notably **light.**
+  - Titles and bold text are easily recognized.
+  - Important content is quickly identifiable.
+
+### h3 Titles
+
+This blog uses only `h2` and `h3` titles.
+It’s to maintain the **beauty of Semantic HTML**. ~~(Occupational hazard)~~
+
+- `h1` already exists as it represents `the highest-level heading on the page`.
+- `h4` is a crime in itself. It's evidence of a complex piece of writing.
+
+## Basic Elements
+
+> Quotations use [Serif typeface](https://en.wikipedia.org/wiki/Serif).
+> Even the font itself makes the quoted text seem significant!
+
+_Serif_ typeface can be used within the text too.
+However, it's not recommended as it disrupts the balance of the text.
+
+`<mark></mark>` can be used to <mark>highlight text</mark>.
+
+[Links](/) have a subtle underline and minimal `hover` effects.
+[**Bold links**](/) are more eye-catching.
+[External links](https://bepyan.me/) generate an icon indicating "a new tab will open."
+https://github.com/bepyan By default, links are automatically parsed.
+
+The division line is subtle and not too prominent.
+It's not frequently used as there's enough spacing overall.
+
+---
+
+List
+
+- Every citizen shall not be prosecuted for an act that does not constitute a crime under the law at the time of the act, nor shall be punished twice for the same crime.
+- The term of the first President under this Constitution shall commence from the day this Constitution comes into force.
+  - All citizens have the right to receive education according to their ability.
+
+Ordered List
+
+1. An amendment to the Constitution may be proposed by a majority of the members of the National Assembly or by the President.
+2. The military shall have the sacred duty of national security and national defense, and its political neutrality shall be maintained.
+
+---
+
+## Code Blocks
+
+`inline code` `[1, 2, 3]{:js}`
+
+```
+Block code
+```
+
+```ts
+import clsx, { type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+```tsx {3} title="layout.tsx" caption="Like a poor star, that's why, the bug, left behind." showLineNumbers /className/ /fontMono/#v /fontSans/#s /fontSerif/#i
+import '~/styles/globals.css';
+
+import type { Metadata } from 'next';
+
+import { fontMono, fontSans, fontSerif } from '~/libs/fonts';
+import { cn } from '~/libs/utils';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="ko" suppressHydrationWarning>
+      <body
+        className={cn(
+          'bg-background min-h-screen font-sans antialiased',
+          fontSans.variable,
+          fontSerif.variable,
+          fontMono.variable,
+        )}
+      >
+        <div className="blur" aria-hidden="true"></div>
+        <div className="max-w-page container mx-auto pt-32">
+          <div className="main-grid">{children}</div>
+        </div>
+      </body>
+    </html>
+  );
+}
+```
+
+## Table
+
+| Emotion | Description                                                                                        |
+| ------- | -------------------------------------------------------------------------------------------------- |
+| Joy     | _Pleasure, Joy, Happiness, Delight._ The pleased and satisfied feeling when a desire is fulfilled. |
+| Sadness | Feeling heartache and pain upon encountering or witnessing a pitiable or regrettable event.        |
+| Fun     | A feeling of being cheerful and happy without any annoyance.                                       |
+
+|          |                                                            |
+| -------- | ---------------------------------------------------------- |
+| Pleasure | Pleasantness and enjoyment. Or the feeling of it.          |
+| Comfort  | Comfort in both body and mind.                             |
+| Delight  | Joy and pleasure. Or the act of being joyful and enjoying. |
+
+| Left | Center | Right |
+| ---- | :----: | ----: |
+| A    |   B    |     C |
+
+## Image
+
+![Chunsik](https://images.pexels.com/photos/262508/pexels-photo-262508.jpeg?cs=srgb&dl=pexels-pixabay-262508.jpg&fm=jpg)_\!\[Image Description\](Link)_

@@ -1,0 +1,59 @@
+---
+title: '(JS) Creating a .txt File'
+description: ''
+date: 2022-09-03 19:14:23
+draft: false
+tags:
+  - javascript
+---
+
+File download and upload functions are important in web applications.
+The **Blob** object is a very useful tool when performing such tasks.
+
+The [Blob (Binary Large Object)](https://developer.mozilla.org/ko/docs/Web/API/Blob) object is used to store and process data such as text files or binary data in memory.
+
+## File Preview
+
+You can create a file using the `Blob` object and provide a file preview in a new tab.
+
+```js {3}
+const previewTextFile = (data) => {
+  const blob = new Blob([JSON.stringify(data)], {
+    type: 'text/plain;charset=UTF-8',
+  });
+  const blobUrl = window.URL.createObjectURL(blob);
+  window.open(blobUrl, '_blank');
+};
+```
+
+Adding `charset=UTF-8` ensures that the encoding is set so that Korean characters are not garbled.
+
+## Downloading the File
+
+You can use the `anchor` element to download the file.
+
+```js {9, 13}
+const downloadTextFile = (data, filename = 'download') => {
+  const blob = new Blob([JSON.stringify(data)], {
+    type: 'text/plain;charset=UTF-8',
+  });
+  const blobUrl = window.URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = `${filename}.txt`;
+  link.click();
+  link.remove();
+
+  window.URL.revokeObjectURL(blobUrl);
+};
+```
+
+The reason for using `window.URL.revokeObjectURL`:
+
+- The garbage collector does not automatically reclaim the associated resources.
+- Therefore, to **prevent memory leaks**, the no longer needed URL is manually released after download.
+
+## References
+
+https://stackoverflow.com/questions/19327749/javascript-blob-filename-without-link/19328891#19328891

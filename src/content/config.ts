@@ -14,6 +14,5 @@ const postCollection = defineCollection({
 });
 
 export const collections = {
-  writing: postCollection,
-  note: postCollection,
+  post: postCollection,
 };

@@ -1,0 +1,47 @@
+---
+title: '(JS) sleep'
+description: ''
+date: 2023-08-08 21:10:33
+draft: false
+tags:
+  - javascript
+---
+
+While coding, there are often times when you need to wait for a specific duration.
+For example, during tests, animations, etc...
+
+A killer utility is needed!
+
+## sleep
+
+Create your own utility using `Promise`.
+
+```ts
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+```
+
+It uses `setTimeout` to wait for the given time (ms) and then calls `resolve` to fulfill the `Promise`.
+
+## lodash.delay
+
+Since `Promise` is an ES5 syntax, it cannot operate in [legacy browsers (IE)](https://caniuse.com/?search=Promise) without additional help.
+In such cases, it's good to use a proven utility library like [`lodash`](https://github.com/lodash/lodash/tree/4.17.15).
+
+```shell
+yarn add lodash-es
+yarn add -D @types/lodash-es
+```
+
+In modern environments, use `lodash-es` for [`tree shaking`](https://developer.mozilla.org/ko/docs/Glossary/Tree_shaking).
+
+```js
+import { delay } from 'lodash-es';
+
+delay(() => {
+  console.log('sleep end');
+}, 100);
+```
+
+If you look at the [original code](https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L10470), it internally uses `setTimeout` as well, so there is no performance difference.

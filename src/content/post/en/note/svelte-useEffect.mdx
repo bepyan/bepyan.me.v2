@@ -1,0 +1,130 @@
+---
+title: '(Svelte) Subscribing to State Like useEffect in React'
+description: ''
+date: 2023-11-30 22:47:45
+draft: false
+tags:
+  - svelte
+  - react
+  - state subscription
+---
+
+A common question among developers transitioning from React to Svelte is, "How can I subscribe to state changes in Svelte, similar to React's `useEffect`?"
+
+To answer this, we need to make good use of Svelte’s unique [`reactive`](https://svelte.dev/blog/svelte-3-rethinking-reactivity) syntax.
+
+## Simple State Subscription
+
+In React, the `useEffect` hook detects changes in the component's state and executes side effects when a specific state changes.
+
+```js
+useEffect(() => {
+  console.log(name);
+}, [name]);
+```
+
+In Svelte, similar functionality can be achieved using [reactive statements](https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive). Defined with the `$:` symbol, Svelte’s compiler automatically re-executes the statement whenever any variable used in the expression changes.
+
+```svelte
+<script>
+  $: console.log(name);
+
+  // Multi-line format
+  $: {
+    console.log(name);
+  }
+
+  // Immediately Invoked Function Expression (IIFE) format
+  $: (() => {
+    console.log(name);
+  })();
+</script>
+```
+
+## Subscribing to Specific States
+
+React allows executing side effects dependent on specific states using the dependency array.
+
+```js
+useEffect(() => {
+  console.log(state1, state2, state3);
+  // Executed only when state1 changes.
+}, [state1]);
+```
+
+However, in Svelte, a reactive declaration with `$:` reacts to changes in all related states. If state1, state2, or state3 changes, the side effect gets executed.
+
+```svelte
+<script>
+  $: console.log(state1, state2, state3);
+  // 🚨 Executed whenever state1, state2, or state3 changes.
+</script>
+```
+
+To address this, you can extract unnecessary dependencies outside the `$:` expression. That is, **declare the side effect function separately** and pass only the state you want to depend on.
+
+```svelte
+<script>
+  const effect = (state1) => {
+    console.log(state1, state2, state3);
+  }
+  $: effect(state1);
+</script>
+```
+
+For a more React-like approach, you can write it as follows:
+
+```svelte {5}
+<script>
+  const effect = () => {
+    console.log(state1, state2, state3);
+  }
+  $: effect(), [state1];
+
+  // $: (() => {
+  //   effect();
+  // })(), [state1];
+</script>
+```
+
+This may seem a bit complex, but it makes the code more concise, especially with TypeScript.
+
+## Reactive and Rendering
+
+Unlike React, rendering and state subscription in Svelte are separate processes. Keep in mind that accessing the DOM after rendering requires using [`tick`](https://learn.svelte.dev/tutorial/tick).
+
+```svelte {11}
+<script>
+  import {tick} from "svelte";
+
+  let btnEl;
+  let cnt = 1;
+
+  const checkBtnWidth = async () => {
+    if(!btnEl) return;
+
+    // Promise that ensures state updates are applied to the DOM
+    await tick();
+
+    const { width } = btnEl.getBoundingClientRect();
+    console.log(width);
+  }
+  $: checkBtnWidth(), [cnt];
+
+  const onClick = () => {
+    cnt = cnt * 10;
+  }
+</script>
+
+<button bind:this={btnEl} on:click={onClick}>
+  {cnt}
+</button>
+```
+
+Test it yourself on [REPL](https://svelte.dev/repl/81a7db6113744424af226c1a246f2b7c?version=4.2.8)!
+
+## In Conclusion
+
+Svelte is often said to have a lower barrier to entry compared to other frameworks. It certainly allows for writing succinct code with ease, but like React, a deep understanding of the framework is essential to handle complex web applications.
+
+With the recent preview of Svelte 5, a new `reactive` system named [runes](https://svelte.dev/blog/runes) was introduced. Although the code structure appears somewhat peculiar, it seems to offer a more intuitive way of managing dependencies. This might raise the entry barrier for beginners in frontend development, but it could make it easier for developers from the React community to transition to Svelte.

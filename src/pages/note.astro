@@ -1,28 +1,26 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav';
 import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
-import { sortCollectionDateDesc } from '~/libs/mdx';
+import { getPostInfoList, type PostInfo } from '~/libs/mdx';
 
-const allNotes = await getCollection('note');
+const { lang, p, t } = useI18n(Astro.url);
+
+const allNotes = await getPostInfoList('note');
 
 const yearList = Object.entries(
-  allNotes.reduce<{ [year: string]: CollectionEntry<'note'>[] }>((ac, v) => {
-    const year = new Date(v.data.date).getFullYear();
-    if (!ac[year]) {
-      ac[year] = [];
-    }
-
-    ac[year].push(v);
-    return ac;
-  }, {}),
+  allNotes
+    .filter((note) => note.lang === lang)
+    .reduce<{ [year: string]: PostInfo[] }>((ac, v) => {
+      const year = new Date(v.date).getFullYear();
+      if (!ac[year]) ac[year] = [];
+      ac[year].push(v);
+      return ac;
+    }, {}),
 ).sort(([yearA], [yearB]) => +yearB - +yearA);
-
-const { p, t } = useI18n(Astro.url);
 
 const title = t('nav.note');
 ---
@@ -43,16 +41,16 @@ const title = t('nav.note');
               <h3 class="font-serif">{year}</h3>
             </div>
             <ul data-animate data-animate-speed="fast" class="space-y-2">
-              {postList.sort(sortCollectionDateDesc).map((post) => {
+              {postList.map((post) => {
                 return (
                   <li style={`--start: ${index * 75}ms;`}>
                     <a
-                      href={`/post/${post.slug}`}
+                      href={post.href}
                       class="flex items-center transition-opacity duration-300 hover:!opacity-100 group-hover:opacity-60"
                     >
-                      <span class="text-heading">{post.data.title}</span>
+                      <span class="text-heading">{post.title}</span>
                       <span class="flex-shrink-0 px-2 text-sm text-second">
-                        {format(new Date(post.data.date), 'MM. dd.')}
+                        {format(new Date(post.date), 'MM. dd.')}
                       </span>
                     </a>
                   </li>

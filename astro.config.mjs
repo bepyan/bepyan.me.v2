@@ -15,7 +15,15 @@ import remarkGfm from 'remark-gfm';
 export default defineConfig({
   site: 'https://bepyan.me',
   integrations: [
-    sitemap(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'ko',
+        locales: {
+          ko: 'ko',
+          en: 'en',
+        },
+      },
+    }),
     tailwind({
       applyBaseStyles: false,
     }),

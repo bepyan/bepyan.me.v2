@@ -1,0 +1,104 @@
+---
+title: 'Redesigning My Blog'
+description: 'Returning to simplicity.'
+date: 2023-11-09 23:10:00
+draft: false
+tags:
+  - blog
+  - next.js 13
+  - astro
+---
+
+I've decided to _redesign_ my passionately crafted ["personal blog"](https://bepyan.github.io/) before it even turned a year old. I want to document this process candidly.
+
+## Rediscovering What I Want to Do
+
+> Getting a job is not the final destination.
+> 'What do I really want to do?' is a question we must continually ask ourselves.
+> Let's burn our one-time youth to achieve what we desire. The job is just a means to an end.
+>
+> <br />
+> by [5 months in a startup, and what I gained.](https://velog.io/@bepyan/5-months-in-a-startup-and-what-I-gained#-백신)
+
+This quote has been a guiding beacon since joining Kakao. Busy with life, this reminder helped me rediscover what I truly want to do.
+
+I yearn to create something **simple, clear, smooth, and relaxed**. I want these qualities to become a sort of **brand identity** in everything I touch, and my self-built blog seemed the perfect canvas for this expression.
+
+## Reflecting on My Previous Blog
+
+Hence, I felt compelled to revisit my [previous blog](https://bepyan.github.io/).
+
+It was a piece made with great effort, and I was satisfied with its softness. However, I sensed an underlying **discomforting complexity**.
+
+There were several areas of dissatisfaction:
+
+- The wide gaps between contents led to easy distraction and fatigue.
+- The narrow space between the title and text felt claustrophobic.
+- The content was skewed to the left, making consumption burdensome.
+- The code highlighting differed from vscode, reducing immersion.
+- The variety in font sizes and styles made the UI feel cluttered.
+- ...
+
+I longed for an extremely simplified screen.
+
+## Redesigning the Blog
+
+Just then, I stumbled upon some inspiring figures during my commutes, discovered through Twitter. [_Paco Coursey_](https://paco.me/), [_Rauno_](https://rauno.me/), and [_Anthony Fu_](https://antfu.me/) gave me abundant inspiration. I was burning with passion to create a stunning blog like theirs.
+
+The first step was the ["Next.js 13 app directory transition"](https://github.com/bepyan/bepyan.me).
+
+- Curiosity about the then-new app directory.
+- Taking cues from the robust Next.js 13 project structure of [`shadcn/ui`](https://github.com/shadcn-ui/ui).
+- Implementing [`rehype-pretty-code`](https://rehype-pretty-code.netlify.app/), a more vscode-like syntax highlighter based on [`shiki`](https://github.com/shikijs/shiki).
+- Emulating the sophisticated simple layouts of these artisans.
+- ...
+
+This led me to rethink **content** as well.
+
+- I wanted to more clearly distinguish between writings containing my thoughts and opinions and those conveying information.
+- This differentiation gave birth to [Writing](https://bepyan.me/writing) and [Note](https://bepyan.me/note).
+- The process involved diligent development → recording discoveries in [Obsidian](https://obsidian.md/) → composing content into articles.
+
+By July and August, the blog had taken shape.
+
+https://bepyan-me.vercel.app/
+
+Addressing each dissatisfaction brought immense peace of mind. Particularly, the [example post](https://bepyan-me.vercel.app/posts/example) page was very satisfying. It rekindled my desire to write.
+
+I kept the [source code](https://github.com/bepyan/bepyan.me) public, hoping it might help someone.
+
+## Transitioning to Astro
+
+However, I quickly decided to move platforms. I wanted to include not just writings but also interesting things like [dnd-playground](https://github.com/bepyan/dnd-playground) (**crafts**). Although I was eagerly using `Svelte` at work and wanted to tinker with it, `Next.js` focused on `React`, making it challenging to handle code in various languages.
+
+Then, a colleague introduced me to [`Astro`](https://astro.build/).
+
+- Optimized for **content delivery**, it's just fast.
+- Framework-level support for `markdown` settings.
+- More intuitive handling of `html`.
+- Easy integration of different languages through [`Astro Islands`](https://docs.astro.build/en/concepts/islands/).
+
+I thought, **"This is it."** It felt like the pinnacle of `MPA`. If Brunch were to be migrated to a new framework, Astro seemed highly appealing. ~Though that day might never come.~
+
+Thus, the work began, and by September and October, the blog was newly revamped. I plan to write a separate post about this experience.
+
+That's how the [Craft](https://bepyan.me/craft) section was added to the blog.
+Additionally, I used the trending [`bun`](https://bun.sh/package-manager) as the package manager for the first time. It was noticeably fast.
+
+https://bepyan-me-v2.vercel.app/
+
+Furthermore, I added my philosophy and details about the post layout to the [example post](/post/example).
+
+## Finally Purchasing a Domain
+
+I bought the domain from [Gabia](https://www.gabia.com/). Compared to other sites, it seemed cheaper and the UI cleaner. I paid 70,000 won for 3 years, considering it like buying a jacket.
+
+https://bepyan.me/
+
+Honestly, I was a bit scared to connect a service to a domain for the first time.
+But `vercel` was a godsend.
+Just pasting the DNS info immediately connected the domain.
+
+## In Conclusion
+
+Maintaining a technical blog really seems impossible without true love for it. I must continually confront my feelings to maintain this affection. "What do you want to do with your blog?"

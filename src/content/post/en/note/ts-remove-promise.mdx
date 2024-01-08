@@ -1,0 +1,80 @@
+---
+title: '(TS) Removing Promise from a Type'
+description: ''
+date: 2022-12-30 23:51:35
+draft: false
+tags:
+  - typescript
+---
+
+Handling `Promise` types in TypeScript can be cumbersome when dealing with asynchronous code. In such cases, using the `Awaited` type can be quite useful.
+
+## Awaited
+
+`Awaited` is one of the new utility types introduced in [TypeScript version 4.5](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#the-awaited-type-and-promise-improvements).
+
+```ts
+// A = string
+type A = Awaited<Promise<string>>;
+```
+
+This allows you to easily extract the value returned by a Promise.
+
+## Handling Nested Promises
+
+The `Awaited` type is also useful for handling multiple nested Promises.
+
+```ts
+// B = number
+type B = Awaited<Promise<Promise<number>>>;
+```
+
+It helps to prevent unnecessary nesting when dealing with asynchronous code. Here’s a practical example:
+
+```ts
+async function fetchData(): Promise<Data> {
+  // Fetch data asynchronously
+}
+
+async function processData(): Promise<Result> {
+  const data = await fetchData();
+  // Process data and return the result
+}
+
+type Result = Awaited<ReturnType<typeof processData>>;
+```
+
+## Dealing with Ambiguous Promise Types
+
+`Awaited` is useful even in situations where different types are mixed.
+
+```ts
+// C = boolean | number
+type C = Awaited<boolean | Promise<number>>;
+```
+
+This allows for detailed automatic type inference related to `Promise.all`.
+
+```ts
+declare function MaybePromise<T>(value: T): T | Promise<T>;
+
+async function doSomething(): Promise<[number, number]> {
+  const result = await Promise.all([MaybePromise(100), MaybePromise(200)]);
+
+  // Below error occurs in versions below TypeScript 4.5.
+  // Error!
+  //
+  // [number | Promise<100>, number | Promise<200>]
+  //
+  // is not assignable to type
+  //
+  // [number, number]
+  return result;
+}
+```
+
+For more details, refer to this [GitHub issue](https://github.com/microsoft/TypeScript/pull/45350).
+
+## References
+
+https://stackoverflow.com/questions/48944552/typescript-how-to-unwrap-remove-promise-from-a-type

@@ -1,0 +1,80 @@
+---
+title: '(JS) Copying to Clipboard'
+description: ''
+date: 2022-09-19 20:15:23
+draft: false
+tags:
+  - javascript
+---
+
+You can copy text to the clipboard using two methods: `navigator.clipboard` and `document.execCommand`.
+
+## navigator.clipboard
+
+The [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API) provides the `Clipboard` object for easy access to related actions.
+Note that ~IE is not supported~, and [Safari compatibility starts from 13.4](https://caniuse.com/mdn-api_navigator_clipboard).
+
+```tsx {3}
+const copyToClipboard = async (url = window.document.location.href) => {
+  try {
+    await window.navigator.clipboard.writeText(url);
+    alert('Link copied to clipboard.');
+  } catch (e) {
+    console.error(e);
+    alert('Failed to copy to clipboard.');
+  }
+};
+```
+
+`writeText` is actually a convenience wrapper around `write`.
+You can also copy images using `blob` and `ClipboardItem`.
+
+```js
+const copyImageToClipboard = async (imgURL) => {
+  try {
+    const data = await fetch(imgURL);
+    const blob = await data.blob();
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [blob.type]: blob,
+      }),
+    ]);
+    alert('Image copied to clipboard.');
+  } catch (err) {
+    console.error(e);
+    alert('Failed to copy to clipboard.');
+  }
+};
+```
+
+## document.execCommand
+
+This is one of the older web technologies and is currently [Deprecated](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
+However, modern browsers "still" support it, so its usage is not greatly hindered.
+
+```tsx {8}
+const copyToClipboard = (url = window.document.location.href) => {
+  let t = document.createElement('textarea');
+  t.style.display = 'none';
+  document.body.appendChild(t);
+  t.value = url;
+  t.select();
+
+  const result = document.execCommand('copy');
+  if (result === 'unsuccessful') {
+    alert('Link copied to clipboard.');
+  } else {
+    alert('Failed to copy to clipboard.');
+  }
+
+  document.body.removeChild(t);
+};
+```
+
+This method creates a `textarea` tag and triggers a keyboard `copy` event.
+Injecting a tag into the `body` might seem awkward, but since it is immediately removed, there are no issues with its use.
+
+## References
+
+- https://web.dev/i18n/ko/async-clipboard
+- https://sezzled.tistory.com/138

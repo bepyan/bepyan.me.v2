@@ -1,0 +1,25 @@
+---
+import BaseHeader from '~/components/base-header.astro';
+import BaseNav from '~/components/base-nav';
+import { GiscusSection } from '~/components/giscus';
+import type { Language } from '~/i18n/ui';
+import Main from '~/layouts/main.astro';
+
+import { App } from './app';
+
+const lang: Language = 'en';
+
+const title = 'r3f bubble';
+const description = 'simple example of react-tree-fiber with rapier';
+---
+
+<Main {lang} seo={{ title, description }}>
+  <BaseNav href="/craft" client:visible />
+  <BaseHeader {title} noI18n>
+    <p class="text-sm text-second">{description}</p>
+  </BaseHeader>
+  <div class="h-96 w-full max-w-content">
+    <App client:load />
+  </div>
+  <GiscusSection className="mx-auto mt-20" {lang} client:idle />
+</Main>

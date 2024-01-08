@@ -16,7 +16,7 @@
     "*.mdx": "markdown"
   },
   "css.lint.unknownAtRules": "ignore",
-  "cSpell.words": ["metalness", "Pretendard"],
+  "cSpell.words": ["Pretendard"],
   "pasteImage.defaultName": "YYMMDD-HHmmss",
   "pasteImage.basePath": "${projectRoot}/public",
   "pasteImage.path": "${projectRoot}/public/img/${currentFileNameWithoutExt}",

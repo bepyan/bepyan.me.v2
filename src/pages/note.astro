@@ -23,15 +23,16 @@ const yearList = Object.entries(
 ).sort(([yearA], [yearB]) => +yearB - +yearA);
 
 const title = t('nav.note');
+const description = t('nav.note.desc');
 ---
 
-<Main seo={{ title }} class="font-serif">
+<Main seo={{ title, description }} class="font-serif">
   <BaseNav href={p('/')} client:visible />
-  <BaseHeader {title} />
+  <BaseHeader {title} {description} />
   <div
     data-animate
     data-animate-speed="slow"
-    class="group space-y-7 border-l pl-4"
+    class="group mt-14 space-y-7 border-l pl-4"
   >
     {
       yearList.map(([year, postList], index) => {

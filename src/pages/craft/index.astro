@@ -1,0 +1,35 @@
+---
+import BaseHeader from '~/components/base-header.astro';
+import BaseNav from '~/components/base-nav';
+import { useI18n } from '~/i18n/utils';
+import Main from '~/layouts/main.astro';
+
+const crafts = await Astro.glob('./**/index.astro');
+console.log(crafts);
+
+const { t } = useI18n(Astro.url);
+
+const title = t('nav.craft');
+const description = t('nav.craft.desc');
+---
+
+<Main
+  data-animate
+  data-animate-speed="slow"
+  seo={{ title, description }}
+  class="font-serif"
+>
+  <BaseNav href="/" client:visible />
+  <BaseHeader {title} />
+  <section class="my-14">
+    <div>
+      {
+        crafts.map((craft) => (
+          <div>
+            <a href={craft.url}>{craft.url}</a>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Main>

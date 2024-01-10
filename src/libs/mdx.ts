@@ -74,6 +74,7 @@ export const getPostCollection = async () => {
 export type PostInfo = {
   title: string;
   description: string;
+  /** /post/example */
   href: string;
   date: string | Date;
   lang: Language;

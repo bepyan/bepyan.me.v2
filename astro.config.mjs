@@ -39,7 +39,6 @@ export default defineConfig({
             behavior: 'wrap',
             properties: {
               className: ['anchor'],
-              ariaLabel: 'heading anchor',
             },
           },
         ],

@@ -77,7 +77,7 @@
 
   @media (max-width: 768px) {
     :root {
-      --page-top: 64px;
+      --page-top: 96px;
       --body-margin-left: max(16px, env(safe-area-inset-left));
       --body-margin-right: max(16px, env(safe-area-inset-right));
     }

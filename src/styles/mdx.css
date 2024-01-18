@@ -3,6 +3,7 @@
   max-width: max-content;
   color: var(--text-second);
   font-size: 16px;
+  font-weight: 300;
   letter-spacing: 0px;
   line-height: 1.75;
 }

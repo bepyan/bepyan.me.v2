@@ -11,3 +11,46 @@ export function Counter() {
     </button>
   );
 }
+
+export function PostPreview({ slug, title, wordCount }) {
+  return (
+    <section className="rounded-md bg-gray-100 px-4 py-2">
+      <h5 className="font-bold">
+        <a href={`/post/${slug}`} target="_blank">
+          {title}
+        </a>
+      </h5>
+      <i>{wordCount} 단어</i>
+    </section>
+  );
+}
+
+const blogList = [
+  { slug: '2023-settlement', title: '2023 연말정산', wordCount: 837 },
+  {
+    slug: 'svelte-compiler-operation',
+    title: 'Svelte Compiler는 어떻게 동작할까?',
+    wordCount: 1067,
+  },
+  { slug: 'life-map', title: '삶의 지도 (Maps of Life)', wordCount: 490 },
+  {
+    slug: 'redesign-blog',
+    title: '블로그를 새롭게 설계하면서',
+    wordCount: 499,
+  },
+  {
+    slug: 'example',
+    title: '글 예시',
+    wordCount: 473,
+  },
+];
+
+export function PostList() {
+  return (
+    <div className="mb-4 flex h-72 flex-col gap-2 overflow-y-scroll">
+      {blogList.map((props, i) => (
+        <PostPreview key={i} {...props} />
+      ))}
+    </div>
+  );
+}

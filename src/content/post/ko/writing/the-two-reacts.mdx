@@ -7,10 +7,7 @@ tags:
   - react
 ---
 
-import { readFile, readdir } from 'fs/promises';
-import matter from 'gray-matter';
-
-import { Counter } from './the-two-reacts.tsx';
+import { Counter, PostPreview, PostList } from './the-two-reacts.tsx';
 
 원문: https://overreacted.io/the-two-reacts/
 
@@ -86,20 +83,11 @@ React의 핵심 원리를 하나의 방정식으로 설명하는 것을 보셨�
 <PostPreview slug="svelte-compiler-operation" />
 ```
 
-export const PostPreview = async (slug) => {
-const fileContent = await readFile(`./src/content/post/ko/writing/${slug}`, 'utf8');
-const { data, content } = matter(fileContent);
-const wordCount = content.split(' ').filter(Boolean).length;
-
-return <section className="rounded-md bg-gray-100 px-4 py-2">
-
-  <h5 className="font-bold">
-    <a href={`/post/${slug.replace('.mdx', '')}`} target="_blank">{data.title}</a>
-  </h5>
-  <i>{wordCount} 단어</i>
-</section> }
-
-{await PostPreview("svelte-compiler-operation.mdx")}
+<PostPreview
+  slug="svelte-compiler-operation"
+  title="Svelte Compiler는 어떻게 동작할까?"
+  wordCount={1067}
+/>
 
 어떻게 이 페이지의 컴포넌트가 다른 페이지의 단어 수를 알고 있을까요?
 
@@ -140,14 +128,7 @@ export async function PostPreview({ slug }) {
 ```
 
 <div>
-{await (async() => {
-const writing = await readdir('./src/content/post/ko/writing', { withFileTypes: true });
-const dirs = writing.filter((file) => file.name.endsWith(".mdx"));
-const res = await Promise.all(dirs.map((dir) => PostPreview(dir.name)))
-
-return <div className="mb-4 flex h-72 flex-col gap-2 overflow-y-scroll">{res}</div>
-})()}
-
+  <PostList />
 </div>
 
 모든 포스트 폴더에 대해 `<PostPreview />`를 렌더링하기만 하면 됩니다:

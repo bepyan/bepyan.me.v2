@@ -76,7 +76,8 @@ export type PostInfo = {
   description: string;
   /** /post/example */
   href: string;
-  date: string | Date;
+  date: Date;
+  updatedDate?: Date;
   lang: Language;
   isExternal?: boolean;
 };
@@ -97,6 +98,7 @@ export const getPostInfoList = async (
       description: post.data.description,
       href: `/post/${resolveSlug(post.slug)}`,
       date: post.data.date,
+      updatedDate: post.data.updatedDate,
       lang: getLangFromSlug(post.slug),
     }));
 };
@@ -108,7 +110,7 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
       title: post.title,
       description: post.description,
       href: post.link,
-      date: post.date,
+      date: new Date(post.date),
       isExternal: true,
       lang: getLangFromSlug(post.link),
     })),

@@ -1,6 +1,5 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -15,15 +14,6 @@ import remarkGfm from 'remark-gfm';
 export default defineConfig({
   site: 'https://bepyan.me',
   integrations: [
-    sitemap({
-      i18n: {
-        defaultLocale: 'ko',
-        locales: {
-          ko: 'ko',
-          en: 'en',
-        },
-      },
-    }),
     tailwind({
       applyBaseStyles: false,
     }),

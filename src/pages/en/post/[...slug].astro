@@ -1,7 +1,4 @@
 ---
-import { type CollectionEntry } from 'astro:content';
-
-import type { Language } from '~/i18n/ui';
 import { getLangFromSlug } from '~/i18n/utils';
 import PostLayout from '~/layouts/post-layout.astro';
 import { getPostCollection, isNote, isWriting, resolveSlug } from '~/libs/mdx';
@@ -22,7 +19,7 @@ export async function getStaticPaths() {
       return {
         params: { slug: resolveSlug(post.slug) },
         props: {
-          lang: 'en',
+          lang: 'en' as const,
           post,
           prevPost: postList[postIndex + 1],
           nextPost: postList[postIndex - 1],
@@ -31,12 +28,7 @@ export async function getStaticPaths() {
     });
 }
 
-type Props = {
-  lang: Language;
-  post: CollectionEntry<'post'>;
-  prevPost: CollectionEntry<'post'>;
-  nextPost: CollectionEntry<'post'>;
-};
+type Props = Awaited<ReturnType<typeof getStaticPaths>>[number]['props'];
 ---
 
 <PostLayout {...Astro.props} />

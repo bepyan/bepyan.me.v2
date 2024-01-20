@@ -25,9 +25,10 @@ export type Props = {
   post: CollectionEntry<'post'>;
   prevPost: CollectionEntry<'post'>;
   nextPost: CollectionEntry<'post'>;
+  noI18n?: boolean;
 };
 
-const { lang, post, prevPost, nextPost } = Astro.props;
+const { lang, post, prevPost, nextPost, noI18n } = Astro.props;
 
 const p = useTranslatedPath(lang);
 
@@ -47,7 +48,7 @@ const toc = parseToc(post.body);
       client:load
     />
   </BaseNav>
-  <BaseHeader {title}>
+  <BaseHeader {title} {noI18n}>
     <time class="text-sm text-second">
       {format(date, 'MMM dd, yyyy')}
     </time>

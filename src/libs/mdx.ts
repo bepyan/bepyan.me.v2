@@ -52,16 +52,11 @@ export const sortCollectionDateAsc = (
 /**
  * 글 경로 조정
  * @example ko/note/svelte-useEffect -> svelte-useEffect
- * @example en/note/svelte-useEffect -> en/svelte-useEffect
+ * @example en/note/svelte-useEffect -> svelte-useEffect
  */
 export const resolveSlug = (slug: string) => {
-  let result = slug.replace('/writing', '').replace('/note', '');
-
-  if (slug.startsWith('ko/')) {
-    result = result.replace('ko/', '');
-  }
-
-  return result;
+  const [_lang, _type, ...slugList] = slug.split('/');
+  return slugList.join('/');
 };
 
 /** 전체 글 정보 */
@@ -74,8 +69,10 @@ export const getPostCollection = async () => {
 export type PostInfo = {
   title: string;
   description: string;
+  /** /post/example */
   href: string;
-  date: string | Date;
+  date: Date;
+  updatedDate?: Date;
   lang: Language;
   isExternal?: boolean;
 };
@@ -96,6 +93,7 @@ export const getPostInfoList = async (
       description: post.data.description,
       href: `/post/${resolveSlug(post.slug)}`,
       date: post.data.date,
+      updatedDate: post.data.updatedDate,
       lang: getLangFromSlug(post.slug),
     }));
 };
@@ -107,7 +105,7 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
       title: post.title,
       description: post.description,
       href: post.link,
-      date: post.date,
+      date: new Date(post.date),
       isExternal: true,
       lang: getLangFromSlug(post.link),
     })),

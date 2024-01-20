@@ -5,10 +5,9 @@ import { getPostCollection, isNote, isWriting, resolveSlug } from '~/libs/mdx';
 
 export async function getStaticPaths() {
   const posts = await getPostCollection();
-  const enPosts = posts.filter((post) => getLangFromSlug(post.slug) === 'en');
 
   return posts
-    .filter((post) => getLangFromSlug(post.slug) === 'ko')
+    .filter((post) => getLangFromSlug(post.slug) === 'en')
     .map((post, _, list) => {
       const postList = list.filter((item) => {
         if (isWriting(post)) return isWriting(item);
@@ -20,13 +19,10 @@ export async function getStaticPaths() {
       return {
         params: { slug: resolveSlug(post.slug) },
         props: {
-          lang: 'ko' as const,
+          lang: 'en' as const,
           post,
           prevPost: postList[postIndex + 1],
           nextPost: postList[postIndex - 1],
-          noI18n: enPosts.every(
-            (enPost) => resolveSlug(enPost.slug) !== resolveSlug(post.slug),
-          ),
         },
       };
     });

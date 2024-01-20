@@ -52,16 +52,11 @@ export const sortCollectionDateAsc = (
 /**
  * 글 경로 조정
  * @example ko/note/svelte-useEffect -> svelte-useEffect
- * @example en/note/svelte-useEffect -> en/svelte-useEffect
+ * @example en/note/svelte-useEffect -> svelte-useEffect
  */
 export const resolveSlug = (slug: string) => {
-  let result = slug.replace('/writing', '').replace('/note', '');
-
-  if (slug.startsWith('ko/')) {
-    result = result.replace('ko/', '');
-  }
-
-  return result;
+  const [_lang, _type, ...slugList] = slug.split('/');
+  return slugList.join('/');
 };
 
 /** 전체 글 정보 */

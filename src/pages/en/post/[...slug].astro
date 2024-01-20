@@ -10,7 +10,7 @@ export async function getStaticPaths() {
   const posts = await getPostCollection();
 
   return posts
-    .filter((post) => getLangFromSlug(post.slug) === 'ko')
+    .filter((post) => getLangFromSlug(post.slug) === 'en')
     .map((post, _, list) => {
       const postList = list.filter((item) => {
         if (isWriting(post)) return isWriting(item);
@@ -22,7 +22,7 @@ export async function getStaticPaths() {
       return {
         params: { slug: resolveSlug(post.slug) },
         props: {
-          lang: 'ko',
+          lang: 'en',
           post,
           prevPost: postList[postIndex + 1],
           nextPost: postList[postIndex - 1],

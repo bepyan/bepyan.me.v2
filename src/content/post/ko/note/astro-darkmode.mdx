@@ -1,0 +1,284 @@
+---
+title: '(Astro) 다크모드 적용하기'
+description: ''
+date: 2024-01-25 11:21:57
+draft: true
+tags:
+  - astro
+  - darkmode
+---
+
+import ThemeToggle from "./src/components/theme-toggle.tsx"
+
+## 들어가면서
+
+블로그 같이 사용자에게 편안한 환경을 제공하는 것이 중요한 페이지의 경우 다크모드를 많이 지원합니다.
+Astro에서는 다크모드를 어떻게 적용하면 좋을지 같이 한번 살펴 보도록 합시다.
+
+우선 페이지에 다크모드를 적용하는 방법이 여러가지 있습니다.
+본 글은 아래 스펙으로 진행될 것이며, 자세한 전략은 [다크모드, 더 프로처럼 활용하기](https://bepyan.github.io/blog/2023/darkmode)을 참고 부탁드립니다.
+
+- tailwind를 통해서 스타일을 적용한다.
+- 다크모드일 땐 `<body>`에 `dark` 클래스를 추가한다.
+- light, dark, system 3가지 테마 상태를 지원한다.
+  - system의 경우 사용자의 기기 테마를 적용한다.
+- 현 테마 상태를 `localStage`에 저장한다.
+  - 페이지에 새로 접속할시 마지막 설정한 테마가 적용된다.
+- 테마 선택 드롭다운 버튼을 지원한다.
+
+## tailwind 테마 세팅
+
+tailwind를 사용하면 손쉽게 다크모드 스타일을 적용할 수 있습니다.
+
+TODO: tailwind darkMode 옵션 소개
+
+```js {3} title="tailwind.config.cjs"
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: ['class'],
+  // ...
+};
+```
+
+TODO: tailwind + css variable 소개
+
+이제 `dark:text-white` 클래스를 활용하여 다크모드 텍스트의 색상을 변경할 수 있죠.
+하지만 매번 `dark:`를 붙이는 일은 상당히 번거로운 일 입니다. 
+
+CSS variable를 활용하면 이를 해결할 수 있음.
+as-is: `text-gray-900 dark:text-white` 
+to-be: `text-heading`
+
+```css title="global.css"
+@layer base {
+  :root {
+    /* ... */
+    --gray-900: #000000;
+    --heading: var(--gray-900);
+  }
+  .dark {
+    /* ... */
+    --gray-900: #fff;
+    --heading: var(--gray-900);
+  }
+}
+```
+
+```js title="tailwind.config.cjs"
+module.exports = {
+  // ...
+  theme: {
+    colors: {
+      gray: {
+        // ...
+        900: 'var(--gray-900)',
+      },
+    },
+    extend: {
+      textColor: {
+        heading: 'var(--heading)',
+        // ...
+      },
+    },
+  },
+};
+```
+
+## 초기 테마 상태 적용
+
+화면이 그리기 전에 어떤 테마를 그릴지 알아야합니다.
+그렇지 않으면 화면 깜빡임 현상을 유발하게 됩니다.
+
+스크립트를 `<head>` 최하단에 배치합니다.
+
+```html {4}
+<html>
+  <head>
+    ...
+    <ThemeScript />
+  </head>
+  <body>
+    ...
+  </body>
+</html>
+```
+
+TODO: `Astro`에서 인라인 스크립트를 작성하는 방법
+TODO: `script is:inline`의 의미
+
+```astro title="theme-script.astro" /is:inline/
+<script is:inline>
+  ...
+</script>
+```
+
+TODO: window.matchMedia
+TODO: `document.documentElement`의 의미
+TODO: 조사 localStorage가 undefined일 경우가 있나?
+
+```astro title="theme-script.astro" /window.matchMedia/
+<script is:inline>
+  const theme = (() => {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  })();
+
+  if (theme === 'light') {
+    document.documentElement.classList.remove('dark');
+  } else {
+    document.documentElement.classList.add('dark');
+  }
+</script>
+```
+
+TODO: 해당 스크립트는 head에 배치하기 때문에, 최대한 필요한 기능만 간결하게 작성하는 것이 포인트.
+TODO: system에 따라 테마가 적용되는 것은 페이지 스크립트까지 로드된 이후에 실행하는 것이 마땅함.
+
+## 테마 선택 드롭다운 버튼 만들기
+
+우선 dark, light 모드를 선택하는 드롭다운 버튼을 만들어 보겠습니다.
+드롭다운 컴포넌트의 경우 [shadcn-ui]()를 사용했습니다.
+
+TODO: react 환경 세팅은 astro 공식 가이드를 참고
+
+```tsx title="components/theme-toggle.tsx"
+import { useEffect, useState } from 'react';
+
+import { Button } from '~/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
+
+import { MoonIcon, SunIcon } from './ui/icons';
+
+export default function ThemeToggle() {
+  const [theme, setTheme] = useState<string>();
+
+  useEffect(() => {
+    setTheme(localStorage.getItem('theme') ?? 'system');
+  }, []);
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', theme);
+    } else if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', theme);
+    }
+  }, [theme]);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <SunIcon className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <MoonIcon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setTheme('light')}>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
+          Dark
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+TODO: Astro에서 아주 중요한 `client:load`
+
+```astro /client:load/
+---
+import ThemeToggle from './theme-toggle';
+---
+
+<ThemeToggle client:load />
+```
+
+## system 테마 적용
+
+TODO: `window.matchMedia`
+
+```tsx title="components/theme-toggle.tsx" /window.matchMedia/
+export default function ThemeToggle() {
+  // ...
+
+  const listenDarkMode = () => {
+    const handle = (query: { matches: boolean }) => {
+      if (query.matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', handle)
+    handle(mediaQuery);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handle);
+    };
+  };
+
+  useEffect(() => {
+    // ...
+    if (theme === 'system') {
+      localStorage.removeItem('theme');
+      return listenDarkMode();
+    }
+  }, [theme]);
+
+  return (
+    // ...
+    <DropdownMenuItem onClick={() => setTheme('system')}>
+      System
+    </DropdownMenuItem>
+  );
+}
+```
+
+TODO: addEventListener 지원범위 이슈
+
+```tsx
+const listenDarkMode = () => {
+  //... 
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const hasEventListener = !!mediaQuery.addEventListener;
+
+  hasEventListener
+    ? mediaQuery.addEventListener('change', handle)
+    : mediaQuery.addListener(handle);
+  handle(mediaQuery);
+
+  return () => {
+    hasEventListener && mediaQuery.removeEventListener('change', handle);
+  };
+};
+```
+
+## 맺으면서
+
+Astro로 페이지에 다크모드를 적용하는 방법에 대해서 알아봤습니다.
+개인적으로 Next.js 보다 더 직관적으로 HTML를 다룰 수 있어서 좋았던 것 같습니다.
+
+<ThemeToggle client:load />
+
+다만 Astro 특유의 문법을 이해하지 못한다면 꽤나 골머리 때릴 것 같습니다.
+만약 개발하시게 된다면 `is:inline` `client:load`를 꼭 기억하시길 바랍니다.
+
+끝으로 추가로 알면 좋은 것들을 공유드리며 글을 마치겠습니다.
+TODO: Astro에서의 전역 상태 공유

@@ -1,50 +1,43 @@
 // import { changeGiscusTheme } from '~/components/giscus';
 import { persistentAtom } from '@nanostores/persistent';
-import { atom } from 'nanostores';
 
 import { changeGiscusTheme } from '~/components/giscus';
 
-/**
- * 웹사이트에 적용되는 Theme
- */
-export type Theme = 'light' | 'dark';
+export const THEME_MAP = {
+  light: 'light',
+  dark: 'dark',
+  system: undefined,
+} as const;
 
-export const $theme = atom<Theme>('light');
+export type ThemeKey = keyof typeof THEME_MAP;
+export type Theme = (typeof THEME_MAP)[ThemeKey];
+
+export const STORAGE_THEME_KEY = 'theme' as const;
+export const $theme = persistentAtom<Theme>(
+  STORAGE_THEME_KEY,
+  THEME_MAP.system,
+);
 
 export const initThemeSubscribe = () => {
-  return $theme.subscribe((theme) => {
-    if (theme === 'dark') {
+  const applyTheme = (theme: Theme) => {
+    if (theme === THEME_MAP.dark) {
       changeGiscusTheme('dark');
       document.documentElement.classList.add('dark');
-    } else if (theme === 'light') {
+    } else if (theme === THEME_MAP.light) {
       changeGiscusTheme('light');
       document.documentElement.classList.remove('dark');
     }
-  });
-};
+  };
 
-/**
- * 사용자가 선택하는 Theme
- */
-export type UserTheme = 'light' | 'dark' | 'system';
-
-export const USER_THEME_STORAGE_KEY = 'user_theme' as const;
-
-export const $userTheme = persistentAtom<UserTheme>(
-  USER_THEME_STORAGE_KEY,
-  'system',
-);
-
-export const initUserThemeSubscribe = () => {
-  $userTheme.subscribe((userTheme) => {
-    const setTheme = $theme.set;
-
-    if (userTheme === 'system') {
+  return $theme.subscribe((theme) => {
+    if (theme !== THEME_MAP.system) {
+      applyTheme(theme);
+    } else {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const hasEventListener = !!mediaQuery.addEventListener;
 
       const handle = (query: { matches: boolean }) => {
-        setTheme(query.matches ? 'dark' : 'light');
+        applyTheme(query.matches ? 'dark' : 'light');
       };
 
       hasEventListener
@@ -57,8 +50,6 @@ export const initUserThemeSubscribe = () => {
           ? mediaQuery.removeEventListener('change', handle)
           : mediaQuery.removeListener(handle);
       };
-    } else {
-      setTheme(userTheme);
     }
   });
 };

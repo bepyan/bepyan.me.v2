@@ -7,12 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { $userTheme } from '~/libs/stores/theme';
+import { $theme, THEME_MAP } from '~/libs/stores/theme';
 
 import { DotIcon, MoonIcon, SunIcon } from './ui/icons';
 
 export default function ThemeToggleStore() {
-  const userTheme = useStore($userTheme);
+  const theme = useStore($theme);
 
   return (
     <DropdownMenu>
@@ -26,24 +26,24 @@ export default function ThemeToggleStore() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           className="justify-between"
-          onClick={() => $userTheme.set('light')}
+          onClick={() => $theme.set(THEME_MAP.light)}
         >
           Light
-          {userTheme === 'light' && <DotIcon />}
+          {theme === THEME_MAP.light && <DotIcon />}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="justify-between"
-          onClick={() => $userTheme.set('dark')}
+          onClick={() => $theme.set(THEME_MAP.dark)}
         >
           Dark
-          {userTheme === 'dark' && <DotIcon />}
+          {theme === THEME_MAP.dark && <DotIcon />}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="justify-between"
-          onClick={() => $userTheme.set('system')}
+          onClick={() => $theme.set(THEME_MAP.system)}
         >
           System
-          {userTheme === 'system' && <DotIcon />}
+          {theme === THEME_MAP.system && <DotIcon />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useStore } from '@nanostores/react';
 
-import { changeGiscusTheme } from '~/components/giscus';
 import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
@@ -8,57 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
+import { $userTheme } from '~/libs/stores/theme';
 
 import { DotIcon, MoonIcon, SunIcon } from './ui/icons';
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState<string>();
-
-  const changeTheme = (theme: 'light' | 'dark') => {
-    if (theme === 'dark') {
-      changeGiscusTheme('dark');
-      document.documentElement.classList.add('dark');
-    } else {
-      changeGiscusTheme('light');
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  const listenDarkMode = () => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const handle = (query: { matches: boolean }) => {
-      changeTheme(query.matches ? 'dark' : 'light');
-    };
-
-    const hasEventListener = !!mediaQuery.addEventListener;
-
-    hasEventListener
-      ? mediaQuery.addEventListener('change', handle)
-      : mediaQuery.addListener(handle);
-    handle(mediaQuery);
-
-    return () => {
-      hasEventListener && mediaQuery.removeEventListener('change', handle);
-    };
-  };
-
-  useEffect(() => {
-    setTheme(localStorage.getItem('theme') ?? 'system');
-  }, []);
-
-  useEffect(() => {
-    if (theme === 'light') {
-      changeTheme('light');
-      localStorage.setItem('theme', theme);
-    } else if (theme === 'dark') {
-      changeTheme('dark');
-      localStorage.setItem('theme', theme);
-    } else if (theme === 'system') {
-      localStorage.removeItem('theme');
-      return listenDarkMode();
-    }
-  }, [theme]);
+export default function ThemeToggleStore() {
+  const userTheme = useStore($userTheme);
 
   return (
     <DropdownMenu>
@@ -72,24 +26,24 @@ export default function ThemeToggle() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           className="justify-between"
-          onClick={() => setTheme('light')}
+          onClick={() => $userTheme.set('light')}
         >
           Light
-          {theme === 'light' && <DotIcon />}
+          {userTheme === 'light' && <DotIcon />}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="justify-between"
-          onClick={() => setTheme('dark')}
+          onClick={() => $userTheme.set('dark')}
         >
           Dark
-          {theme === 'dark' && <DotIcon />}
+          {userTheme === 'dark' && <DotIcon />}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="justify-between"
-          onClick={() => setTheme('system')}
+          onClick={() => $userTheme.set('system')}
         >
           System
-          {theme === 'system' && <DotIcon />}
+          {userTheme === 'system' && <DotIcon />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

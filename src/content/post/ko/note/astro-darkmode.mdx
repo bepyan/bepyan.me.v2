@@ -8,29 +8,23 @@ tags:
   - darkmode
 ---
 
-import ThemeToggle from "./src/components/theme-toggle.tsx"
-
 ## 들어가면서
 
-블로그 같이 사용자에게 편안한 환경을 제공하는 것이 중요한 페이지의 경우 다크모드를 많이 지원합니다.
-Astro에서는 다크모드를 어떻게 적용하면 좋을지 같이 한번 살펴 보도록 합시다.
+블로그 같이 사용자에게 편안한 환경을 제공하는 것이 중요한 페이지의 경우 다크모드를 많이 지원합니다. Astro에서는 다크모드를 어떻게 적용하면 좋을지 같이 한번 살펴 보도록 합시다.
 
-우선 페이지에 다크모드를 적용하는 방법이 여러가지 있습니다.
+페이지에 다크모드를 적용하는 방법이 여러가지 있습니다.
 본 글은 아래 스펙으로 진행될 것이며, 자세한 전략은 [다크모드, 더 프로처럼 활용하기](https://bepyan.github.io/blog/2023/darkmode)을 참고 부탁드립니다.
 
 - tailwind를 통해서 스타일을 적용한다.
+- 다크모드 선택 드롭다운 버튼을 지원한다.
 - 다크모드일 땐 `<body>`에 `dark` 클래스를 추가한다.
-- light, dark, system 3가지 테마 상태를 지원한다.
-  - system의 경우 사용자의 기기 테마를 적용한다.
-- 현 테마 상태를 `localStage`에 저장한다.
-  - 페이지에 새로 접속할시 마지막 설정한 테마가 적용된다.
-- 테마 선택 드롭다운 버튼을 지원한다.
+- 현 테마 상태를 `localStage`에 저장되고 페이지에 새로 접속시 마지막 설정한 테마가 적용된다.
 
-## tailwind 테마 세팅
+## tailwind 세팅
 
 tailwind를 사용하면 손쉽게 다크모드 스타일을 적용할 수 있습니다.
 
-TODO: tailwind darkMode 옵션 소개
+tailwind 설정에서 `class strategy`를 적용하여 `.dark` 클래스 하위로 다른 스타일이 적용되도록 합니다. 그럼 저희는 다크모드일 때 `<html>`, `<body>` 같은 최상위 태그에 `.dark` 클래스를 추가하면 페이지에 다크모드가 적용됩니다.
 
 ```js {3} title="tailwind.config.cjs"
 /** @type {import('tailwindcss').Config} */
@@ -40,115 +34,17 @@ module.exports = {
 };
 ```
 
-TODO: tailwind + css variable 소개
+자세한 내용은 [tailwind 공식문서](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually)를 참고 바랍니다.
 
-이제 `dark:text-white` 클래스를 활용하여 다크모드 텍스트의 색상을 변경할 수 있죠.
-하지만 매번 `dark:`를 붙이는 일은 상당히 번거로운 일 입니다. 
+## 다크모드 선택 드롭다운 만들기
 
-CSS variable를 활용하면 이를 해결할 수 있음.
-as-is: `text-gray-900 dark:text-white` 
-to-be: `text-heading`
+자, 그럼 사용자가 다크모드를 적용하려할 때 `<html>`에 `.dark` 클래스를 추가하면 될 것 같습니다.
 
-```css title="global.css"
-@layer base {
-  :root {
-    /* ... */
-    --gray-900: #000000;
-    --heading: var(--gray-900);
-  }
-  .dark {
-    /* ... */
-    --gray-900: #fff;
-    --heading: var(--gray-900);
-  }
-}
-```
+[shadcn-ui](https://ui.shadcn.com/)의 드롭다운을 활용해서, 사용자가 선택한 테마에 따라 `<html>`테그에 `.dark` 클래스를 추가되거나 제거하면 됩니다. 그리고 마지막 선택한 테마를 `localStorage`에 저장하여 페이지를 다시 접근하여도 테마가 유지되도록 미리 작업을 해둡시다.
 
-```js title="tailwind.config.cjs"
-module.exports = {
-  // ...
-  theme: {
-    colors: {
-      gray: {
-        // ...
-        900: 'var(--gray-900)',
-      },
-    },
-    extend: {
-      textColor: {
-        heading: 'var(--heading)',
-        // ...
-      },
-    },
-  },
-};
-```
+React 컴포넌트인 `theme-dropdown.tsx`를 만들 것이기 때문에, Astro에서의 React 환경 세팅은 [Astro 공식 가이드](https://docs.astro.build/en/guides/integrations-guide/react)를 참고해주세요.
 
-## 초기 테마 상태 적용
-
-화면이 그리기 전에 어떤 테마를 그릴지 알아야합니다.
-그렇지 않으면 화면 깜빡임 현상을 유발하게 됩니다.
-
-스크립트를 `<head>` 최하단에 배치합니다.
-
-```html {4}
-<html>
-  <head>
-    ...
-    <ThemeScript />
-  </head>
-  <body>
-    ...
-  </body>
-</html>
-```
-
-TODO: `Astro`에서 인라인 스크립트를 작성하는 방법
-TODO: `script is:inline`의 의미
-
-```astro title="theme-script.astro" /is:inline/
-<script is:inline>
-  ...
-</script>
-```
-
-TODO: window.matchMedia
-TODO: `document.documentElement`의 의미
-TODO: 조사 localStorage가 undefined일 경우가 있나?
-
-```astro title="theme-script.astro" /window.matchMedia/
-<script is:inline>
-  const theme = (() => {
-    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-      return localStorage.getItem('theme');
-    }
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    return 'light';
-  })();
-
-  if (theme === 'light') {
-    document.documentElement.classList.remove('dark');
-  } else {
-    document.documentElement.classList.add('dark');
-  }
-</script>
-```
-
-TODO: 해당 스크립트는 head에 배치하기 때문에, 최대한 필요한 기능만 간결하게 작성하는 것이 포인트.
-TODO: system에 따라 테마가 적용되는 것은 페이지 스크립트까지 로드된 이후에 실행하는 것이 마땅함.
-
-## 테마 선택 드롭다운 버튼 만들기
-
-우선 dark, light 모드를 선택하는 드롭다운 버튼을 만들어 보겠습니다.
-드롭다운 컴포넌트의 경우 [shadcn-ui]()를 사용했습니다.
-
-TODO: react 환경 세팅은 astro 공식 가이드를 참고
-
-```tsx title="components/theme-toggle.tsx"
-import { useEffect, useState } from 'react';
-
+```tsx title="components/theme-dropdown.tsx" {13,14,18,19}
 import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
@@ -159,22 +55,16 @@ import {
 
 import { MoonIcon, SunIcon } from './ui/icons';
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState<string>();
+export default function ThemeDropdown() {
+  const onClickLight = () => {
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+  };
 
-  useEffect(() => {
-    setTheme(localStorage.getItem('theme') ?? 'system');
-  }, []);
-
-  useEffect(() => {
-    if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', theme);
-    } else if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', theme);
-    }
-  }, [theme]);
+  const onClickDark = () => {
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  };
 
   return (
     <DropdownMenu>
@@ -186,99 +76,101 @@ export default function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Dark
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onClickLight}>Light</DropdownMenuItem>
+        <DropdownMenuItem onClick={onClickDark}>Dark</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 ```
 
-TODO: Astro에서 아주 중요한 `client:load`
+React 컴포넌트를 Astro에서 사용하는 방법은 간단합니다.
+그저 `import`하면 됩니다.
 
-```astro /client:load/
+다만 Astro 고유 문법인 [Client Directives](https://docs.astro.build/en/reference/directives-reference/#client-directives)을 제대로 확인하고 넘어가야 합니다. Astro는 기본적으로 HTML만을 렌더링해서 응답하기에, React 코드가 사용자에게 전달되지 않습니다. React 코드가 없는 버튼은 아무리 클릭해도 반응이 없는 깡통이 되지요. 그렇기에 Client Directives 설정을 통해서 페이지가 로드될 때 React 코드가 사용자 브라우저에서 실행되도록 해야 합니다.
+
+```astro /client:load/#v
 ---
-import ThemeToggle from './theme-toggle';
+import ThemeDropdown from './theme-dropdown';
 ---
 
-<ThemeToggle client:load />
+<ThemeDropdown client:load />
 ```
 
-## system 테마 적용
+설명이 길었지만, 컴포넌트 태그에 `client:load`를 추가하기만 하면 됩니다. 페이지가 로드될 때 바로 사용자와 상호작용 되도록 말이죠. 이렇게 선언하면 Astro가 알아서 해당 컴포넌트에 Hydration을 진행하여 의도대로 버튼이 동작하게 됩니다.
 
-TODO: `window.matchMedia`
+## 초기 테마 상태 적용
 
-```tsx title="components/theme-toggle.tsx" /window.matchMedia/
-export default function ThemeToggle() {
-  // ...
+사용자가 페이지를 새로고침하거나 다른 페이지로 이동할 때 설정한 테마가 유지되어야 할 것입니다.
 
-  const listenDarkMode = () => {
-    const handle = (query: { matches: boolean }) => {
-      if (query.matches) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
+서버 쿠키를 활용하는 방법도 있지만, 저희는 좀 더 단순하게 스크립트를 통해서 초기 테마 상태를 HTML에 적용하는 방법을 써봅시다. 이전에 사용자가 테마를 선택할 때 저장해뒀던 `localStorage`의 데이터를 활용하면 됩니다. 만약 아무런 설정값이 없다면 [`window.matchMedia`](https://developer.mozilla.org/ko/docs/Web/API/Window/matchMedia)를 활용하여 기기의 테마 정보가 적용되도록 했습니다.
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', handle)
-    handle(mediaQuery);
+```astro title="theme-head-script.astro"
+<script is:inline>
+  const theme = localStorage.getItem('theme');
 
-    return () => {
-      mediaQuery.removeEventListener('change', handle);
-    };
-  };
-
-  useEffect(() => {
-    // ...
-    if (theme === 'system') {
-      localStorage.removeItem('theme');
-      return listenDarkMode();
-    }
-  }, [theme]);
-
-  return (
-    // ...
-    <DropdownMenuItem onClick={() => setTheme('system')}>
-      System
-    </DropdownMenuItem>
-  );
-}
+  if (
+    theme === 'dark' ||
+    (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
+    document.documentElement.classList.add('dark');
+  }
+</script>
 ```
 
-TODO: addEventListener 지원범위 이슈
+위 스크립트가 브라우저에서 실행되면 되는데요. **스크립트의 실행시점**이 굉장히 중요합니다.
 
-```tsx
-const listenDarkMode = () => {
-  //... 
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  const hasEventListener = !!mediaQuery.addEventListener;
+결론부터 말하자면, **화면이 그려지기 전에 스크립트가 실행**되어야 합니다.
+브라우저가 페이지를 로드하기 전에 페이지에 어떤 테마를 적용할지 알아야합니다. 그렇지 않으면, 먼저 빈화면이 띄워지고 어떤 테마를 그릴지 확인하고 그리기에, 다크모드에서 화면 깜빡임 현상을 유발하게 됩니다.
 
-  hasEventListener
-    ? mediaQuery.addEventListener('change', handle)
-    : mediaQuery.addListener(handle);
-  handle(mediaQuery);
+아래와 같이 스크립트를 `<head>` 최하단에 배치하여 브라우저가 페이지를 로드하기 전에 스크립트를 실행시켜 이슈를 해결할 수 있습니다.
 
-  return () => {
-    hasEventListener && mediaQuery.removeEventListener('change', handle);
-  };
-};
+```astro {8}
+---
+import ThemeHeadScript from '~/components/theme-head-script.astro';
+---
+
+<html>
+  <head>
+    <!-- ... -->
+    <ThemeHeadScript />
+  </head>
+  <body>
+    <!-- ... -->
+  </body>
+</html>
+```
+
+여기서 `ThemeHeadScript`에는 **필수 동작만 수행할 점**을 주의해야 합니다.
+브라우저는 페이지 로드되기 전에 script 태그를 만나면, DOM 트리를 만드는 것을 중단하고 스크립트를 실행하기에, 따라서 스크립트가 무거울수록 페이지 로드 속도가 느려집니다.
+
+또한 Astro의 또 한가지 고유 문법 [**Script & Style Directives**](https://docs.astro.build/en/reference/directives-reference/#script--style-directives)도 주의해야 합니다.
+Astro는 기본적으로 스크립트를 모듈 번들(`type="module"`)로 추출합니다. 모듈 번들은 페이지가 로드되고 실행되기에 여전히 페이지 깜빡임 현상이 발생됩니다.
+
+Astro에서는 스크립트 태그에 [`is:inline`](https://docs.astro.build/en/reference/directives-reference/#isinline)를 선언하여 스크립트가 모듈 번들로 최적화되지 않고 HTML에 그대로 삽입되게 할 수 있습니다. 그럴경우 서버 사이드 데이터는 `define:vars`를 통해서 넘겨주면 되는 점도 같이 확인하시면 좋습니다.
+
+```astro title="theme-head-script.astro" /is:inline/#v
+---
+const theme = 'dark';
+---
+
+<script is:inline define:vars={{ theme }}>
+  console.log(theme);
+</script>
 ```
 
 ## 맺으면서
 
-Astro로 페이지에 다크모드를 적용하는 방법에 대해서 알아봤습니다.
-개인적으로 Next.js 보다 더 직관적으로 HTML를 다룰 수 있어서 좋았던 것 같습니다.
+이렇게 Astro로 페이지에 다크모드를 적용하는 방법에 대해서 알아봤습니다.
+개인적으로 Astro는 Next.js 보다 더 직관적으로 HTML를 다룰 수 있어서 좋았던 것 같습니다.
 
-<ThemeToggle client:load />
+다만 Astro의 고유 문법을 이해하지 못한다면 꽤나 골머리 때릴 것 같습니다.
+개발하시게 된다면 `client:load` `is:inline`을 꼭 기억하시길 바랍니다.
 
-다만 Astro 특유의 문법을 이해하지 못한다면 꽤나 골머리 때릴 것 같습니다.
-만약 개발하시게 된다면 `is:inline` `client:load`를 꼭 기억하시길 바랍니다.
+사실 다크모드를 적용하는 여정은 여기가 끝이 아닌데요.
 
-끝으로 추가로 알면 좋은 것들을 공유드리며 글을 마치겠습니다.
-TODO: Astro에서의 전역 상태 공유
+- 현 테마를 전역 상태로 여러 컴포넌트에 공유하기
+- 테마에 system 선택지 추가하기
+- ...
+
+다음 글에서 이를 더 알아봅시다.

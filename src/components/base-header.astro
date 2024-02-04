@@ -1,6 +1,6 @@
 ---
 import LanguageDropdown from './language-dropdown';
-import ThemeToggle from './theme-toggle';
+import ThemeDropdown from './theme-dropdown';
 
 type Props = {
   title: string;
@@ -17,7 +17,7 @@ const { title, description, noI18n } = props;
     <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
     <div class="ml-auto flex gap-1">
       {!noI18n && <LanguageDropdown client:load {url} />}
-      <ThemeToggle client:load />
+      <ThemeDropdown client:load />
     </div>
   </div>
   {description && <p class="text-sm text-second">{description}</p>}

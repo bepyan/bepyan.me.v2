@@ -1,7 +1,8 @@
 ---
 import BaseHead from '~/components/base-head.astro';
 import MonitoringScript from '~/components/monitoring-script.astro';
-import ThemeScript from '~/components/theme-script.astro';
+import ThemeFooterScript from '~/components/theme-footer-script.astro';
+import ThemeHeadScript from '~/components/theme-head-script.astro';
 import type { Language } from '~/i18n/ui';
 import { getLangFromUrl } from '~/i18n/utils';
 import type { SEOProps } from '~/types';
@@ -20,7 +21,7 @@ const lang = props.lang ?? getLangFromUrl(Astro.url);
 <html {lang}>
   <head>
     <BaseHead {...seo} />
-    <ThemeScript />
+    <ThemeHeadScript />
     <MonitoringScript />
   </head>
   <body>
@@ -30,5 +31,6 @@ const lang = props.lang ?? getLangFromUrl(Astro.url);
         <slot />
       </main>
     </div>
+    <ThemeFooterScript />
   </body>
 </html>

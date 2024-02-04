@@ -11,7 +11,7 @@ import { $theme, THEME_MAP } from '~/libs/stores/theme';
 
 import { DotIcon, MoonIcon, SunIcon } from './ui/icons';
 
-export default function ThemeToggleStore() {
+export default function ThemeDropdown() {
   const theme = useStore($theme);
 
   return (

@@ -145,7 +145,7 @@ import ThemeHeadScript from '~/components/theme-head-script.astro';
 여기서 `ThemeHeadScript`에는 **필수 동작만 수행할 점**을 주의해야 합니다.
 브라우저는 페이지 로드되기 전에 script 태그를 만나면, DOM 트리를 만드는 것을 중단하고 스크립트를 실행하기에, 따라서 스크립트가 무거울수록 페이지 로드 속도가 느려집니다.
 
-또한 Astro의 또 한가지 고유 문법 [**Script & Style Directives**](https://docs.astro.build/en/reference/directives-reference/#script--style-directives)도 주의해야 합니다.
+Astro의 고유 문법 [**Script & Style Directives**](https://docs.astro.build/en/reference/directives-reference/#script--style-directives)도 주의해야 합니다.
 Astro는 기본적으로 스크립트를 모듈 번들(`type="module"`)로 추출합니다. 모듈 번들은 페이지가 로드되고 실행되기에 여전히 페이지 깜빡임 현상이 발생됩니다.
 
 Astro에서는 스크립트 태그에 [`is:inline`](https://docs.astro.build/en/reference/directives-reference/#isinline)를 선언하여 스크립트가 모듈 번들로 최적화되지 않고 HTML에 그대로 삽입되게 할 수 있습니다. 그럴경우 서버 사이드 데이터는 `define:vars`를 통해서 넘겨주면 되는 점도 같이 확인하시면 좋습니다.

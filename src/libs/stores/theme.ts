@@ -1,5 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
-import { allTasks, onMount } from 'nanostores';
+import { onMount } from 'nanostores';
 
 import { changeGiscusTheme } from '~/components/giscus';
 
@@ -52,7 +52,8 @@ const initThemeSubscribe = () => {
   });
 };
 
-// to avoid SSR
-await allTasks();
-
-onMount(theme$, initThemeSubscribe);
+if (typeof window !== 'undefined') {
+  onMount(theme$, () => {
+    initThemeSubscribe();
+  });
+}

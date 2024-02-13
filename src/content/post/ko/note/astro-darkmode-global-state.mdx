@@ -100,17 +100,15 @@ const initThemeSubscribe = () => {
 ```
 
 TODO: `onMount`에 대한 설명
-TODO: `allTasks`에 대한 설명
+TODO: `allTasks`도 있지만 난해하기에 우회하도록 함
 
 ```ts title="libs/stores/theme.ts"
-import { allTasks, onMount } from 'nanostores';
+import { onMount } from 'nanostores';
 
 //...
-
-// to avoid SSR
-await allTasks();
-
-onMount(theme$, initThemeSubscribe);
+if (typeof window !== 'undefined') {
+  onMount(theme$, initThemeSubscribe);
+}
 ```
 
 TODO: 마법과 같은 동작을 신뢰할 수 없다면?

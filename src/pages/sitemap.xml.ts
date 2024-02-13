@@ -5,16 +5,18 @@ export async function GET() {
   const posts = await getPostInfoList('all');
 
   const renderUrl = (slug: string, hasEn = true) => {
-    const hreflang = hasEn
-      ? `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}/en${slug}" />`
-      : '';
+    let result = `<url><loc>${siteUrl}${slug}</loc></url>`;
 
-    return `<url><loc>${siteUrl}</loc>${hreflang}</url>`;
+    if (hasEn) {
+      result += `<url><loc>${siteUrl}/en${slug}</loc></url>`;
+    }
+
+    return result;
   };
 
   const result = `
   <?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     ${renderUrl('/')}
     ${renderUrl('/writing')}
     ${renderUrl('/note')} 

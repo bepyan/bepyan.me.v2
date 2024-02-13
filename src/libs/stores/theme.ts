@@ -1,4 +1,3 @@
-// import { changeGiscusTheme } from '~/components/giscus';
 import { persistentAtom } from '@nanostores/persistent';
 
 import { changeGiscusTheme } from '~/components/giscus';
@@ -10,16 +9,16 @@ export const THEME_MAP = {
 } as const;
 
 export type ThemeKey = keyof typeof THEME_MAP;
-export type Theme = (typeof THEME_MAP)[ThemeKey];
+export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
 
 export const STORAGE_THEME_KEY = 'theme' as const;
-export const $theme = persistentAtom<Theme>(
+export const theme$ = persistentAtom<ThemeValue>(
   STORAGE_THEME_KEY,
   THEME_MAP.system,
 );
 
 export const initThemeSubscribe = () => {
-  const applyTheme = (theme: Theme) => {
+  const applyTheme = (theme: ThemeValue) => {
     if (theme === THEME_MAP.dark) {
       changeGiscusTheme('dark');
       document.documentElement.classList.add('dark');
@@ -29,7 +28,7 @@ export const initThemeSubscribe = () => {
     }
   };
 
-  return $theme.subscribe((theme) => {
+  return theme$.subscribe((theme) => {
     if (theme !== THEME_MAP.system) {
       applyTheme(theme);
     } else {

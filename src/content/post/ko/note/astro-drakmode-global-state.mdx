@@ -1,0 +1,146 @@
+---
+title: '(Astro) 전역 상태를 곁들여 다크모드 관리하기'
+description: ''
+date: 2024-02-07 21:41:57
+draft: false
+tags:
+  - astro
+  - tailwind
+  - darkmode
+---
+
+지난 [(Astro) 다크모드 적용하기](./astro-global-state) 글에 이어서 Astro에 전역 상태를 곁들어 다크모드를 어떻게 적용하면 좋을지 살펴봅시다.
+
+- 현 테마를 전역 상태로 여러 컴포넌트에 공유하기
+- 테마에 system 선택지 추가하기
+
+## 상태 관리 라이브러리 - nanostores
+
+Astro의 매력 중의 하나는 React, Vue, Svelte, Solid 등 여러 웹 프레임워크를 사용할 수 있다는 점입니다. 하지만 다른 프레임워크의 컴포넌트가 같은 상태를 공유한다는 것은 꽤나 생소한 영역입니다.
+
+[Astro 공식문서]()에서 권장하는 전역 상태 관리 라이브러리 [nanostores](https://github.com/nanostores/nanostores?tab=readme-ov-file#atoms)를 활용 해봅시다.
+
+```shell
+bun add nanostores @nanostores/persistent @nanostores/react
+```
+
+TODO: `nanostores`애 대한 소개
+
+TODO: `@nanostores/persistent`에 대한 소개
+
+TODO: `@nanostores/react`에 대한 소개
+
+## 전역 상태 선언하기
+
+```ts title="libs/stores/theme.ts" {15-19}
+import { persistentAtom } from '@nanostores/persistent';
+
+import { changeGiscusTheme } from '~/components/giscus';
+
+export const THEME_MAP = {
+  light: 'light',
+  dark: 'dark',
+  system: undefined,
+} as const;
+
+export type ThemeKey = keyof typeof THEME_MAP;
+export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
+
+export const STORAGE_THEME_KEY = 'theme' as const;
+export const $theme = persistentAtom<ThemeValue>(
+  STORAGE_THEME_KEY,
+  THEME_MAP.system,
+);
+```
+
+## 전역 상태 구독하기
+
+TDOO: theme이 변경될 때 `<html>` 태그에 `.dark` 클리스를 추가하자.
+
+```ts title="libs/stores/theme.ts"
+// ...
+
+export const initThemeSubscribe = () => {
+  const applyTheme = (theme: ThemeValue) => {
+    if (theme === THEME_MAP.dark) {
+      document.documentElement.classList.add('dark');
+    } else if (theme === THEME_MAP.light) {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  return $theme.subscribe((theme) => {
+    if (theme !== THEME_MAP.system) {
+      applyTheme(theme);
+    } else {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const hasEventListener = !!mediaQuery.addEventListener;
+
+      const handle = (query: { matches: boolean }) => {
+        applyTheme(query.matches ? 'dark' : 'light');
+      };
+
+      hasEventListener
+        ? mediaQuery.addEventListener('change', handle)
+        : mediaQuery.addListener(handle);
+      handle(mediaQuery);
+
+      return () => {
+        hasEventListener
+          ? mediaQuery.removeEventListener('change', handle)
+          : mediaQuery.removeListener(handle);
+      };
+    }
+  });
+};
+```
+
+```astro title="theme-footer-script.astro"
+<script>
+  import { initThemeSubscribe } from '~/libs/stores/theme';
+
+  initThemeSubscribe();
+</script>
+```
+
+TODO: Astro에서 번들링 최적화 함
+
+```astro title="main.astro"
+---
+// ...
+import ThemeFooterScript from '~/components/theme-footer-script.astro';
+---
+
+<html>
+  <!-- ... -->
+  <body>
+    <!-- ... -->
+    <ThemeFooterScript />
+  </body>
+</html>
+```
+
+## React 컴포넌트에 전역 상태 구독하기
+
+```tsx title="theme-dropdown.tsx" {6, 13, 16}
+import { useStore } from '@nanostores/react';
+// ...
+import { THEME_MAP, theme$ } from '~/libs/stores/theme';
+
+export default function ThemeDropdown() {
+  const theme = useStore(theme$);
+
+  return (
+    <DropdownMenu>
+      {/* ... */}
+      <DropdownMenuItem
+        className="justify-between"
+        onClick={() => theme$.set(THEME_MAP.light)}
+      >
+        Light
+        {theme === THEME_MAP.light && <DotIcon />}
+      </DropdownMenuItem>
+    </DropdownMenu>
+  );
+}
+```

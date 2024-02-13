@@ -17,20 +17,24 @@ import ThemeDropdown from '~/components/theme-dropdown.tsx';
 
 지난 [(Astro) 다크모드 적용하기](./astro-darkmode) 글에 이어서 Astro에 전역 상태를 곁들어 다크모드를 어떻게 적용하면 좋을지 살펴봅시다.
 
-- 현 테마를 전역 상태로 여러 컴포넌트에 공유하기
+- 현 테마를 전역 상태로 관리하기
 - 테마에 system 선택지 추가하기
+- React, Svelte 컴포넌트에 전역 상태 구독하기
 
 ## 상태 관리 라이브러리 - nanostores
 
-Astro의 큰 매력 중의 하나는 React, Vue, Svelte, Solid 등 여러 웹 프레임워크를 같은 페이지에서 사용할 수 있는 점입니다. 하지만 다른 프레임워크의 컴포넌트가 같은 상태를 공유한다는 것은 꽤나 생소한 영역입니다.
+Astro의 큰 매력 중의 하나는 React, Vue, Svelte, Solid 등 여러 웹 프레임워크를 사용할 수 있는 점입니다. 하지만 다른 프레임워크의 컴포넌트가 같은 상태를 공유한다는 것은 꽤나 생소한 영역입니다.
 
-[Astro 공식문서](https://docs.astro.build/en/recipes/sharing-state/#_top)에서 권장하는 전역 상태 관리 라이브러리 [nanostores](https://github.com/nanostores/nanostores?tab=readme-ov-file#atoms)를 활용해 봅시다.
+[Astro 공식문서](https://docs.astro.build/en/recipes/sharing-state)에서 권장하는 전역 상태 관리 라이브러리 [nanostores](https://github.com/nanostores/nanostores#nano-stores)를 활용해 봅시다.
 
 ```shell
 bun add nanostores @nanostores/persistent @nanostores/react
 ```
 
 TODO: `nanostores`애 대한 소개
+
+- recoil, jotai과 비슷한 atomic store
+- 간편하고 깔쌈함
 
 TODO: `@nanostores/persistent`에 대한 소개
 
@@ -53,20 +57,22 @@ export type ThemeKey = keyof typeof THEME_MAP;
 export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
 
 export const STORAGE_THEME_KEY = 'theme' as const;
-export const $theme = persistentAtom<ThemeValue>(
+export const theme$ = persistentAtom<ThemeValue>(
   STORAGE_THEME_KEY,
   THEME_MAP.system,
 );
 ```
 
+TODO: `theme$`로 쓰는 이유, `$theme`를 쓰지 않는 이유
+
 ## 전역 상태 구독하기
 
-TDOO: theme이 변경될 때 `<html>` 태그에 `.dark` 클리스를 추가하자.
+TODO: theme이 변경될 때 `<html>` 태그에 `.dark` 클리스를 추가
 
 ```ts title="libs/stores/theme.ts"
 // ...
 
-export const initThemeSubscribe = () => {
+const initThemeSubscribe = () => {
   const applyTheme = (theme: ThemeValue) => {
     if (theme === THEME_MAP.dark) {
       document.documentElement.classList.add('dark');
@@ -75,31 +81,39 @@ export const initThemeSubscribe = () => {
     }
   };
 
-  return $theme.subscribe((theme) => {
+  const handleMediaQuery = (query: { matches: boolean }) => {
+    applyTheme(query.matches ? 'dark' : 'light');
+  };
+
+  theme$.subscribe((theme) => {
     if (theme !== THEME_MAP.system) {
       applyTheme(theme);
-    } else {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const hasEventListener = !!mediaQuery.addEventListener;
-
-      const handle = (query: { matches: boolean }) => {
-        applyTheme(query.matches ? 'dark' : 'light');
-      };
-
-      hasEventListener
-        ? mediaQuery.addEventListener('change', handle)
-        : mediaQuery.addListener(handle);
-      handle(mediaQuery);
-
-      return () => {
-        hasEventListener
-          ? mediaQuery.removeEventListener('change', handle)
-          : mediaQuery.removeListener(handle);
-      };
+      return;
     }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.removeEventListener('change', handleMediaQuery);
+    mediaQuery.addEventListener('change', handleMediaQuery);
+    handleMediaQuery(mediaQuery);
   });
 };
 ```
+
+TODO: `onMount`에 대한 설명
+TODO: `allTasks`에 대한 설명
+
+```ts title="libs/stores/theme.ts"
+import { allTasks, onMount } from 'nanostores';
+
+//...
+
+// to avoid SSR
+await allTasks();
+
+onMount(theme$, initThemeSubscribe);
+```
+
+TODO: 마법과 같은 동작을 신뢰할 수 없다면?
 
 ```astro title="theme-footer-script.astro"
 <script>
@@ -108,8 +122,6 @@ export const initThemeSubscribe = () => {
   initThemeSubscribe();
 </script>
 ```
-
-TODO: Astro에서 번들링 최적화 함
 
 ```astro title="main.astro"
 ---
@@ -126,7 +138,12 @@ import ThemeFooterScript from '~/components/theme-footer-script.astro';
 </html>
 ```
 
+TODO: Astro에서 번들링 최적화 함
+
 ## React
+
+TODO: `useStore`로 상태 리렌더링 적용
+TODO: `theme$.set`으로 상태 수정
 
 ```tsx title="theme-dropdown.tsx" {6, 13, 16}
 import { useStore } from '@nanostores/react';
@@ -154,6 +171,26 @@ export default function ThemeDropdown() {
 [코드 원본 보기](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/theme-dropdown.tsx)
 
 ## Svelte
+
+TODO: Astro에서 Svelte 세팅하는 법
+
+[@astrojs/svelte](https://docs.astro.build/ko/guides/integrations-guide/svelte/)
+
+```shell
+bun add svelte @astrojs/svelte
+```
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import svelte from '@astrojs/svelte';
+
+export default defineConfig({
+  // ...
+  integrations: [svelte()],
+});
+```
+
+TODO: 별다른 세팅없이 바로 svelte의 `reactive` 문법을 사용 가능
 
 ```svelte title="theme-dropdown.svelte"
 <script>

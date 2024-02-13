@@ -1,4 +1,5 @@
 import { persistentAtom } from '@nanostores/persistent';
+import { allTasks, onMount } from 'nanostores';
 
 import { changeGiscusTheme } from '~/components/giscus';
 
@@ -17,7 +18,7 @@ export const theme$ = persistentAtom<ThemeValue>(
   THEME_MAP.system,
 );
 
-export const initThemeSubscribe = () => {
+const initThemeSubscribe = () => {
   const applyTheme = (theme: ThemeValue) => {
     if (theme === THEME_MAP.dark) {
       changeGiscusTheme('dark');
@@ -28,27 +29,30 @@ export const initThemeSubscribe = () => {
     }
   };
 
-  return theme$.subscribe((theme) => {
+  const handleMediaQuery = (query: { matches: boolean }) => {
+    applyTheme(query.matches ? THEME_MAP.dark : THEME_MAP.light);
+  };
+
+  theme$.subscribe((theme) => {
     if (theme !== THEME_MAP.system) {
       applyTheme(theme);
-    } else {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const hasEventListener = !!mediaQuery.addEventListener;
-
-      const handle = (query: { matches: boolean }) => {
-        applyTheme(query.matches ? 'dark' : 'light');
-      };
-
-      hasEventListener
-        ? mediaQuery.addEventListener('change', handle)
-        : mediaQuery.addListener(handle);
-      handle(mediaQuery);
-
-      return () => {
-        hasEventListener
-          ? mediaQuery.removeEventListener('change', handle)
-          : mediaQuery.removeListener(handle);
-      };
+      return;
     }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    if (!!mediaQuery.addEventListener) {
+      mediaQuery.removeEventListener('change', handleMediaQuery);
+      mediaQuery.addEventListener('change', handleMediaQuery);
+    } else {
+      mediaQuery.removeListener(handleMediaQuery);
+      mediaQuery.addListener(handleMediaQuery);
+    }
+    handleMediaQuery(mediaQuery);
   });
 };
+
+// to avoid SSR
+await allTasks();
+
+onMount(theme$, initThemeSubscribe);

@@ -8,10 +8,10 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { DotIcon, MoonIcon, SunIcon } from '~/components/ui/icons';
-import { THEME_MAP, theme$, type ThemeKey } from '~/libs/stores/theme';
+import { THEME_MAP, type ThemeKey, themeStore } from '~/libs/stores/theme';
 
 export default function ThemeDropdown() {
-  const theme = useStore(theme$);
+  const theme = useStore(themeStore);
 
   return (
     <DropdownMenu>
@@ -29,7 +29,7 @@ export default function ThemeDropdown() {
             <DropdownMenuItem
               key={key}
               className="justify-between capitalize"
-              onClick={() => theme$.set(THEME_MAP[themeKey])}
+              onClick={() => themeStore.set(THEME_MAP[themeKey])}
             >
               {themeKey}
               {theme === THEME_MAP[themeKey] && <DotIcon />}

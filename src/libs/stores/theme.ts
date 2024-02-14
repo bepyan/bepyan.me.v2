@@ -13,12 +13,13 @@ export type ThemeKey = keyof typeof THEME_MAP;
 export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
 
 export const STORAGE_THEME_KEY = 'theme' as const;
-export const theme$ = persistentAtom<ThemeValue>(
+
+export const themeStore = persistentAtom<ThemeValue>(
   STORAGE_THEME_KEY,
   THEME_MAP.system,
 );
 
-const initThemeSubscribe = () => {
+const initThemeStoreSubscribe = () => {
   const applyTheme = (theme: ThemeValue) => {
     if (theme === THEME_MAP.dark) {
       changeGiscusTheme('dark');
@@ -33,7 +34,7 @@ const initThemeSubscribe = () => {
     applyTheme(query.matches ? THEME_MAP.dark : THEME_MAP.light);
   };
 
-  theme$.subscribe((theme) => {
+  themeStore.subscribe((theme) => {
     if (theme !== THEME_MAP.system) {
       applyTheme(theme);
       return;
@@ -53,7 +54,7 @@ const initThemeSubscribe = () => {
 };
 
 if (typeof window !== 'undefined') {
-  onMount(theme$, () => {
-    initThemeSubscribe();
+  onMount(themeStore, () => {
+    initThemeStoreSubscribe();
   });
 }

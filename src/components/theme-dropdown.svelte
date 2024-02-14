@@ -1,5 +1,5 @@
 <script>
-  import { THEME_MAP, theme$ } from '~/libs/stores/theme';
+  import { THEME_MAP, themeStore } from '~/libs/stores/theme';
   import { cn } from '~/libs/utils';
 
   let isDropdownOpen = false;
@@ -20,7 +20,7 @@
   };
 
   const handleItemClick = (theme) => {
-    $theme$ = theme;
+    $themeStore = theme;
     isDropdownOpen = false;
   };
 </script>
@@ -33,7 +33,7 @@
     class="h-9 w-16 rounded-md capitalize font-medium transition-color focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-200 hover:bg-selection hover:text-gray-900"
     on:click={handleDropdownClick}
   >
-    {THEME_MAP[$theme$] ?? 'system'}
+    {THEME_MAP[$themeStore] ?? 'system'}
   </button>
   <div
     class={cn(
@@ -45,7 +45,7 @@
       <button
         class={cn(
           'w-full text-left capitalize px-2 py-1.5 rounded-sm hover:bg-selection',
-          $theme$ === THEME_MAP[themeKey] && 'underline font-medium',
+          $themeStore === THEME_MAP[themeKey] && 'underline font-medium',
         )}
         on:click={() => handleItemClick(THEME_MAP[themeKey])}
       >

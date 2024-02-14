@@ -45,7 +45,7 @@ const description = t('nav.writing.desc');
                 return (
                   <li style={`--lv-wait: ${index};`}>
                     <a
-                      href={post.href}
+                      href={p(post.href)}
                       class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-60"
                       target={post.isExternal ? '_blank' : '_self'}
                     >

@@ -46,7 +46,7 @@ const description = t('nav.note.desc');
                 return (
                   <li style={`--start: ${index * 75}ms;`}>
                     <a
-                      href={post.href}
+                      href={p(post.href)}
                       class="flex items-center transition-opacity duration-300 hover:!opacity-100 group-hover:opacity-60"
                     >
                       <span class="text-heading">{post.title}</span>

@@ -15,17 +15,18 @@ tags:
 import ThemeDropdownSvelte from '~/components/theme-dropdown.svelte';
 import ThemeDropdown from '~/components/theme-dropdown.tsx';
 
-지난 [(Astro) 다크모드 적용하기](./astro-darkmode) 글에 이어서 Astro에 전역 상태를 곁들어 다크모드를 어떻게 적용하면 좋을지 살펴봅시다.
+지난 [(Astro) 다크모드 적용하기](./astro-darkmode) 글에 이어서, Astro에 전역 상태를 곁들어 다크모드를 어떻게 적용하면 좋을지 살펴봅시다. 아래 기능을 구현하게 될 점 참고 부탁드려요.
 
 - 현 테마를 전역 상태로 관리하기
-- 사용자 기기의 테마를 따라가는 system 테마 추가하기
 - 페이지를 새로고침하여도 상태가 유지되기
+- 사용자 기기의 테마를 따라가는 system 테마 추가하기
 - React, Svelte 컴포넌트에 전역 상태 구독하기
 
 ## Nano Stores
 
-Astro의 가장 큰 매력 중 하나는 React, Vue, Svelte, Solid 등 여러 웹 프레임워크를 사용할 수 있다는 점입니다. NextJS는 React만을 써야 하고 Nuxt는 Vue만을 써야 하기 때문이죠. 이러한 다양성은 프로젝트의 유연성을 향상할 수 있지만 다른 프레임워크간 같은 상태를 공유하는 새로운 도전 과제를 던져줍니다.
+Astro의 가장 큰 매력 중 하나는 React, Vue, Svelte, Solid 등 여러 웹 프레임워크를 사용할 수 있다는 점입니다. NextJS는 React만을 써야 하고 Nuxt는 Vue만을 써야 하기 때문이죠.
 
+그러나 이러한 다양성은 프로젝트의 유연성을 향상할 수 있지만, 다른 프레임워크간 같은 상태를 공유하는 새로운 도전 과제를 던져줍니다.
 다행히 [Astro 공식문서](https://docs.astro.build/en/recipes/sharing-state)에서 이에 적합한 상태 관리 라이브러리 [**Nano Stores**](https://github.com/nanostores/nanostores#nano-stores)를 소개해줍니다.
 
 [**Nano Stores**](https://github.com/nanostores/nanostores#nano-stores)는 이름대로 "**아주 작은 저장소**"입니다.

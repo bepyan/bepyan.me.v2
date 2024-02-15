@@ -1,5 +1,6 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
+import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -18,6 +19,7 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
     react(),
+    svelte(),
     mdx({
       syntaxHighlight: false,
       remarkPlugins: [remarkGfm, remarkBreaks],

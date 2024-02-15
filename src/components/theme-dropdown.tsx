@@ -7,12 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { $theme, THEME_MAP } from '~/libs/stores/theme';
-
-import { DotIcon, MoonIcon, SunIcon } from './ui/icons';
+import { DotIcon, MoonIcon, SunIcon } from '~/components/ui/icons';
+import { THEME_MAP, type ThemeKey, themeStore } from '~/libs/stores/theme';
 
 export default function ThemeDropdown() {
-  const theme = useStore($theme);
+  const theme = useStore(themeStore);
 
   return (
     <DropdownMenu>
@@ -24,27 +23,19 @@ export default function ThemeDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          className="justify-between"
-          onClick={() => $theme.set(THEME_MAP.light)}
-        >
-          Light
-          {theme === THEME_MAP.light && <DotIcon />}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="justify-between"
-          onClick={() => $theme.set(THEME_MAP.dark)}
-        >
-          Dark
-          {theme === THEME_MAP.dark && <DotIcon />}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="justify-between"
-          onClick={() => $theme.set(THEME_MAP.system)}
-        >
-          System
-          {theme === THEME_MAP.system && <DotIcon />}
-        </DropdownMenuItem>
+        {Object.keys(THEME_MAP).map((key) => {
+          const themeKey = key as ThemeKey;
+          return (
+            <DropdownMenuItem
+              key={key}
+              className="justify-between capitalize"
+              onClick={() => themeStore.set(THEME_MAP[themeKey])}
+            >
+              {themeKey}
+              {theme === THEME_MAP[themeKey] && <DotIcon />}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

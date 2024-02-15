@@ -1,5 +1,5 @@
-// import { changeGiscusTheme } from '~/components/giscus';
 import { persistentAtom } from '@nanostores/persistent';
+import { onMount } from 'nanostores';
 
 import { changeGiscusTheme } from '~/components/giscus';
 
@@ -10,16 +10,17 @@ export const THEME_MAP = {
 } as const;
 
 export type ThemeKey = keyof typeof THEME_MAP;
-export type Theme = (typeof THEME_MAP)[ThemeKey];
+export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
 
 export const STORAGE_THEME_KEY = 'theme' as const;
-export const $theme = persistentAtom<Theme>(
+
+export const themeStore = persistentAtom<ThemeValue>(
   STORAGE_THEME_KEY,
   THEME_MAP.system,
 );
 
-export const initThemeSubscribe = () => {
-  const applyTheme = (theme: Theme) => {
+const initThemeStoreSubscribe = () => {
+  const applyTheme = (theme: ThemeValue) => {
     if (theme === THEME_MAP.dark) {
       changeGiscusTheme('dark');
       document.documentElement.classList.add('dark');
@@ -29,27 +30,31 @@ export const initThemeSubscribe = () => {
     }
   };
 
-  return $theme.subscribe((theme) => {
+  const handleMediaQuery = (query: { matches: boolean }) => {
+    applyTheme(query.matches ? THEME_MAP.dark : THEME_MAP.light);
+  };
+
+  themeStore.subscribe((theme) => {
     if (theme !== THEME_MAP.system) {
       applyTheme(theme);
-    } else {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const hasEventListener = !!mediaQuery.addEventListener;
-
-      const handle = (query: { matches: boolean }) => {
-        applyTheme(query.matches ? 'dark' : 'light');
-      };
-
-      hasEventListener
-        ? mediaQuery.addEventListener('change', handle)
-        : mediaQuery.addListener(handle);
-      handle(mediaQuery);
-
-      return () => {
-        hasEventListener
-          ? mediaQuery.removeEventListener('change', handle)
-          : mediaQuery.removeListener(handle);
-      };
+      return;
     }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    if (!!mediaQuery.addEventListener) {
+      mediaQuery.removeEventListener('change', handleMediaQuery);
+      mediaQuery.addEventListener('change', handleMediaQuery);
+    } else {
+      mediaQuery.removeListener(handleMediaQuery);
+      mediaQuery.addListener(handleMediaQuery);
+    }
+    handleMediaQuery(mediaQuery);
   });
 };
+
+if (typeof window !== 'undefined') {
+  onMount(themeStore, () => {
+    initThemeStoreSubscribe();
+  });
+}

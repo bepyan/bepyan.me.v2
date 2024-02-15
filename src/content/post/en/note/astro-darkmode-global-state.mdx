@@ -1,0 +1,262 @@
+---
+title: '(Astro) Manage Dark Mode With Global State'
+description: 'Using Nano Stores share state across React and Svelte components in Astro.'
+date: 2024-02-07 21:41:57
+draft: false
+tags:
+  - astro
+  - nanostores
+  - global state
+  - react
+  - svelte
+  - darkmode
+---
+
+import ThemeDropdownSvelte from '~/components/theme-dropdown.svelte';
+import ThemeDropdown from '~/components/theme-dropdown.tsx';
+
+Following the previous [(Astro) Applying Dark Mode](./astro-darkmode) post, let's look at how to apply dark mode to Astro with global state. Please note that we will be implementing the following features:
+
+- Manage the current theme with global state
+- Maintain the state even after refreshing the page
+- Add a "system" theme that follows the user's device theme
+- Subscribe to global state in React, Svelte components
+
+## Nano Stores
+
+One of the biggest charms of Astro is that it can use various web frameworks such as React, Vue, Svelte, Solid, etc. This is because NextJS only uses React and Nuxt only uses Vue.
+
+However, this diversity can increase the flexibility of the project, but it presents a new challenge of sharing the same state between different frameworks.
+Fortunately, the [Astro Official Document](https://docs.astro.build/en/recipes/sharing-state) introduces a state management library suitable for this called [**Nano Stores**](https://github.com/nanostores/nanostores#nano-stores).
+
+[**Nano Stores**](https://github.com/nanostores/nanostores#nano-stores) is, as the name suggests, a "**very small storage**".
+It boasts a small capacity (298 bytes) and makes it easy to handle states by borrowing the `atomic` concept similar to Recoil, Jotai. In addition, Nano Stores introduces its identity as follows:
+
+> **Nano Stores was created to move logic from components to the store.**
+
+Because global states can be used anywhere, you can easily suffer from code fragmentation. It would be very pleasant if you could handle all state-related logic in one `store.ts` file.
+
+Then let's use this to handle the dark mode theme state.
+
+## Declaring Global State
+
+First, install the libraries to be used.
+
+```shell
+bun add nanostores @nanostores/persistent @nanostores/react
+```
+
+`nanostores` is a state management core library.
+`@nanostores/persistent` helps to maintain the state even after refreshing the page using localStorage or sessionStorage.
+`@nanostores/react` provides a hook that allows re-rendering according to the state in React.
+
+There is no special setting to use Nano Stores. Just declare the state and use it.
+I have set constants and types as follows to easily handle the theme.
+
+```ts title="libs/stores/theme.ts" {14-17}
+import { persistentAtom } from '@nanostores/persistent';
+
+export const THEME_MAP = {
+  light: 'light',
+  dark: 'dark',
+  system: undefined,
+} as const;
+
+export type ThemeKey = keyof typeof THEME_MAP;
+export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
+
+export const STORAGE_THEME_KEY = 'theme' as const;
+
+export const themeStore = persistentAtom<ThemeValue>(
+  STORAGE_THEME_KEY,
+  THEME_MAP.system,
+);
+```
+
+## Subscribing to Global State
+
+When `themeStore` changes,
+you just need to add or remove the `.dark` class to the `<html>` tag depending on the state.
+
+You can implement this using the `themeStore.subscribe` method.
+
+```ts title="libs/stores/theme.ts" {12-14}
+// ...
+
+const initThemeStoreSubscribe = () => {
+  const applyTheme = (theme: ThemeValue) => {
+    if (theme === THEME_MAP.dark) {
+      document.documentElement.classList.add('dark');
+    } else if (theme === THEME_MAP.light) {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  themeStore.subscribe((theme) => {
+    applyTheme(theme);
+  });
+};
+```
+
+When in `system` state,
+you also add logic to apply dark mode according to the user's device theme.
+
+```ts title="libs/stores/theme.ts" /mediaQuery/
+const initThemeStoreSubscribe = () => {
+  // ...
+
+  const handleMediaQuery = (query: { matches: boolean }) => {
+    applyTheme(query.matches ? 'dark' : 'light');
+  };
+
+  themeStore.subscribe((theme) => {
+    if (theme !== THEME_MAP.system) {
+      applyTheme(theme);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    // Make sure the EventListener is not registered redundantly by removing it before registering it.
+    mediaQuery.removeEventListener('change', handleMediaQuery);
+    mediaQuery.addEventListener('change', handleMediaQuery);
+    handleMediaQuery(mediaQuery);
+  });
+};
+```
+
+When the page is loaded, just run the `initThemeStoreSubscribe` function.
+
+If you use [`onMount`](https://github.com/nanostores/nanostores?tab=readme-ov-file#lazy-stores) of Nano Store, it's very easy.
+The related logic is executed when the store is `mounted` when it is actually used in the UI.
+
+```ts title="libs/stores/theme.ts"
+import { onMount } from 'nanostores';
+
+// Don't run it in the SSR.
+if (typeof window !== 'undefined') {
+  onMount(themeStore, initThemeStoreSubscribe);
+}
+```
+
+If `onMount` feels too magical and you want to **directly control the time when state subscription is registered yourself**, you can work as follows.
+
+```astro title="theme-footer-script.astro"
+<script>
+  import { initThemeStoreSubscribe } from '~/libs/stores/theme';
+
+  initThemeStoreSubscribe();
+</script>
+```
+
+```astro title="main.astro"
+---
+// ...
+import ThemeFooterScript from '~/components/theme-footer-script.astro';
+---
+
+<html>
+  <!-- ... -->
+  <body>
+    <!-- ... -->
+    <ThemeFooterScript />
+  </body>
+</html>
+```
+
+If you place `ThemeFooterScript` at the bottom of body, the script will execute when the page is loaded. Astro optimizes this as a separate module bundle.
+
+## React
+
+For setting up Astro in React, refer to [@astrojs/react](https://docs.astro.build/en/guides/integrations-guide/react/).
+
+Using Nano Stores in React is simpler than you thought.
+
+When using a state, use the `useStore` hook provided by `@nanostores/react`.
+When modifying a state, use `themeStore.set`.
+
+This is also applied in the same way in Preact.
+
+```tsx title="theme-dropdown.tsx" {6, 13, 16}
+import { useStore } from '@nanostores/react';
+// ...
+import { THEME_MAP, themeStore } from '~/libs/stores/theme';
+
+export default function ThemeDropdown() {
+  const theme = useStore(themeStore);
+
+  return (
+    <DropdownMenu>
+      {/* ... */}
+      <DropdownMenuItem
+        className="justify-between"
+        onClick={() => themeStore.set(THEME_MAP.system)}
+      >
+        System
+        {theme === THEME_MAP.system && <DotIcon />}
+      </DropdownMenuItem>
+    </DropdownMenu>
+  );
+}
+```
+
+[View original code](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/theme-dropdown.tsx)
+
+## Svelte
+
+For setting up Astro in Svelte, refer to [@astrojs/svelte](https://docs.astro.build/en/guides/integrations-guide/svelte/).
+
+Nano Store is compatible with Svelte's [`reactive`](https://svelte.dev/docs/svelte-components#script-4-prefix-stores-with-$-to-access-their-values) syntax.
+You can use it directly by attaching `$` in front of Store without any special settings.
+
+```svelte title="theme-dropdown.svelte" {9, 15}
+<script>
+  import { THEME_MAP, themeStore } from '~/libs/stores/theme';
+
+  let isDropdownOpen = false;
+
+  // ...
+
+  const handleItemClick = (theme) => {
+    $themeStore = theme;
+    isDropdownOpen = false;
+  };
+</script>
+
+<div>
+  {$themeStore}
+</div>
+<div>
+  {#each Object.keys(THEME_MAP) as themeKey}
+    <button on:click={() => handleItemClick(THEME_MAP[themeKey])}>
+      {themeKey}
+    </button>
+  {/each}
+</div>
+```
+
+[View original code](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/theme-dropdown.svelte)
+
+## Conclusion
+
+Now, what if we use the components we made together?
+
+<div class="relative z-10 flex items-center gap-2">
+  <div class="text-center">
+    React
+    <ThemeDropdown client:load />
+  </div>
+  <div class="text-center">
+    Svelte
+    <ThemeDropdownSvelte client:load />
+  </div>
+</div>
+
+It seems that the state is synchronized well without any problem. ✨
+
+Actually, [`Zustand`](https://github.com/pmndrs/zustand?tab=readme-ov-file#using-zustand-without-react) can also be used in various frameworks.
+But it's a pity that the official document guide is lacking and you have to do the groundwork according to the framework yourself.
+
+On the other hand, **Nano Stores** seem to be attractive as they can be easily used on various frameworks through the official document guide. The library is lightweight and the code is short. I love the philosophy of bringing state logic from the components to the store. Especially, the `onMount` feature struck me as quite radical.
+
+What about you?
+Personally, I look forward to using Nano Stores more as the opportunity arises. 🥰

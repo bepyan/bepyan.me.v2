@@ -1,0 +1,269 @@
+---
+title: '(Astro) 전역 상태를 곁들여 다크모드 관리하기'
+description: 'Nano Stores를 사용하여 React와 Svelte 컴포넌트 간에 상태를 공유합니다.'
+date: 2024-02-15 21:41:57
+draft: false
+tags:
+  - astro
+  - nanostores
+  - global state
+  - react
+  - svelte
+  - darkmode
+---
+
+import ThemeDropdownSvelte from '~/components/theme-dropdown.svelte';
+import ThemeDropdown from '~/components/theme-dropdown.tsx';
+
+지난 [(Astro) 다크모드 적용하기](./astro-darkmode) 글에 이어서, Astro에 전역 상태를 곁들어 다크모드를 어떻게 적용하면 좋을지 살펴봅시다. 아래 기능을 구현하게 될 점 참고 부탁드려요.
+
+- 현 테마를 전역 상태로 관리하기
+- 페이지를 새로고침하여도 상태가 유지되기
+- 사용자 기기의 테마를 따라가는 system 테마 추가하기
+- React, Svelte 컴포넌트에 전역 상태 구독하기
+
+## Nano Stores
+
+Astro의 가장 큰 매력 중 하나는 React, Vue, Svelte, Solid 등 여러 웹 프레임워크를 사용할 수 있다는 점입니다. NextJS는 React만을 써야 하고 Nuxt는 Vue만을 써야 하기 때문이죠.
+
+그러나 이러한 다양성은 프로젝트의 유연성을 향상할 수 있지만, 다른 프레임워크간 같은 상태를 공유하는 새로운 도전 과제를 던져줍니다.
+다행히 [Astro 공식문서](https://docs.astro.build/en/recipes/sharing-state)에서 이에 적합한 상태 관리 라이브러리 [**Nano Stores**](https://github.com/nanostores/nanostores#nano-stores)를 소개해줍니다.
+
+[**Nano Stores**](https://github.com/nanostores/nanostores#nano-stores)는 이름대로 "**아주 작은 저장소**"입니다.
+작은 용량(298 bytes)을 자랑하며 Recoil, Jotai와 유사한 `atomic` 개념을 차용하여 쉽게 상태를 다룰 수 있습니다. 추가로 Nano Stores는 아래와 같이 자신의 정체성을 소개합니다.
+
+> **Nano Stores was created to move logic from components to the store.**
+
+전역 상태는 어디서나 사용할 수 있다는 점 때문에 코드 파편화로 쉽게 고통을 받는데요. 만약 상태 관련된 모든 로직을 `store.ts` 한 파일에서 다루게 된다면 무척 쾌적할 것 같습니다.
+
+그럼 이를 활용하여 다크모드 테마 상태를 다뤄보도록 합시다.
+
+## 전역 상태 선언하기
+
+먼저, 사용할 라이브러리를 설치해줍니다.
+
+```shell
+bun add nanostores @nanostores/persistent @nanostores/react
+```
+
+`nanostores`는 상태 관리 코어 라이브러리입니다.
+`@nanostores/persistent`는 localStorage나 sessionStorage를 활용하여 페이지를 새로고침하여도 상태가 유지되도록 도와줍니다.
+`@nanostores/react`는 React에서 상태에 따라 리랜더링 되도록 하는 훅을 제공해줍니다.
+&nbsp;
+
+Nano Stores를 사용하기 위해 특별한 세팅은 없습니다. 그저 상태를 선언하고 사용하면 됩니다.
+저는 테마를 쉽게 다루기 위해 아래와 같이 상수 및 타입을 세팅했습니다.
+
+```ts title="libs/stores/theme.ts" {14-17}
+import { persistentAtom } from '@nanostores/persistent';
+
+export const THEME_MAP = {
+  light: 'light',
+  dark: 'dark',
+  system: undefined,
+} as const;
+
+export type ThemeKey = keyof typeof THEME_MAP;
+export type ThemeValue = (typeof THEME_MAP)[ThemeKey];
+
+export const STORAGE_THEME_KEY = 'theme' as const;
+
+export const themeStore = persistentAtom<ThemeValue>(
+  STORAGE_THEME_KEY,
+  THEME_MAP.system,
+);
+```
+
+## 전역 상태 구독하기
+
+`themeStore`가 변경될 때,
+상태에 따라 `<html>` 태그에 `.dark` 클리스를 첨삭하면 됩니다.
+
+`themeStore.subscribe` 메소드를 활용하여 이를 구현할 수 있습니다.
+
+```ts title="libs/stores/theme.ts" {12-14}
+// ...
+
+const initThemeStoreSubscribe = () => {
+  const applyTheme = (theme: ThemeValue) => {
+    if (theme === THEME_MAP.dark) {
+      document.documentElement.classList.add('dark');
+    } else if (theme === THEME_MAP.light) {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  themeStore.subscribe((theme) => {
+    applyTheme(theme);
+  });
+};
+```
+
+여기서 `system` 상태일 땐,
+사용자 기기의 테마에 따라 다크모드가 적용되는 로직도 추가합니다.
+
+```ts title="libs/stores/theme.ts" /mediaQuery/
+const initThemeStoreSubscribe = () => {
+  // ...
+
+  const handleMediaQuery = (query: { matches: boolean }) => {
+    applyTheme(query.matches ? 'dark' : 'light');
+  };
+
+  themeStore.subscribe((theme) => {
+    if (theme !== THEME_MAP.system) {
+      applyTheme(theme);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    // EventListener가 중복 등록되지 않도록 제거 후 등록합니다.
+    mediaQuery.removeEventListener('change', handleMediaQuery);
+    mediaQuery.addEventListener('change', handleMediaQuery);
+    handleMediaQuery(mediaQuery);
+  });
+};
+```
+
+&nbsp;
+
+페이지가 로드되었을 때 `initThemeStoreSubscribe` 함수를 실행하면 되는데요.
+
+Nano Store의 [`onMount`](https://github.com/nanostores/nanostores?tab=readme-ov-file#lazy-stores)를 활용하면 무척 쉽습니다.
+Store가 실제로 UI에서 사용하게 될 때 `mount` 되면서 관련 로직을 수행합니다.
+
+```ts title="libs/stores/theme.ts"
+import { onMount } from 'nanostores';
+
+// SSR에서는 실행되지 않도록 합니다.
+if (typeof window !== 'undefined') {
+  onMount(themeStore, initThemeStoreSubscribe);
+}
+```
+
+&nbsp;
+
+만약 `onMount`가 너무 마법처럼 느껴져 **직접 상태 구독이 등록되는 시점을 다루고 싶다면**, 아래와 같이 작업하면 됩니다.
+
+```astro title="theme-footer-script.astro"
+<script>
+  import { initThemeStoreSubscribe } from '~/libs/stores/theme';
+
+  initThemeStoreSubscribe();
+</script>
+```
+
+```astro title="main.astro"
+---
+// ...
+import ThemeFooterScript from '~/components/theme-footer-script.astro';
+---
+
+<html>
+  <!-- ... -->
+  <body>
+    <!-- ... -->
+    <ThemeFooterScript />
+  </body>
+</html>
+```
+
+`ThemeFooterScript`를 body 최하단에 위치시키면, 페이지가 로드된 시점에서 스크립트가 실행될 것입니다. Astro가 알아서 이를 별도의 모듈 번들로 최적화해줍니다.
+
+## React
+
+Astro에서 React 세팅하는 방법은 [@astrojs/react](https://docs.astro.build/en/guides/integrations-guide/react/)을 참고하길 바랍니다.
+
+React에서 Nano Stores를 사용하는 방법을 생각보다 단순합니다.
+
+상태를 사용할 땐, `@nanostores/react`에서 제공해주는 `useStore` 훅을 사용합니다.
+상태를 수정할 땐, `themeStore.set`을 사용합니다.
+
+Preact에서도 똑같이 적용 됩니다.
+
+```tsx title="theme-dropdown.tsx" {6, 13, 16}
+import { useStore } from '@nanostores/react';
+// ...
+import { THEME_MAP, themeStore } from '~/libs/stores/theme';
+
+export default function ThemeDropdown() {
+  const theme = useStore(themeStore);
+
+  return (
+    <DropdownMenu>
+      {/* ... */}
+      <DropdownMenuItem
+        className="justify-between"
+        onClick={() => themeStore.set(THEME_MAP.system)}
+      >
+        System
+        {theme === THEME_MAP.system && <DotIcon />}
+      </DropdownMenuItem>
+    </DropdownMenu>
+  );
+}
+```
+
+[코드 원본 보기](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/theme-dropdown.tsx)
+
+## Svelte
+
+Astro에서 Svelte 세팅하는 방법은 [@astrojs/svelte](https://docs.astro.build/ko/guides/integrations-guide/svelte/)을 참고하길 바랍니다.
+
+Nano Store는 Svelte의 [`reactive`](https://svelte.dev/docs/svelte-components#script-4-prefix-stores-with-$-to-access-their-values) 문법과 호환이 됩니다.
+별다른 세팅 없이 Store 앞에 `$`를 붙여 바로 사용할 수 있습니다.
+
+```svelte title="theme-dropdown.svelte" {9, 15}
+<script>
+  import { THEME_MAP, themeStore } from '~/libs/stores/theme';
+
+  let isDropdownOpen = false;
+
+  // ...
+
+  const handleItemClick = (theme) => {
+    $themeStore = theme;
+    isDropdownOpen = false;
+  };
+</script>
+
+<div>
+  {$themeStore}
+</div>
+<div>
+  {#each Object.keys(THEME_MAP) as themeKey}
+    <button on:click={() => handleItemClick(THEME_MAP[themeKey])}>
+      {themeKey}
+    </button>
+  {/each}
+</div>
+```
+
+[코드 원본 보기](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/theme-dropdown.svelte)
+
+## 맺으면서
+
+이제, 앞서 만든 컴포넌트를 같이 사용하게 되면 어떨까요?
+
+<div class="relative z-10 flex items-center gap-2">
+  <div class="text-center">
+    React
+    <ThemeDropdown client:load />
+  </div>
+  <div class="text-center">
+    Svelte
+    <ThemeDropdownSvelte client:load />
+  </div>
+</div>
+
+문제 없이 상태가 잘 동기화되는 것 같습니다 ✨
+
+&nbsp;
+
+사실 [`Zustand`](https://github.com/pmndrs/zustand?tab=readme-ov-file#using-zustand-without-react)도 여러 프레임워크에서 같은 상태를 사용할 수 있는데요.
+하지만 공식문서 가이드가 부족하고, 직접 프레임워크에 맞춰 밑 작업을 해야 한다는 점이 아쉽습니다.
+
+반면에 **Nano Stores**는 공식문서 가이드를 통해서 여러 프레임워크에 쉽게 사용할 수 있어 매력적으로 다가오는 것 같습니다. 그 외로 라이브러리가 가볍고, 코드가 짧은 점. 상태 로직을 컴포넌트에서 스토어로 가져오려는 철학이 무척 마음에 듭니다. 특히 `onMount` 기능은 제게 아주 파격적으로 다가왔습니다.
+
+여러분은 어떠셨나요?
+개인적으론 앞으로 기회가 된다면 Nano Stores를 더 많이 활용해보고 싶습네요 🥰

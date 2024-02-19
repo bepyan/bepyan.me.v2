@@ -1,0 +1,39 @@
+name: Optimize Images
+on: pull_request
+jobs:
+  build:
+    name: sharp
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-primes-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-primes-
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bun install
+
+      - name: Optimize images
+        run: bun run sharp
+
+      - name: Commit changes and Report
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SHA: ${{ secrets.GITHUB_SHA }}
+          GITHUB_REF_NAME: ${{ secrets.GITHUB_REF_NAME }}
+          GITHUB_WORKSPACE: ${{ secrets.GITHUB_WORKSPACE }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+          bun ./scripts/sharp-commit.ts

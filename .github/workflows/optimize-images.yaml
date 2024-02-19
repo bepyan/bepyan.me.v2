@@ -33,6 +33,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_PULL_REQUEST: ${{ toJSON(github.event.pull_request) }}
-        run: |
-          echo "$GITHUB_PULL_REQUEST"
-          bun ./scripts/sharp-commit.ts
+        run: bun ./scripts/sharp-commit.ts

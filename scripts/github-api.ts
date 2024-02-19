@@ -1,6 +1,7 @@
 import { Octokit } from '@octokit/rest';
 
 import {
+  GITHUB_ISSUE_NUMBER,
   GITHUB_PULL_REQUEST,
   GITHUB_RECENT_COMMIT_SHA,
   GITHUB_REPOSITORY_NAME,
@@ -17,9 +18,9 @@ export const api = new Octokit({
 
 export const createPRComment = (content: string) => {
   return api.rest.issues.createComment({
-    owner: 'bepyan',
-    repo: 'bepyan.me.v2',
-    issue_number: 13,
+    owner: owner,
+    repo: repo,
+    issue_number: GITHUB_ISSUE_NUMBER,
     body: content,
   });
 };

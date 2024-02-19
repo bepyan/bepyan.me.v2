@@ -12,7 +12,7 @@ const owner = GITHUB_REPOSITORY_OWNER;
 const repo = GITHUB_REPOSITORY_NAME;
 
 export const api = new Octokit({
-  auth: GITHUB_TOKEN,
+  auth: `token ${GITHUB_TOKEN}`,
 });
 
 export const createPRComment = (content: string) => {

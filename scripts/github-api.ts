@@ -12,7 +12,7 @@ export const api = new Octokit({
 });
 
 export const createPRComment = (content: string) => {
-  return api.issues.createComment({
+  return api.rest.issues.createComment({
     owner: GITHUB_REPOSITORY_OWNER,
     repo: GITHUB_REPOSITORY,
     issue_number: GITHUB_ISSUE_NUMBER,

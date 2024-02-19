@@ -1,3 +1,9 @@
 import { createPRComment } from './github-api';
 
-createPRComment('test comment');
+(async () => {
+  try {
+    await createPRComment('test comment');
+  } catch (e) {
+    console.log(e);
+  }
+})();

@@ -1,6 +1,7 @@
 export const GITHUB_TOKEN = process.env['GITHUB_TOKEN'];
 export const GITHUB_REPOSITORY = process.env['GITHUB_REPOSITORY']!;
-export const GITHUB_REPOSITORY_OWNER = process.env['GITHUB_REPOSITORY_OWNER']!;
+// prettier-ignore
+export const [GITHUB_REPOSITORY_NAME, GITHUB_REPOSITORY_OWNER] = GITHUB_REPOSITORY.split('/');
 export const GITHUB_ISSUE_NUMBER = +process.env['GITHUB_ISSUE_NUMBER']!;
 
 if (!GITHUB_TOKEN) {

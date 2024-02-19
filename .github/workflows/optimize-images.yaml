@@ -31,6 +31,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
           GITHUB_ISSUE_NUMBER: ${{ github.event.pull_request.number }}
         run: bun ./scripts/sharp-commit.ts

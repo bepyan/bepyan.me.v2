@@ -1,3 +1,3 @@
-import { createComment } from './github-pr-comment';
+import { createPRComment } from './github-api';
 
-createComment('test comment');
+createPRComment('test comment');

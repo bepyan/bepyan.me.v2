@@ -29,11 +29,8 @@ jobs:
 
       - name: Commit changes and Report
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_SHA: ${{ secrets.GITHUB_SHA }}
-          GITHUB_REF_NAME: ${{ secrets.GITHUB_REF_NAME }}
-          GITHUB_WORKSPACE: ${{ secrets.GITHUB_WORKSPACE }}
-        run: |
-          echo "$GITHUB_CONTEXT"
-          bun ./scripts/sharp-commit.ts
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_ISSUE_NUMBER: ${{ github.event.pull_request.number }}
+        run: bun ./scripts/sharp-commit.ts

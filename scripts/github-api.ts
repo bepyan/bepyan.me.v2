@@ -1,45 +1,73 @@
 import { Octokit } from '@octokit/rest';
 
-import {
-  GITHUB_ISSUE_NUMBER,
-  GITHUB_PULL_REQUEST,
-  GITHUB_RECENT_COMMIT_SHA,
-  GITHUB_REPOSITORY_NAME,
-  GITHUB_REPOSITORY_OWNER,
-  GITHUB_TOKEN,
-} from './constants';
+export const GITHUB_TOKEN = process.env['GITHUB_TOKEN'];
+export const GITHUB_REPOSITORY = process.env['GITHUB_REPOSITORY']!;
+export const [owner, repo] = GITHUB_REPOSITORY.split('/');
 
-const owner = GITHUB_REPOSITORY_OWNER;
-const repo = GITHUB_REPOSITORY_NAME;
+// @example https://gist.githubusercontent.com/colbyfayock/1710edb9f47ceda0569844f791403e7e/raw/1e575a3e5b2bb3c6d97d79ae25190e609f1e4f95/github-context.json
+export const GITHUB_PULL_REQUEST = JSON.parse(
+  process.env['GITHUB_PULL_REQUEST']!,
+);
+
+if (!GITHUB_TOKEN) {
+  console.log('::error:: There is no GITHUB_TOKEN environment variable');
+  process.exit(1);
+}
 
 export const api = new Octokit({
   auth: `token ${GITHUB_TOKEN}`,
 });
 
-export const createPRComment = (content: string) => {
+export const createComment = (content: string) => {
   return api.rest.issues.createComment({
     owner: owner,
     repo: repo,
-    issue_number: GITHUB_ISSUE_NUMBER,
+    issue_number: GITHUB_PULL_REQUEST.number,
     body: content,
   });
 };
 
+// const convertToTreeBlobs = async ({ owner, repo, images }: any) => {
+//   const imageBlobs = [];
+
+//   for await (const image of images) {
+//     const encodedImage = await readFile(image.path, { encoding: 'base64' });
+
+//     const blob = await api.git.createBlob({
+//       owner,
+//       repo,
+//       content: encodedImage,
+//       encoding: 'base64',
+//     });
+
+//     imageBlobs.push({
+//       path: image.name,
+//       type: 'blob',
+//       mode: '100644',
+//       sha: blob.data.sha,
+//     });
+//   }
+
+//   return imageBlobs;
+// };
+
 export const createCommit = async ({
-  treeBlobs,
   message,
+  treeBlobs,
 }: {
-  treeBlobs: any;
   message: string;
+  treeBlobs: any;
 }) => {
+  const recentCommitSHA = GITHUB_PULL_REQUEST.head.sha;
+
   const latestCommit = await api.rest.git.getCommit({
     owner,
     repo,
-    commit_sha: GITHUB_RECENT_COMMIT_SHA,
+    commit_sha: recentCommitSHA,
   });
   const baseTree = latestCommit.data.tree.sha;
 
-  const newTree = await api.git.createTree({
+  const newTree = await api.rest.git.createTree({
     owner,
     repo,
     base_tree: baseTree,
@@ -51,10 +79,10 @@ export const createCommit = async ({
     repo,
     message,
     tree: newTree.data.sha,
-    parents: [GITHUB_RECENT_COMMIT_SHA],
+    parents: [recentCommitSHA],
   });
 
-  await api.git.updateRef({
+  await api.rest.git.updateRef({
     owner,
     repo,
     ref: `heads/${GITHUB_PULL_REQUEST.head.ref}`,

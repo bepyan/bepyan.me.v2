@@ -25,12 +25,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: bun install
 
-      - name: Optimize images
-        run: bun run sharp
-
-      - name: Commit changes and Report
+      - name: Optimize images and Report
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_PULL_REQUEST: ${{ toJSON(github.event.pull_request) }}
-        run: bun ./scripts/sharp-commit.ts
+        run: bun ./scripts/action-optimize-images.ts

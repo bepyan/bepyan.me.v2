@@ -1,6 +1,9 @@
-import { Octokit } from '@octokit/rest';
+import { Octokit, type RestEndpointMethodTypes } from '@octokit/rest';
 
 import type { ProcessedResult } from './sharp-api';
+
+export type GitTreeBlobs =
+  RestEndpointMethodTypes['git']['createTree']['parameters']['tree'];
 
 export const GITHUB_TOKEN = process.env['GITHUB_TOKEN'];
 export const GITHUB_REPOSITORY = process.env['GITHUB_REPOSITORY']!;
@@ -29,26 +32,23 @@ export const createComment = (content: string) => {
   });
 };
 
+const imageToBase64 = async (path: string) => {
+  const imageFile = Bun.file(path);
+  const buffer = await imageFile.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+
+  let binary = '';
+  for (var i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
 export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
-  const imageBlobs = [];
+  const imageBlobs: GitTreeBlobs = [];
 
   for await (const image of images) {
-    const imageFile = Bun.file(image.path);
-    // const encodedImage = btoa(await imageFile.text());
-
-    const buffer = await imageFile.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    for (var i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    const encodedImage = btoa(binary);
-
-    // const encodedImage = await fsPromises.readFile(image.path, {
-    //   encoding: 'base64',
-    // });
-
-    // console.log(encodedImage);
+    const encodedImage = await imageToBase64(image.path);
 
     const blob = await api.rest.git.createBlob({
       owner,
@@ -59,8 +59,8 @@ export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
 
     imageBlobs.push({
       path: image.name,
-      type: 'blob',
       mode: '100644',
+      type: 'blob',
       sha: blob.data.sha,
     });
   }
@@ -73,7 +73,7 @@ export const createCommit = async ({
   treeBlobs,
 }: {
   message: string;
-  treeBlobs: any;
+  treeBlobs: GitTreeBlobs;
 }) => {
   const recentCommitSHA = GITHUB_PULL_REQUEST.head.sha;
 

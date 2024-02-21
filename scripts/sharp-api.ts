@@ -96,6 +96,8 @@ export const sharpImages = async () => {
         : 0,
   };
 
+  console.log('::✧:: sharp metrics', metrics);
+
   return {
     sharpedImageList,
     unSharpedImageList,

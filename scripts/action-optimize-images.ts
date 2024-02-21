@@ -19,6 +19,11 @@ const formatImages = (num: number) => {
 (async () => {
   const { sharpedImageList, metrics } = await sharpImages();
 
+  if (!sharpedImageList.length) {
+    console.log('::✧:: Passed. No images to optimize.');
+    return;
+  }
+
   console.log('::✧:: Generating Blobs…');
   const imageBlobs = await convertToTreeBlobs(sharpedImageList);
 
@@ -31,18 +36,15 @@ const formatImages = (num: number) => {
   console.log('::✧:: Generating markdown…');
   // prettier-ignore
   const markdown = `
-Optimize Image with Sharp.
+Optimize Image with Sharp. ${commit.sha}
 
-Total ${formatImages(metrics.totalFiles)}, Optimized ${formatImages(metrics.sharpFiles)}.
-Reduced **${formatByte(metrics.savedPercent)}%**, Saving **${formatByte(metrics.savedBytes)}**.
+Detected **${formatImages(metrics.totalFiles)}**, Optimized **${formatImages(metrics.sharpFiles)}**, Reduced **${metrics.savedPercent}%**, Saving **${formatByte(metrics.savedBytes)}**.
 
 ${sharpedImageList.map((image) =>`
 | Filename | Before | After | Improvement |
 | -------- | ------ | ----- | ----------- |
 | <code>${image.name}</code> | ${formatByte(image.beforeSize)} | ${formatByte(image.afterSize)} | -${image.percentChange}% |
 `.trim()).join('')}
-
-commit ${commit.sha}
 `.trim();
 
   console.log('::✧:: Writing comment on PR…');

@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import { promises as fsPromises } from 'fs';
 
 import type { ProcessedResult } from './sharp-api';
 
@@ -33,8 +34,11 @@ export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
   const imageBlobs = [];
 
   for await (const image of images) {
-    const imageFile = Bun.file(image.path);
-    const encodedImage = btoa(await imageFile.text());
+    // const imageFile = Bun.file(image.path);
+    // const encodedImage = btoa(await imageFile.text());
+    const encodedImage = await fsPromises.readFile(image.path, {
+      encoding: 'base64',
+    });
 
     console.log(encodedImage);
 

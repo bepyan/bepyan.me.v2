@@ -19,8 +19,10 @@ const formatImages = (num: number) => {
 (async () => {
   const { sharpedImageList, metrics } = await sharpImages();
 
-  console.log('::✧:: Committing files…');
+  console.log('::✧:: Generating Blobs…');
   const imageBlobs = convertToTreeBlobs(sharpedImageList);
+
+  console.log('::✧:: Committing files…');
   const commit = await createCommit({
     message: '🔥 optimize image',
     treeBlobs: imageBlobs,

@@ -20,7 +20,7 @@ const formatImages = (num: number) => {
   const { sharpedImageList, metrics } = await sharpImages();
 
   console.log('::✧:: Generating Blobs…');
-  const imageBlobs = convertToTreeBlobs(sharpedImageList);
+  const imageBlobs = await convertToTreeBlobs(sharpedImageList);
 
   console.log('::✧:: Committing files…');
   const commit = await createCommit({

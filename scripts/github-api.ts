@@ -38,7 +38,6 @@ export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
 
     const buffer = await imageFile.arrayBuffer();
     const bytes = new Uint8Array(buffer);
-
     let binary = '';
     for (var i = 0; i < bytes.byteLength; i++) {
       binary += String.fromCharCode(bytes[i]);
@@ -49,7 +48,7 @@ export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
     //   encoding: 'base64',
     // });
 
-    console.log(encodedImage);
+    // console.log(encodedImage);
 
     const blob = await api.rest.git.createBlob({
       owner,

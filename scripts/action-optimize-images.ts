@@ -20,7 +20,7 @@ const formatImages = (num: number) => {
   const { sharpedImageList, metrics } = await sharpImages();
 
   if (!sharpedImageList.length) {
-    console.log('::✧:: Passed. No images to optimize.');
+    console.log('::✧:: No images to optimize.');
     return;
   }
 
@@ -36,7 +36,7 @@ const formatImages = (num: number) => {
   console.log('::✧:: Generating markdown…');
   // prettier-ignore
   const markdown = `
-Optimize Image with Sharp. ${commit.sha}
+Optimize Image with Sharp ${commit.sha}
 
 Detected **${formatImages(metrics.totalFiles)}**, Optimized **${formatImages(metrics.sharpFiles)}**, Reduced **${metrics.savedPercent}%**, Saving **${formatByte(metrics.savedBytes)}**.
 

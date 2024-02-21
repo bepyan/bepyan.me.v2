@@ -46,6 +46,7 @@ export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
       owner,
       repo,
       content: encodedImage,
+      encoding: 'base64',
     });
 
     imageBlobs.push({

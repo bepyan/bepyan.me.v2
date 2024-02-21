@@ -36,7 +36,7 @@ export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
     const imageFile = Bun.file(image.path);
     const encodedImage = btoa(await imageFile.text());
 
-    const blob = await api.git.createBlob({
+    const blob = await api.rest.git.createBlob({
       owner,
       repo,
       content: encodedImage,

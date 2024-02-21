@@ -5,14 +5,20 @@ import sharp from 'sharp';
 
 const SHARP_OPTIONS: {
   png: sharp.PngOptions;
+  jpeg: sharp.JpegOptions;
   webp: sharp.WebpOptions;
 } = {
   png: {},
+  jpeg: {},
   webp: {},
 };
 
 type SharpFileType = keyof typeof SHARP_OPTIONS;
-const SHARP_FILE_TYPE_LIST = ['png', 'webp'] as const satisfies SharpFileType[];
+const SHARP_FILE_TYPE_LIST = [
+  'png',
+  'jpeg',
+  'webp',
+] as const satisfies SharpFileType[];
 
 export type ProcessedResult = {
   name: string;
@@ -84,7 +90,10 @@ export const sharpImages = async () => {
     sharpBeforeSize,
     sharpAfterSize,
     savedBytes: sharpBeforeSize - sharpAfterSize,
-    savedPercent: +((1 - sharpAfterSize / sharpBeforeSize) * 100).toFixed(2),
+    savedPercent:
+      sharpBeforeSize > 0
+        ? +((1 - sharpAfterSize / sharpBeforeSize) * 100).toFixed(2)
+        : 0,
   };
 
   return {

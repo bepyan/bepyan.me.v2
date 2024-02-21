@@ -1,5 +1,6 @@
 import { sharpImages } from './sharp-api';
 
 (async () => {
-  await sharpImages();
+  const result = await sharpImages();
+  console.log('::✧:: sharp result', result.metrics);
 })();

@@ -14,25 +14,31 @@ const SHARP_OPTIONS: {
 type SharpFileType = keyof typeof SHARP_OPTIONS;
 const SHARP_FILE_TYPE_LIST = ['png', 'webp'] as const satisfies SharpFileType[];
 
-export type ProcessedImage = {
+export type ProcessedResult = {
   name: string;
   path: string;
-  beforeStats: number;
-  afterStats: number;
+  beforeSize: number;
+  afterSize: number;
+  percentChange: number;
+};
+
+export type ProcessedMetrics = {
+  bytesSaved: number;
   percentChange: number;
 };
 
 export const sharpImages = async () => {
   console.log('::✧:: start sharp images');
 
-  const sharpedImageList: ProcessedImage[] = [];
-  const unSharpedImageList: ProcessedImage[] = [];
+  const sharpedImageList: ProcessedResult[] = [];
+  const unSharpedImageList: ProcessedResult[] = [];
 
   const glob = new Glob(`public/img/**/*.{${SHARP_FILE_TYPE_LIST.join(',')}}`);
 
   for await (const filePath of glob.scan('.')) {
     try {
       console.log('✧', filePath);
+      const filename = filePath.split('/').pop() ?? '';
       const fileType = filePath.split('.').pop() as SharpFileType;
 
       const sharpedFilePath = filePath.replace(
@@ -47,25 +53,20 @@ export const sharpImages = async () => {
       const file = Bun.file(filePath);
       const sharpedFile = Bun.file(sharpedFilePath);
 
-      if (file.size > sharpedFile.size) {
-        console.log('✧✧ processing', file.size, '>', sharpedFile.size);
+      const processedResult: ProcessedResult = {
+        name: filename,
+        path: filePath,
+        beforeSize: file.size,
+        afterSize: sharpedFile.size,
+        percentChange: +((1 - sharpedFile.size / file.size) * 100).toFixed(2),
+      };
+
+      if (processedResult.percentChange > 1) {
         await Bun.write(filePath, sharpedFile);
 
-        sharpedImageList.push({
-          name: filePath,
-          path: sharpedFilePath,
-          beforeStats: file.size,
-          afterStats: sharpedFile.size,
-          percentChange: Math.round((1 - sharpedFile.size / file.size) * 100),
-        });
+        sharpedImageList.push(processedResult);
       } else {
-        unSharpedImageList.push({
-          name: filePath,
-          path: sharpedFilePath,
-          beforeStats: file.size,
-          afterStats: sharpedFile.size,
-          percentChange: Math.round((1 - sharpedFile.size / file.size) * 100),
-        });
+        unSharpedImageList.push(processedResult);
       }
 
       await unlink(sharpedFilePath);
@@ -74,8 +75,21 @@ export const sharpImages = async () => {
     }
   }
 
+  const totalSize =
+    sharpedImageList.reduce((ac, v) => ac + v.afterSize, 0) +
+    unSharpedImageList.reduce((ac, v) => ac + v.beforeSize, 0);
+  const afterSize =
+    sharpedImageList.reduce((ac, v) => ac + v.afterSize, 0) +
+    unSharpedImageList.reduce((ac, v) => ac + v.beforeSize, 0);
+
+  const metrics: ProcessedMetrics = {
+    bytesSaved: totalSize - afterSize,
+    percentChange: +((1 - afterSize / totalSize) * 100).toFixed(2),
+  };
+
   return {
     sharpedImageList,
     unSharpedImageList,
+    metrics,
   };
 };

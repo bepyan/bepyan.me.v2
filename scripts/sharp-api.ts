@@ -3,7 +3,7 @@ import { unlink } from 'node:fs/promises';
 import Bun, { Glob } from 'bun';
 import sharp from 'sharp';
 
-const SHARP_OPTIONS: {
+export const SHARP_OPTIONS: {
   png: sharp.PngOptions;
   jpeg: sharp.JpegOptions;
   webp: sharp.WebpOptions;
@@ -12,13 +12,17 @@ const SHARP_OPTIONS: {
   jpeg: {},
   webp: {},
 };
+export type SharpOptionType = keyof typeof SHARP_OPTIONS;
 
-type SharpFileType = keyof typeof SHARP_OPTIONS;
-const SHARP_FILE_TYPE_LIST = [
-  'png',
-  'jpeg',
-  'webp',
-] as const satisfies SharpFileType[];
+export const SHARP_OPTIONS_TYPE_MAPPER = {
+  png: 'png',
+  jpg: 'jpeg',
+  jpeg: 'jpeg',
+  webp: 'webp',
+} as const satisfies { [key: string]: SharpOptionType };
+export type SharpFileType = keyof typeof SHARP_OPTIONS_TYPE_MAPPER;
+
+const SHARP_FILE_TYPE_LIST = Object.keys(SHARP_OPTIONS_TYPE_MAPPER);
 
 export type ProcessedResult = {
   name: string;
@@ -42,13 +46,16 @@ export const sharpImages = async () => {
       const filename = filePath.split('/').pop() ?? '';
       const fileType = filePath.split('.').pop() as SharpFileType;
 
+      const sharpOptionType = SHARP_OPTIONS_TYPE_MAPPER[fileType];
+      const sharpOption = SHARP_OPTIONS[sharpOptionType];
+
       const sharpedFilePath = filePath.replace(
         `.${fileType}`,
         `.sharp.${fileType}`,
       );
 
       await sharp(filePath)
-        [fileType](SHARP_OPTIONS[fileType])
+        [sharpOptionType](sharpOption)
         .toFile(sharpedFilePath);
 
       const file = Bun.file(filePath);

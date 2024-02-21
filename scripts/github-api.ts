@@ -1,5 +1,7 @@
 import { Octokit } from '@octokit/rest';
 
+import type { ProcessedResult } from './sharp-api';
+
 export const GITHUB_TOKEN = process.env['GITHUB_TOKEN'];
 export const GITHUB_REPOSITORY = process.env['GITHUB_REPOSITORY']!;
 export const [owner, repo] = GITHUB_REPOSITORY.split('/');
@@ -27,29 +29,30 @@ export const createComment = (content: string) => {
   });
 };
 
-// const convertToTreeBlobs = async ({ owner, repo, images }: any) => {
-//   const imageBlobs = [];
+export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
+  const imageBlobs = [];
 
-//   for await (const image of images) {
-//     const encodedImage = await readFile(image.path, { encoding: 'base64' });
+  for await (const image of images) {
+    const imageFile = Bun.file(image.path);
+    const encodedImage = btoa(await imageFile.text());
 
-//     const blob = await api.git.createBlob({
-//       owner,
-//       repo,
-//       content: encodedImage,
-//       encoding: 'base64',
-//     });
+    const blob = await api.git.createBlob({
+      owner,
+      repo,
+      content: encodedImage,
+      encoding: 'base64',
+    });
 
-//     imageBlobs.push({
-//       path: image.name,
-//       type: 'blob',
-//       mode: '100644',
-//       sha: blob.data.sha,
-//     });
-//   }
+    imageBlobs.push({
+      path: image.name,
+      type: 'blob',
+      mode: '100644',
+      sha: blob.data.sha,
+    });
+  }
 
-//   return imageBlobs;
-// };
+  return imageBlobs;
+};
 
 export const createCommit = async ({
   message,
@@ -88,4 +91,6 @@ export const createCommit = async ({
     ref: `heads/${GITHUB_PULL_REQUEST.head.ref}`,
     sha: commit.data.sha,
   });
+
+  return commit.data;
 };

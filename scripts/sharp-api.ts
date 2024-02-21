@@ -22,11 +22,6 @@ export type ProcessedResult = {
   percentChange: number;
 };
 
-export type ProcessedMetrics = {
-  bytesSaved: number;
-  percentChange: number;
-};
-
 export const sharpImages = async () => {
   console.log('::✧:: start sharp images');
 
@@ -75,16 +70,21 @@ export const sharpImages = async () => {
     }
   }
 
-  const totalSize =
-    sharpedImageList.reduce((ac, v) => ac + v.afterSize, 0) +
-    unSharpedImageList.reduce((ac, v) => ac + v.beforeSize, 0);
-  const afterSize =
-    sharpedImageList.reduce((ac, v) => ac + v.afterSize, 0) +
-    unSharpedImageList.reduce((ac, v) => ac + v.beforeSize, 0);
-
-  const metrics: ProcessedMetrics = {
-    bytesSaved: totalSize - afterSize,
-    percentChange: +((1 - afterSize / totalSize) * 100).toFixed(2),
+  const sharpBeforeSize = sharpedImageList.reduce(
+    (ac, v) => ac + v.beforeSize,
+    0,
+  );
+  const sharpAfterSize = sharpedImageList.reduce(
+    (ac, v) => ac + v.afterSize,
+    0,
+  );
+  const metrics = {
+    totalFiles: sharpedImageList.length + unSharpedImageList.length,
+    sharpFiles: sharpedImageList.length,
+    sharpBeforeSize,
+    sharpAfterSize,
+    savedBytes: sharpBeforeSize - sharpAfterSize,
+    savedPercent: +((1 - sharpAfterSize / sharpBeforeSize) * 100).toFixed(2),
   };
 
   return {

@@ -1,4 +1,4 @@
-name: Optimize Images
+name: Process Images
 on: pull_request
 jobs:
   build:
@@ -25,9 +25,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: bun install
 
-      - name: Optimize images and Report
+      - name: Process images and Report results
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_PULL_REQUEST: ${{ toJSON(github.event.pull_request) }}
-        run: bun ./scripts/action-optimize-images.ts
+        run: bun ./scripts/action-process-images.ts

@@ -33,7 +33,7 @@ export type ProcessedResult = {
 };
 
 export const sharpImages = async () => {
-  console.log('::✧:: start sharp images');
+  console.log('\n::✧:: start sharp images');
 
   const sharpedImageList: ProcessedResult[] = [];
   const unSharpedImageList: ProcessedResult[] = [];
@@ -103,7 +103,8 @@ export const sharpImages = async () => {
         : 0,
   };
 
-  console.log('::✧:: sharp metrics', metrics);
+  console.log('::✧:: sharp metrics');
+  console.log(metrics);
 
   return {
     sharpedImageList,

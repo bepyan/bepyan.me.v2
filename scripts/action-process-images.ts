@@ -17,23 +17,23 @@ const formatImages = (num: number) => {
 };
 
 (async () => {
+  console.log('\n::✧:: Optimize images…');
   const { sharpedImageList, metrics } = await sharpImages();
-
   if (!sharpedImageList.length) {
-    console.log('::✧:: No images to optimize.');
+    console.log('\n::✧:: No images to optimize.');
     return;
   }
 
-  console.log('::✧:: Generating Blobs…');
+  console.log('\n::✧:: Generating Blobs…');
   const imageBlobs = await Promise.all(sharpedImageList.map(imageToTreeBlob));
 
-  console.log('::✧:: Committing files…');
+  console.log('\n::✧:: Committing files…');
   const commit = await createCommit({
-    message: '🔥 optimize image',
+    message: '::✧:: process images',
     treeBlobs: imageBlobs,
   });
 
-  console.log('::✧:: Generating markdown…');
+  console.log('\n::✧:: Writing comment on PR…');
   // prettier-ignore
   const markdown = `
 Optimize Image with Sharp ${commit.sha}
@@ -46,7 +46,5 @@ ${sharpedImageList.map((image) =>`
 | <code>${image.name}</code> | ${formatByte(image.beforeSize)} | ${formatByte(image.afterSize)} | -${image.percentChange}% |
 `.trim()).join('')}
 `.trim();
-
-  console.log('::✧:: Writing comment on PR…');
   await createComment(markdown);
 })();

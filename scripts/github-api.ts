@@ -46,12 +46,12 @@ export const imageToTreeBlob = async (image: ProcessedResult) => {
     owner,
     repo,
     content: encodedImage,
-    encoding: 'utf-8',
+    encoding: 'base64',
   });
   console.log(`::debug-blob::`, blob);
 
   return {
-    path: image.name,
+    path: image.path,
     mode: '100644',
     type: 'blob',
     sha: blob.data.sha,

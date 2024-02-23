@@ -42,13 +42,13 @@ const imageToBase64 = async (path: string) => {
 export const imageToTreeBlob = async (image: ProcessedResult) => {
   const encodedImage = await imageToBase64(image.path);
 
-  console.log('::debug-encodedImage::', encodedImage);
   const blob = await api.rest.git.createBlob({
     owner,
     repo,
     content: encodedImage,
-    encoding: 'utf-8',
+    encoding: 'base64',
   });
+  console.log(`::debug::`, blob);
 
   return {
     path: image.name,

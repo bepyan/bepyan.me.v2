@@ -35,18 +35,14 @@ export const createComment = (content: string) => {
 const imageToBase64 = async (path: string) => {
   const imageFile = Bun.file(path);
   const buffer = await imageFile.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-
-  let binary = '';
-  for (var i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary).replaceAll('\n', '');
+  const base64 = Buffer.from(buffer).toString('base64');
+  return base64;
 };
 
 export const imageToTreeBlob = async (image: ProcessedResult) => {
   const encodedImage = await imageToBase64(image.path);
 
+  console.log('::debug-encodedImage::', encodedImage);
   const blob = await api.rest.git.createBlob({
     owner,
     repo,
@@ -85,7 +81,6 @@ export const createCommit = async ({
     base_tree: baseTreeSha,
     tree: treeBlobs,
   });
-  console.log('::debug-new-tree::', newTree);
 
   const commit = await api.rest.git.createCommit({
     owner,
@@ -94,7 +89,6 @@ export const createCommit = async ({
     tree: newTree.data.sha,
     parents: [recentCommitSHA],
   });
-  console.log('::debug-commit::', commit);
 
   await api.rest.git.updateRef({
     owner,

@@ -53,6 +53,7 @@ export const imageToTreeBlob = async (image: ProcessedResult) => {
     content: encodedImage,
     encoding: 'base64',
   });
+  console.log('::debug-blob::', blob);
 
   return {
     path: image.name,
@@ -76,14 +77,15 @@ export const createCommit = async ({
     repo,
     commit_sha: recentCommitSHA,
   });
-  const baseTree = latestCommit.data.tree.sha;
+  const baseTreeSha = latestCommit.data.tree.sha;
 
   const newTree = await api.rest.git.createTree({
     owner,
     repo,
-    base_tree: baseTree,
+    base_tree: baseTreeSha,
     tree: treeBlobs,
   });
+  console.log('::debug-new-tree::', newTree);
 
   const commit = await api.rest.git.createCommit({
     owner,
@@ -92,6 +94,7 @@ export const createCommit = async ({
     tree: newTree.data.sha,
     parents: [recentCommitSHA],
   });
+  console.log('::debug-commit::', commit);
 
   await api.rest.git.updateRef({
     owner,

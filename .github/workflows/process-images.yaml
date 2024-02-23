@@ -25,7 +25,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: bun install
 
-      - name: Process images and Report results
+      - name: ✧ Process images and Report results
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}

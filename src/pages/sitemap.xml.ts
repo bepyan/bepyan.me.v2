@@ -26,7 +26,7 @@ export async function GET() {
         const langPrefix = post.lang === 'ko' ? '' : `/${post.lang}`;
         const lastMod = (post.updatedDate ?? post.date).toISOString();
         const slug = `${langPrefix}${post.href}`;
-        return `<url><loc>${siteUrl}${slug}</loc><lastmod>${lastMod}</lastmod></url>`;
+        return `<url><loc>${siteUrl}${slug}/</loc><lastmod>${lastMod}</lastmod></url>`;
       })
       .join('\n')}
   </urlset>

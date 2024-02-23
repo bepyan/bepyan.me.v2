@@ -2,8 +2,8 @@ import { Octokit, type RestEndpointMethodTypes } from '@octokit/rest';
 
 import type { ProcessedResult } from './sharp-api';
 
-export type GitTreeBlobs =
-  RestEndpointMethodTypes['git']['createTree']['parameters']['tree'];
+export type GitTreeBlob =
+  RestEndpointMethodTypes['git']['createTree']['parameters']['tree'][number];
 
 export const GITHUB_TOKEN = process.env['GITHUB_TOKEN'];
 export const GITHUB_REPOSITORY = process.env['GITHUB_REPOSITORY']!;
@@ -44,28 +44,22 @@ const imageToBase64 = async (path: string) => {
   return btoa(binary);
 };
 
-export const convertToTreeBlobs = async (images: ProcessedResult[]) => {
-  const imageBlobs: GitTreeBlobs = [];
+export const imageToTreeBlob = async (image: ProcessedResult) => {
+  const encodedImage = await imageToBase64(image.path);
 
-  for await (const image of images) {
-    const encodedImage = await imageToBase64(image.path);
+  const blob = await api.rest.git.createBlob({
+    owner,
+    repo,
+    content: encodedImage,
+    encoding: 'base64',
+  });
 
-    const blob = await api.rest.git.createBlob({
-      owner,
-      repo,
-      content: encodedImage,
-      encoding: 'base64',
-    });
-
-    imageBlobs.push({
-      path: image.name,
-      mode: '100644',
-      type: 'blob',
-      sha: blob.data.sha,
-    });
-  }
-
-  return imageBlobs;
+  return {
+    path: image.name,
+    mode: '100644',
+    type: 'blob',
+    sha: blob.data.sha,
+  } satisfies GitTreeBlob;
 };
 
 export const createCommit = async ({
@@ -73,7 +67,7 @@ export const createCommit = async ({
   treeBlobs,
 }: {
   message: string;
-  treeBlobs: GitTreeBlobs;
+  treeBlobs: GitTreeBlob[];
 }) => {
   const recentCommitSHA = GITHUB_PULL_REQUEST.head.sha;
 

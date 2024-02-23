@@ -1,4 +1,4 @@
-import { convertToTreeBlobs, createComment, createCommit } from './github-api';
+import { createComment, createCommit, imageToTreeBlob } from './github-api';
 import { sharpImages } from './sharp-api';
 
 const formatByte = (byte: number) => {
@@ -25,7 +25,7 @@ const formatImages = (num: number) => {
   }
 
   console.log('::✧:: Generating Blobs…');
-  const imageBlobs = await convertToTreeBlobs(sharpedImageList);
+  const imageBlobs = await Promise.all(sharpedImageList.map(imageToTreeBlob));
 
   console.log('::✧:: Committing files…');
   const commit = await createCommit({
@@ -38,7 +38,7 @@ const formatImages = (num: number) => {
   const markdown = `
 Optimize Image with Sharp ${commit.sha}
 
-Detected **${formatImages(metrics.totalFiles)}**, Optimized **${formatImages(metrics.sharpFiles)}**, Reduced **${metrics.savedPercent}%**, Saving **${formatByte(metrics.savedBytes)}**.
+Detected **${formatImages(metrics.totalFiles)}**, Optimized **${formatImages(metrics.sharpFiles)}**, Reduced **${metrics.savedPercent}%**, Saved **${formatByte(metrics.savedBytes)}**.
 
 ${sharpedImageList.map((image) =>`
 | Filename | Before | After | Improvement |

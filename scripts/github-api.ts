@@ -36,7 +36,7 @@ const imageToBase64 = async (path: string) => {
   const imageFile = Bun.file(path);
   const buffer = await imageFile.arrayBuffer();
   const base64 = Buffer.from(buffer).toString('base64');
-  return base64;
+  return `data:image/png;base64,${base64}`;
 };
 
 export const imageToTreeBlob = async (image: ProcessedResult) => {

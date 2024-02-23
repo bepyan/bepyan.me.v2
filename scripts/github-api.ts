@@ -41,7 +41,7 @@ const imageToBase64 = async (path: string) => {
   for (var i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
-  return btoa(binary);
+  return btoa(binary).replaceAll('\n', '');
 };
 
 export const imageToTreeBlob = async (image: ProcessedResult) => {

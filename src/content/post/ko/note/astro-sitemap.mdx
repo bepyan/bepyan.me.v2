@@ -1,0 +1,101 @@
+---
+title: '(Astro) 직접 sitemap.xml 만들기'
+description: ''
+date: 2024-02-23 23:39:55
+draft: false
+tags:
+  - astro
+  - sitemap
+---
+
+TODO: 사이트맵에 대한 간략한 소개
+
+TODO: [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/)에서 sitemap을 쉽게 생성할 수 있으나, 직접 sitemap을 만들게 되었음
+
+TODO: `@astrojs/sitemap`은 sitemap index을 생성
+TODO: google search console에서 sitemap index으로 부터 자동으로 페이지를 수집을 못하는 것 같음
+
+## /sitemap.xml 응답하게
+
+TODO: Astro에서 xml 응답을 하는 방법 소개
+
+```ts title="pages/sitemap.xml.ts"
+export async function GET() {
+  let result = '';
+
+  return new Response(result, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}
+```
+
+## sitemap 작성법
+
+TODO: 가장 기본적인 sitemap 마크업 형태
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+      <loc>https://bepyan.me</loc>
+  </url>
+  <url>
+      <loc>https://bepyan.me/blog</loc>
+  </url>
+</urlset>
+```
+
+TODO: sitemap 파싱 관련 정보를 더 알고 싶다면 아래 링크 참고
+https://support.google.com/webmasters/answer/7451001
+
+TODO: 포스트 글
+
+```ts title="pages/sitemap.xml.ts"
+import { getCollection } from 'astro:content';
+
+export async function GET() {
+  const siteUrl = import.meta.env.SITE;
+  const posts = await getCollection('post');
+
+  const result = `
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${siteUrl}/</loc></url>
+  <url><loc>${siteUrl}/posts/</loc></url>
+  ${posts
+    .map((post) => {
+      const lastMod = (post.data.updatedDate ?? post.data.date).toISOString();
+      return `<url><loc>${siteUrl}${post.slug}/</loc><lastmod>${lastMod}</lastmod></url>`;
+    })
+    .join('\n')}
+</urlset>
+  `.trim();
+
+  return new Response(result, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}
+```
+
+## 이후 적용해야할 곳
+
+https://docs.astro.build/en/guides/integrations-guide/sitemap/#usage
+
+```html title="src/layouts/Layout.astro"
+<head>
+  <link rel="sitemap" href="/sitemap.xml" />
+</head>
+```
+
+```txt title="public/robots.txt"
+User-agent: *
+Allow: /
+
+Sitemap: https://bepyan.me/sitemap.xml
+```
+
+http://localhost:4321/sitemap.xml 접근시 아래 이미지 처럼 브라우저가 잘 파싱했으면 됨

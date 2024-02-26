@@ -28,7 +28,16 @@ const description = t('nav.note.desc');
 
 <Main seo={{ title, description }} class="font-serif">
   <BaseNav href={p('/')} client:visible />
-  <BaseHeader {title} {description} />
+  <BaseHeader {title} {description}>
+    <div class="mt-2 flex gap-2 text-sm">
+      <a class="external-link" href={p('/writing')}>
+        {t('nav.writing')}
+      </a>
+      <a class="external-link" href={p('/craft')}>
+        {t('nav.craft')}
+      </a>
+    </div>
+  </BaseHeader>
   <div
     data-animate
     data-animate-speed="slow"

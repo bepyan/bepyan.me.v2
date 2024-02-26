@@ -1,0 +1,105 @@
+---
+title: '(Astro) 직접 sitemap.xml 만들기'
+description: ''
+date: 2024-02-26 20:39:25
+draft: false
+tags:
+  - astro
+  - sitemap
+---
+
+**사이트맵**(sitemap)은 웹사이트에 있는 페이지들을 명시함으로써, 검색 엔진이 사이트를 쉽게 크롤링할 수 있도록 돕습니다.
+
+Astro에서 사이트맵을 간편하게 생성해주는 플러그인 [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/)을 제공해줍니다.
+다만 `@astrojs/sitemap`에서 만들어 주는 Sitemap Index(서브 사이트맵의 리스트를 제공하는 사이트맵)을 원치 않다거나, 직접 사이트맵을 다루고자 할 수 있습니다.
+
+이 글에서는 Astro에서 직접적인 사이트맵을 만드는 방법을 설명해 드리겠습니다.
+
+## /sitemap.xml 응답
+
+Astro에서 아래와 같이 [Response](https://developer.mozilla.org/docs/Web/API/Response) 객체를 활용하여 XML 양식으로 응답할 수 있습니다.
+
+```ts title="pages/sitemap.xml.ts" {6}
+export async function GET() {
+  let result = '';
+
+  return new Response(result, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}
+```
+
+## 사이트맵 작성법
+
+이제 사이트맵의 내용을 작성하면 되는데요.
+가장 기본적인 사이트맵 마크업 형태는 아래와 같습니다. 꽤 직관적이죠.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+      <loc>https://bepyan.me/</loc>
+  </url>
+</urlset>
+```
+
+블로그 글 링크도 모두 이 양식에 맞춰 기입하면 됩니다.
+여기서 `<lastmode>`태그를 추가 기입하여 봇이 변경된 페이지를 우선적으로 크롤링 할 수 있게 합니다.
+
+```ts title="pages/sitemap.xml.ts" {15}
+import { getCollection } from 'astro:content';
+
+export async function GET() {
+  const siteUrl = import.meta.env.SITE;
+  const posts = await getCollection('post');
+
+  const result = `
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${siteUrl}/</loc></url>
+  <url><loc>${siteUrl}/posts/</loc></url>
+  ${posts
+    .map((post) => {
+      const lastMod = (post.data.updatedDate ?? post.data.date).toISOString();
+      return `<url><loc>${siteUrl}${post.slug}/</loc><lastmod>${lastMod}</lastmod></url>`;
+    })
+    .join('\n')}
+</urlset>
+  `.trim();
+
+  return new Response(result, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}
+```
+
+## 추가로 적용해보면 좋은 것
+
+클롤러가 사이트맵을 쉽게 탐지할 수 있도록 관련 메타 정보를 사이트에 추가할 수 있습니다.
+
+```html title="src/layouts/Layout.astro"
+<head>
+  <link rel="sitemap" href="/sitemap.xml" />
+</head>
+```
+
+```txt title="public/robots.txt"
+User-agent: *
+Allow: /
+Sitemap: https://bepyan.me/sitemap.xml
+```
+
+검색 엔진에 사이트맵을 등록하는 방법은 [여기 글](https://bepyan.github.io/blog/nextjs-blog/5-create-sitemap)을 참고해 보세요.
+
+## 맺으면서
+
+작업 후 http://localhost:4321/sitemap.xml 경로로 접근해, 브라우저가 아래 이미지 처럼 XML을 표기하는지 확인합니다.
+
+![240226-201053](/img/astro-sitemap/240226-201053.png)
+
+사이트맵에 대해 더 알고 싶다면 아래 링크를 참고 바랍니다.
+https://support.google.com/webmasters/answer/7451001

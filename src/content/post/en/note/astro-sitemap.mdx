@@ -1,0 +1,104 @@
+---
+title: '(Astro) Create sitemap.xml Manually'
+description: ''
+date: 2024-02-26 20:40:21
+draft: false
+tags:
+  - astro
+  - sitemap
+---
+
+A **Sitemap** assists search engines in easily crawling a website by designating its pages.
+
+Astro provides a handy plugin [`@astrojs/sitemap`](https://docs.astro.build/en/guides/integrations-guide/sitemap/) to generate your sitemap.  
+However, you may not want a Sitemap Index (a sitemap that lists sub-sitemaps) created by `@astrojs/sitemap`, or you may want to handle the sitemap yourself.
+
+In this post, I will explain how to create a direct sitemap in Astro.
+
+## Responding /sitemap.xml
+
+In Astro, you can respond in XML format using a [Response](https://developer.mozilla.org/docs/Web/API/Response) object as follows.
+
+```ts title="pages/sitemap.xml.ts" {6}
+export async function GET() {
+  let result = '';
+
+  return new Response(result, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}
+```
+
+## How to write a sitemap
+
+Now all you need to do is write the content of the sitemap.  
+The most basic sitemap markup format is as follows. It's quite intuitive, isn't it?
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+      <loc>https://bepyan.me/</loc>
+  </url>
+</urlset>
+```
+
+All blog post links should also be entered in this format.  
+Here, you can add the `<lastmode>` tag to allow the bot to prioritize the crawling of changed pages.
+
+```ts title="pages/sitemap.xml.ts" {15}
+import { getCollection } from 'astro:content';
+
+export async function GET() {
+  const siteUrl = import.meta.env.SITE;
+  const posts = await getCollection('post');
+
+  const result = `  
+<?xml version="1.0" encoding="UTF-8"?>  
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">  
+  <url><loc>${siteUrl}/</loc></url>  
+  <url><loc>${siteUrl}/posts/</loc></url>  
+  ${posts
+    .map((post) => {
+      const lastMod = (post.data.updatedDate ?? post.data.date).toISOString();
+      return `<url><loc>${siteUrl}${post.slug}/</loc><lastmod>${lastMod}</lastmod></url>`;
+    })
+    .join('\n')}  
+</urlset>  
+  `.trim();
+
+  return new Response(result, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}
+```
+
+## What is good to apply additionally
+
+You can add related meta information to the site so that the crawler can easily detect the sitemap.
+
+```html title="src/layouts/Layout.astro"
+<head>
+  <link rel="sitemap" href="/sitemap.xml" />
+</head>
+```
+
+```txt title="public/robots.txt"
+User-agent: *
+Allow: /
+Sitemap: https://bepyan.me/sitemap.xml
+```
+
+## In Conclusion
+
+After the work, access the http://localhost:4321/sitemap.xml path and check if the browser displays XML as shown in the image below.
+
+![240226-201053](/img/astro-sitemap/240226-201053.png)
+
+If you want to know more about sitemaps, please refer to the link below.  
+https://support.google.com/webmasters/answer/7451001

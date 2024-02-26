@@ -18,7 +18,7 @@ const baubles = [...Array(50)].map(() => ({
   color: baubleColors[Math.floor(Math.random() * baubleColors.length)],
 }));
 
-export const App = () => {
+export const R3FBubbleApp = () => {
   return (
     <Canvas
       shadows

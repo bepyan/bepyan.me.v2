@@ -4,8 +4,7 @@ import BaseNav from '~/components/base-nav';
 import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
 
-const crafts = await Astro.glob('./**/index.astro');
-console.log(crafts);
+const crafts = await Astro.glob('./craft/**/index.astro');
 
 const { t, p } = useI18n(Astro.url);
 
@@ -30,7 +29,9 @@ const description = t('nav.craft.desc');
       {
         crafts.map((craft) => (
           <div>
-            <a href={craft.url}>{craft.url}</a>
+            <a class="link" href={craft.url}>
+              {craft.url}
+            </a>
           </div>
         ))
       }

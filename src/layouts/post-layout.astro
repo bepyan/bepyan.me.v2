@@ -5,20 +5,15 @@ import { type CollectionEntry } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseHeader from '~/components/base-header.astro';
-import BaseNav from '~/components/base-nav';
+import BaseLeftAside from '~/components/base-left-aside.astro';
+import BaseNav from '~/components/base-nav.astro';
 import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import TableOfContent from '~/components/table-of-content';
 import type { Language } from '~/i18n/ui';
-import { useTranslatedPath } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
-import {
-  contentToDescription,
-  getPostType,
-  parseToc,
-  resolveSlug,
-} from '~/libs/mdx';
+import { contentToDescription, parseToc, resolveSlug } from '~/libs/mdx';
 
 export type Props = {
   lang: Language;
@@ -30,9 +25,6 @@ export type Props = {
 
 const { lang, post, prevPost, nextPost, noI18n } = Astro.props;
 
-const p = useTranslatedPath(lang);
-
-const type = getPostType(post);
 const { Content } = await post.render();
 const { title, date } = post.data;
 const description = post.data.description || contentToDescription(post.body);
@@ -40,25 +32,23 @@ const toc = parseToc(post.body);
 ---
 
 <Main seo={{ title, description }}>
-  <BaseNav href={p(`/${type}`)} client:visible>
+  <BaseLeftAside>
     <TableOfContent
       data-animate
-      className="mt-[60px] px-2 text-sm md:hidden"
+      className="px-2 text-sm md:hidden"
       toc={toc}
       client:load
     />
-  </BaseNav>
-  <BaseHeader {title} {noI18n}>
-    <time class="text-sm text-second">
-      {format(date, 'MMM dd, yyyy')}
-    </time>
+  </BaseLeftAside>
+  <BaseHeader {title} description={format(date, 'MMM dd, yyyy')} {noI18n}>
+    <BaseNav class="mt-1.5" />
   </BaseHeader>
-  <article data-animate data-animate-speed="fast" class="mdx">
+  <article data-animate data-animate-speed="fast" class="mdx mt-14">
     <Content />
-  </article>
-  <footer>
     <CopyRight class="mt-page text-right text-xs" />
-    <hr class="mb-7 mt-4" />
+  </article>
+  <hr class="mb-7 mt-4" />
+  <footer>
     <section class="text-tx flex items-stretch justify-between gap-1 text-sm">
       {
         !!prevPost && (

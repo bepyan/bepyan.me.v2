@@ -1,0 +1,42 @@
+---
+import type { Language } from '~/i18n/ui';
+import {
+  getLangFromUrl,
+  useTranslatedPath,
+  useTranslations,
+} from '~/i18n/utils';
+import { cn } from '~/libs/utils';
+
+import { DotIcon } from './ui/icons';
+
+type Props = {
+  class?: string;
+  lang?: Language;
+};
+
+const { props, url } = Astro;
+
+const lang = props.lang ?? getLangFromUrl(url);
+
+const p = useTranslatedPath(lang);
+const t = useTranslations(lang);
+---
+
+<div class={cn('flex items-center gap-2 font-serif text-sm', props.class)}>
+  <div>
+    <span>by</span>
+    <a class="link ml-0.5" href={p('/')}>
+      {t('index.name')}
+    </a>
+  </div>
+  <DotIcon className="h-2 w-2 text-second" />
+  <div class="flex items-center gap-1">
+    {
+      (['writing', 'note', 'craft'] as const).map((item) => (
+        <a class="external-link" href={p(`/${item}`)}>
+          {t(`nav.${item}`)}
+        </a>
+      ))
+    }
+  </div>
+</div>

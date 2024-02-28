@@ -13,9 +13,9 @@ const { title, description, noI18n } = props;
 ---
 
 <div class="mb-7 font-serif">
-  <div class="flex items-center">
+  <div class="flex items-center justify-between">
     <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
-    <div class="ml-auto flex gap-1">
+    <div class="flex gap-1">
       {!noI18n && <LanguageDropdown client:load {url} />}
       <ThemeDropdown client:load />
     </div>

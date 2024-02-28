@@ -1,12 +1,12 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
-import BaseNav from '~/components/base-nav';
+import BaseNav from '~/components/base-nav.astro';
 import WritingSection from '~/components/writing-section';
 import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
 import { getWritingPostInfoList } from '~/libs/mdx';
 
-const { lang, p, t } = useI18n(Astro.url);
+const { lang, t } = useI18n(Astro.url);
 
 const posts = await getWritingPostInfoList();
 
@@ -15,16 +15,8 @@ const description = t('nav.writing.desc');
 ---
 
 <Main seo={{ title, description }} class="font-serif">
-  <BaseNav href={p('/')} client:visible />
   <BaseHeader {title} {description}>
-    <div class="mt-2 flex gap-2 text-sm">
-      <a class="external-link" href={p('/note')}>
-        {t('nav.note')}
-      </a>
-      <a class="external-link" href={p('/craft')}>
-        {t('nav.craft')}
-      </a>
-    </div>
+    <BaseNav class="mt-1.5" />
   </BaseHeader>
   <WritingSection client:load {lang} {posts} />
 </Main>

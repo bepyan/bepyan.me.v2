@@ -1,6 +1,6 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
-import BaseNav from '~/components/base-nav';
+import BaseNav from '~/components/base-nav.astro';
 import { R3FBubbleApp } from '~/components/examples/r3f-bubble';
 import { GiscusSection } from '~/components/giscus';
 import type { Language } from '~/i18n/ui';
@@ -13,8 +13,9 @@ const description = 'simple example of react-tree-fiber with rapier';
 ---
 
 <Main {lang} seo={{ title, description }}>
-  <BaseNav href="/craft" client:visible />
-  <BaseHeader {title} {description} noI18n />
+  <BaseHeader {title} {description} noI18n>
+    <BaseNav class="mt-1.5" lang="en" />
+  </BaseHeader>
   <div class="h-96 w-full max-w-content">
     <R3FBubbleApp client:load />
   </div>

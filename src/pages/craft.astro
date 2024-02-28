@@ -1,28 +1,20 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
-import BaseNav from '~/components/base-nav';
+import BaseNav from '~/components/base-nav.astro';
 import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
 
 const crafts = await Astro.glob('./craft/**/index.astro');
 
-const { t, p } = useI18n(Astro.url);
+const { t } = useI18n(Astro.url);
 
 const title = t('nav.craft');
 const description = t('nav.craft.desc');
 ---
 
 <Main seo={{ title, description }} class="font-serif">
-  <BaseNav href="/" client:visible />
   <BaseHeader {title} {description}>
-    <div class="mt-2 flex gap-2 text-sm">
-      <a class="external-link" href={p('/note')}>
-        {t('nav.note')}
-      </a>
-      <a class="external-link" href={p('/writing')}>
-        {t('nav.writing')}
-      </a>
-    </div>
+    <BaseNav class="mt-1.5" />
   </BaseHeader>
   <section data-animate data-animate-speed="slow" class="my-14">
     <div>

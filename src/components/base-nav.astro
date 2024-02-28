@@ -9,15 +9,20 @@ import { cn } from '~/libs/utils';
 
 import { DotIcon } from './ui/icons';
 
+const NAV_ITEM_LIST = ['writing', 'note', 'craft'] as const;
+type NavItem = (typeof NAV_ITEM_LIST)[number];
+
 type Props = {
   class?: string;
   lang?: Language;
+  hightlightNavItem?: NavItem;
 };
 
 const { props, url } = Astro;
 
-const lang = props.lang ?? getLangFromUrl(url);
+const currentNavItem = url.pathname.split('/').filter(Boolean).join('');
 
+const lang = props.lang ?? getLangFromUrl(url);
 const p = useTranslatedPath(lang);
 const t = useTranslations(lang);
 ---
@@ -30,13 +35,21 @@ const t = useTranslations(lang);
     </a>
   </div>
   <DotIcon className="h-2 w-2 text-second" />
-  <div class="flex items-center gap-1">
+  <div class="flex items-center gap-2">
     {
-      (['writing', 'note', 'craft'] as const).map((item) => (
-        <a class="external-link" href={p(`/${item}`)}>
-          {t(`nav.${item}`)}
-        </a>
-      ))
+      NAV_ITEM_LIST.filter((navItem) => navItem !== currentNavItem).map(
+        (navItem) => (
+          <a
+            class={cn(
+              'external-link',
+              navItem === props.hightlightNavItem && 'font-bold',
+            )}
+            href={p(`/${navItem}`)}
+          >
+            {t(`nav.${navItem}`)}
+          </a>
+        ),
+      )
     }
   </div>
 </div>

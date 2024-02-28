@@ -7,14 +7,14 @@ import {
   NotionIcon,
   TwitterXIcon,
 } from '~/components/ui/icons';
-import Main from '~/layouts/main.astro';
+import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 
 const { url } = Astro;
 const { p, t } = useI18n(url);
 ---
 
-<Main class="font-serif">
+<MainLayout class="font-serif">
   <BaseHeader title={`${t('index.name')} ﹒ bepyan`} />
   <div data-animate data-animate-speed="slow">
     <!-- 소개 -->
@@ -87,4 +87,4 @@ const { p, t } = useI18n(url);
       </div>
     </div>
   </div>
-</Main>
+</MainLayout>

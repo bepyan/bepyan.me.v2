@@ -1,7 +1,7 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
-import Main from '~/layouts/main.astro';
+import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 
 const crafts = await Astro.glob('./craft/**/index.astro');
@@ -12,7 +12,7 @@ const title = t('nav.craft');
 const description = t('nav.craft.desc');
 ---
 
-<Main seo={{ title, description }} class="font-serif">
+<MainLayout seo={{ title, description }} class="font-serif">
   <BaseHeader {title} {description}>
     <BaseNav class="mt-1.5" />
   </BaseHeader>
@@ -29,4 +29,4 @@ const description = t('nav.craft.desc');
       }
     </div>
   </section>
-</Main>
+</MainLayout>

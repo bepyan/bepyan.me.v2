@@ -11,7 +11,7 @@ import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import TableOfContent from '~/components/table-of-content';
-import Main from '~/layouts/main.astro';
+import MainLayout from '~/layouts/main-layout.astro';
 import type { Language } from '~/libs/i18n';
 import {
   contentToDescription,
@@ -38,7 +38,7 @@ const toc = parseToc(post.body);
 const { Content } = await post.render();
 ---
 
-<Main seo={{ title, description }}>
+<MainLayout seo={{ title, description }}>
   <BaseLeftAside>
     <TableOfContent
       data-animate
@@ -91,4 +91,4 @@ const { Content } = await post.render();
     <GiscusSection className="mx-auto mt-20" {lang} client:load />
   </footer>
   <MediumZoomScript />
-</Main>
+</MainLayout>

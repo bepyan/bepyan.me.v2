@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
-import Main from '~/layouts/main.astro';
+import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 import { getPostInfoList, type PostInfo } from '~/libs/mdx';
 
@@ -26,7 +26,7 @@ const title = t('nav.note');
 const description = t('nav.note.desc');
 ---
 
-<Main seo={{ title, description }} class="font-serif">
+<MainLayout seo={{ title, description }} class="font-serif">
   <BaseHeader {title} {description}>
     <BaseNav class="mt-1.5" />
   </BaseHeader>
@@ -68,4 +68,4 @@ const description = t('nav.note.desc');
       })
     }
   </div>
-</Main>
+</MainLayout>

@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
 import { BxLinkExternal } from '~/components/ui/icons';
-import Main from '~/layouts/main.astro';
+import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n, useTranslatedPath } from '~/libs/i18n';
 import {
   getWritingPostInfoList,
@@ -33,7 +33,7 @@ const yearList = Object.entries(
 ).sort((a, b) => +b[0] - +a[0]);
 ---
 
-<Main seo={{ title, description }} class="font-serif">
+<MainLayout seo={{ title, description }} class="font-serif">
   <BaseHeader {title} {description}>
     <BaseNav class="mt-1.5" />
   </BaseHeader>
@@ -78,4 +78,4 @@ const yearList = Object.entries(
       })
     }
   </section>
-</Main>
+</MainLayout>

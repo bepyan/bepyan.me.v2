@@ -3,7 +3,7 @@ import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
 import { R3FBubbleApp } from '~/components/examples/r3f-bubble';
 import { GiscusSection } from '~/components/giscus';
-import Main from '~/layouts/main.astro';
+import MainLayout from '~/layouts/main-layout.astro';
 import type { Language } from '~/libs/i18n';
 
 const lang: Language = 'en';
@@ -12,7 +12,7 @@ const title = 'r3f bubble';
 const description = 'simple example of react-tree-fiber with rapier';
 ---
 
-<Main {lang} seo={{ title, description }}>
+<MainLayout {lang} seo={{ title, description }}>
   <BaseHeader {title} {description} noI18n>
     <BaseNav class="mt-1.5" lang="en" />
   </BaseHeader>
@@ -20,4 +20,4 @@ const description = 'simple example of react-tree-fiber with rapier';
     <R3FBubbleApp client:load />
   </div>
   <GiscusSection className="mx-auto mt-20" {lang} client:idle />
-</Main>
+</MainLayout>

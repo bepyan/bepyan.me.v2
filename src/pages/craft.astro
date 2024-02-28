@@ -1,8 +1,8 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
-import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
+import { useI18n } from '~/libs/i18n';
 
 const crafts = await Astro.glob('./craft/**/index.astro');
 

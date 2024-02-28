@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { defaultLang, type Language } from '~/i18n/ui';
+import { defaultLang, type Language } from '~/libs/i18n';
 
 const giscusThemes = {
   light: 'https://giscus.app/themes/noborder_light.css',

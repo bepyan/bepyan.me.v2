@@ -1,7 +1,7 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
-import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
+import { useI18n } from '~/libs/i18n';
 
 const { url } = Astro;
 const { t, p } = useI18n(url);

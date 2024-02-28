@@ -1,7 +1,7 @@
 import rss from '@astrojs/rss';
 
 import { SITE } from '~/consts';
-import { useTranslatedPath } from '~/i18n/utils';
+import { useTranslatedPath } from '~/libs/i18n';
 import { getPostInfoList } from '~/libs/mdx';
 
 export async function GET(context: any) {

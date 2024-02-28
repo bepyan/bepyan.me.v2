@@ -1,8 +1,7 @@
 import { format } from 'date-fns';
 import { useMemo } from 'react';
 
-import type { Language } from '~/i18n/ui';
-import { useTranslatedPath } from '~/i18n/utils';
+import { type Language, useTranslatedPath } from '~/libs/i18n';
 import { type PostInfo, sortDateDesc } from '~/libs/mdx';
 
 import { BxLinkExternal } from './ui/icons';

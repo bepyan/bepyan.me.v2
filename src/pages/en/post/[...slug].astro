@@ -1,6 +1,6 @@
 ---
-import { getLangFromSlug } from '~/i18n/utils';
 import PostLayout from '~/layouts/post-layout.astro';
+import { getLangFromSlug } from '~/libs/i18n/utils';
 import { getPostCollection, isNote, isWriting, resolveSlug } from '~/libs/mdx';
 
 export async function getStaticPaths() {

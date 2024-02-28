@@ -5,8 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { languages } from '~/i18n/ui';
-import { getDefaultPathname, useI18n } from '~/i18n/utils';
+import { getDefaultPathname, languages, useI18n } from '~/libs/i18n';
 
 import { DotIcon, HeroiconsLanguage } from './ui/icons';
 

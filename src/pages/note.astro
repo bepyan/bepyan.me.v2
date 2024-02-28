@@ -3,8 +3,8 @@ import { format } from 'date-fns';
 
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
-import { useI18n } from '~/i18n/utils';
 import Main from '~/layouts/main.astro';
+import { useI18n } from '~/libs/i18n';
 import { getPostInfoList, type PostInfo } from '~/libs/mdx';
 
 const { lang, p, t } = useI18n(Astro.url);

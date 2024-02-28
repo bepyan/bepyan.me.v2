@@ -1,8 +1,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 
 import { externalWritings } from '~/content/_constants';
-import type { Language } from '~/i18n/ui';
-import { getLangFromSlug } from '~/i18n/utils';
+import { getLangFromSlug, type Language } from '~/libs/i18n';
 
 import { isDev } from './utils';
 

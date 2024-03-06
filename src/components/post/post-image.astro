@@ -1,0 +1,34 @@
+---
+import { Image } from 'astro:assets';
+import sizeOf from 'image-size';
+
+type Props = {
+  src: string;
+  alt: string;
+};
+
+const { src, alt } = Astro.props;
+
+const isExternalImage = src.startsWith('https');
+const isVaildCaption = alt && Number.isInteger(+alt[0]) === false;
+
+const getDimention = () => {
+  const dim = sizeOf(`public/${src}`);
+
+  return {
+    width: dim.width ?? 0,
+    height: dim.height ?? 0,
+  };
+};
+---
+
+<figure>
+  {
+    isExternalImage ? (
+      <img {src} {alt} />
+    ) : (
+      <Image {src} {alt} {...getDimention()} />
+    )
+  }
+  {isVaildCaption && <figcaption>{alt}</figcaption>}
+</figure>

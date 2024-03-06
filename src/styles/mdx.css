@@ -164,7 +164,8 @@
 }
 
 .mdx img + em,
-.mdx img + em p {
+.mdx img + em p,
+.mdx img + figcaption {
   display: inline-block;
   margin-top: 8px;
   color: var(--shiki-token-comment);

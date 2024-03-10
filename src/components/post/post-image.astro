@@ -1,12 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import sizeOf from 'image-size';
-import type { ISizeCalculationResult } from 'image-size/dist/types/interface';
-
-type Dimension = {
-  width: number;
-  height: number;
-};
+import { getPlaiceholder } from 'plaiceholder';
 
 type Props = {
   src: string;
@@ -15,41 +8,32 @@ type Props = {
 
 const { src, alt } = Astro.props;
 
-const isExternalImage = src.startsWith('https');
 const isVaildCaption = alt && Number.isInteger(+alt[0]) === false;
 
-const refineDimension = (dim: ISizeCalculationResult) => {
-  return {
-    width: dim.width ?? 0,
-    height: dim.height ?? 0,
-  } satisfies Dimension;
+const getImageBuffer = async (src: string) => {
+  const isExternalImage = src.startsWith('https');
+
+  if (isExternalImage) {
+    const res = await fetch(src);
+    return Buffer.from(await res.arrayBuffer());
+  }
+
+  const localSrc = `public/${src}`;
+  const file = Bun.file(localSrc);
+  return Buffer.from(await file.arrayBuffer());
 };
 
-const getExternalDimension = async () => {
-  const res = await fetch(src);
-  const buffer = Buffer.from(await res.arrayBuffer());
-
-  const dimention = sizeOf(buffer);
-  return refineDimension(dimention);
-};
-
-const getLocalDimension = () => {
-  const dimension = sizeOf(`public/${src}`);
-  return refineDimension(dimension);
-};
-
-const dimention = isExternalImage
-  ? await getExternalDimension()
-  : getLocalDimension();
+const imageBuffer = await getImageBuffer(src);
+const {
+  metadata: { height, width },
+  css,
+} = await getPlaiceholder(imageBuffer);
 ---
 
 <figure>
-  {
-    isExternalImage ? (
-      <img {src} {alt} {...dimention} />
-    ) : (
-      <Image {src} {alt} {...dimention} />
-    )
-  }
+  <div class="relative block overflow-hidden">
+    <div style={css} class="absolute inset-0 -z-10 blur-2xl filter"></div>
+    <img {src} {alt} {width} {height} />
+  </div>
   {isVaildCaption && <figcaption>{alt}</figcaption>}
 </figure>

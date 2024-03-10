@@ -38,6 +38,7 @@
     "lucide-react": "^0.279.0",
     "medium-zoom": "^1.1.0",
     "nanostores": "^0.9.5",
+    "plaiceholder": "^3.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "svelte": "^4.2.10",

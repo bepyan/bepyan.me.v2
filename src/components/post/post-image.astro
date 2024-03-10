@@ -1,4 +1,6 @@
 ---
+import fs from 'node:fs/promises';
+
 import { getPlaiceholder } from 'plaiceholder';
 
 type Props = {
@@ -19,8 +21,8 @@ const getImageBuffer = async (src: string) => {
   }
 
   const localSrc = `public/${src}`;
-  const file = Bun.file(localSrc);
-  return Buffer.from(await file.arrayBuffer());
+  const file = await fs.readFile(localSrc);
+  return Buffer.from(file);
 };
 
 const imageBuffer = await getImageBuffer(src);

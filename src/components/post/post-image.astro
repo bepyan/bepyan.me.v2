@@ -1,0 +1,41 @@
+---
+import fs from 'node:fs/promises';
+
+import { getPlaiceholder } from 'plaiceholder';
+
+type Props = {
+  src: string;
+  alt: string;
+};
+
+const { src, alt } = Astro.props;
+
+const isVaildCaption = alt && Number.isInteger(+alt[0]) === false;
+
+const getImageBuffer = async (src: string) => {
+  const isExternalImage = src.startsWith('https');
+
+  if (isExternalImage) {
+    const res = await fetch(src);
+    return Buffer.from(await res.arrayBuffer());
+  }
+
+  const localSrc = `public/${src}`;
+  const file = await fs.readFile(localSrc);
+  return Buffer.from(file);
+};
+
+const imageBuffer = await getImageBuffer(src);
+const {
+  metadata: { height, width },
+  css,
+} = await getPlaiceholder(imageBuffer);
+---
+
+<figure>
+  <div class="relative block overflow-hidden">
+    <div style={css} class="absolute inset-0 -z-10 blur-2xl filter"></div>
+    <img {src} {alt} {width} {height} />
+  </div>
+  {isVaildCaption && <figcaption>{alt}</figcaption>}
+</figure>

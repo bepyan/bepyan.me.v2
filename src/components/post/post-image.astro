@@ -1,6 +1,12 @@
 ---
 import { Image } from 'astro:assets';
 import sizeOf from 'image-size';
+import type { ISizeCalculationResult } from 'image-size/dist/types/interface';
+
+type Dimension = {
+  width: number;
+  height: number;
+};
 
 type Props = {
   src: string;
@@ -12,22 +18,37 @@ const { src, alt } = Astro.props;
 const isExternalImage = src.startsWith('https');
 const isVaildCaption = alt && Number.isInteger(+alt[0]) === false;
 
-const getDimention = () => {
-  const dim = sizeOf(`public/${src}`);
-
+const refineDimension = (dim: ISizeCalculationResult) => {
   return {
     width: dim.width ?? 0,
     height: dim.height ?? 0,
-  };
+  } satisfies Dimension;
 };
+
+const getExternalDimension = async () => {
+  const res = await fetch(src);
+  const buffer = Buffer.from(await res.arrayBuffer());
+
+  const dimention = sizeOf(buffer);
+  return refineDimension(dimention);
+};
+
+const getLocalDimension = () => {
+  const dimension = sizeOf(`public/${src}`);
+  return refineDimension(dimension);
+};
+
+const dimention = isExternalImage
+  ? await getExternalDimension()
+  : getLocalDimension();
 ---
 
 <figure>
   {
     isExternalImage ? (
-      <img {src} {alt} />
+      <img {src} {alt} {...dimention} />
     ) : (
-      <Image {src} {alt} {...getDimention()} />
+      <Image {src} {alt} {...dimention} />
     )
   }
   {isVaildCaption && <figcaption>{alt}</figcaption>}

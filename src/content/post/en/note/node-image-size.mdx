@@ -1,0 +1,119 @@
+---
+title: '(Node) Get the Image Width and Height'
+description: 'Learn how to get the width and height of an local image and url image in the Node runtime.'
+date: 2024-03-12 13:06:56
+draft: false
+tags:
+  - node
+---
+
+TL;DR, follow the [**final code**](#final-code) right away!
+
+In a browser runtime, you can easily get the size of an image using the [`Image`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image) element. The following code can be run directly in the browser console.
+
+```js
+const img = new Image();
+img.onload = function () {
+  console.log(img.width + 'x' + img.height);
+  // 200x300
+};
+img.src = 'https://picsum.photos/200/300';
+```
+
+However, in the case of non-browser runtime like Node or Bun, you cannot use this `Image` element. Then how can you get the size of the image in this situation?
+
+## `image-size`
+
+The open-source library [`image-size`](https://github.com/image-size/image-size) can easily solve this problem.
+
+```shell
+yarn add image-size
+```
+
+`image-size` is written with TypeScript.  
+Currently it operates only in the Node runtime in version 1, but It is expected to operate in the browser runtime in version 2. [find out GitHub](https://github.com/image-size/image-size/pull/370).
+
+The basic operation is to **extract image information from binary data of the image**.
+
+Different file formats have different binary structures and need to be handled separately, but since `image-size` supports many file formats (PNG, JPEG, GIF, WebP, HEIC, etc.) and automatically parses them, we can easily get the size of an image.
+
+## Local Images
+
+If you want to get the size of an image in the local file system, you can get it right away by just passing the file path as an argument.
+
+```ts
+import sizeOf from 'image-size';
+
+const dimension = sizeOf('public/og.png');
+
+console.log(dimension);
+// {
+//   height: 720,
+//   width: 1280,
+//   type: "png",
+// }
+```
+
+## External Images
+
+For external images, you can get the size of the image by obtaining binary data from the URL and providing it as an argument.
+
+```ts {4}
+import sizeOf from 'image-size';
+
+const res = await fetch('https://picsum.photos/200/300');
+const buffer = new Uint8Array(await res.arrayBuffer());
+const dimension = sizeOf(buffer);
+
+console.log(dimension);
+// {
+//   height: 300,
+//   orientation: 1,
+//   width: 200,
+//   type: "jpg",
+// }
+```
+
+Inside `image-size`, parsing is done based on [Uint8Array](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)(8-bit unsigned integer array), so just provide it to them.
+
+You can get the binary data([ArrayBuffer](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)) through the `arrayBuffer` method of the fetch Response, and you can convert the binary data to a Uint8Array object through the constructor of Uint8Array.
+
+Also, it is acceptable to write like below in the Node runtime.
+
+```js
+// Buffer is a global variable in the Node runtime, but it is recommended to import and use it for easy reference.
+import { Buffer } from 'node:buffer';
+
+const buffer = Buffer.from(await res.arrayBuffer());
+```
+
+## Final Code
+
+If you look at the [library code](https://github.com/image-size/image-size/blob/9120bfb0b1dc0dab5456f22c94133b6fc3f5f0a4/lib/index.ts#L140-L141), you can see that it gets the image size by converting the local image into binary data as well.  
+So whether it is an internal image or an external image, if you convert them all into binary data and get the image size, you can write much a clean code.
+
+```ts {17-20}
+import fs from 'node:fs/promises';
+import sizeOf from 'image-size';
+
+const getImageBuffer = async (src: string) => {
+  const isExternalImage = src.startsWith('http');
+
+  if (isExternalImage) {
+    const res = await fetch(src);
+    return new Uint8Array(await res.arrayBuffer());
+  }
+
+  const localSrc = `public/${src}`;
+  const file = await fs.readFile(localSrc);
+  return new Uint8Array(file);
+};
+
+export const getImageDimension = async (src: string) => {
+  const buffer = await getImageBuffer(src);
+  return sizeOf(buffer);
+};
+```
+
+I wanted to prevent layout shift of the blog article by specifying the image size at the web application build time.  
+Try to get the size of the image without depending on the browser anymore.

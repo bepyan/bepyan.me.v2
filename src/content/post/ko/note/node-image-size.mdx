@@ -1,8 +1,8 @@
 ---
 title: '(Node) 이미지 가로 세로 크기 구하기'
 description: '노드 런타임에서 이미지의 가로 세로 크기를 구하는 방법을 알아봅시다.'
-date: 2024-03-11 18:27:57
-draft: true
+date: 2024-03-12 13:06:56
+draft: false
 tags:
   - node
 ---
@@ -27,15 +27,15 @@ img.src = 'https://picsum.photos/200/300';
 바쁘신 분은 바로 [최종코드](#최종-코드)를 참고해주세요!
 
 ```shell
-pnpm add image-size
+yarn add image-size
 ```
 
-`image-size`는 TypeScript로 구성된 Node 모듈 라이브러리인데요.
-이는 반대로 브라우저 런타임에서 사용할 수 없습니다.
+`image-size`는 TypeScript로 구성된 라이브러리인데요.
+현재 v1에서는 Node 런타임에서만 동작하지만, v2에서는 브라우저 런타임에서도 동작할 예정입니다. [Github 참고](https://github.com/image-size/image-size/pull/370).
 
 라이브러리의 기본 동작 원리는 **이미지의 바이너리 데이터에서 이미지 정보를 추출하는 것**입니다.
 
-파일 형식마다 바이너리 구조가 다르므로 이를 별도로 처리해야 하지만, `image-size`는 PNG, JPEG, GIF, WebP, HEIC 등 다양한 파일 포멧을 지원하고 있어
+파일 형식마다 바이너리 구조가 다르므로 이를 별도로 처리해야 하지만, `image-size`는 PNG, JPEG, GIF, WebP, HEIC 등 다양한 파일 포멧을 지원하고 있고 자동으로 파일 형식을 파싱하기에, 저희는 간편히 이미지의 크기를 구할 수 있습니다.
 
 ## 로컬 이미지
 
@@ -58,12 +58,11 @@ console.log(dimension);
 
 외부 이미지의 경우, URL로부터 이미지의 바이너리 데이터를 가져와, 이를 통해 이미지 크기를 알 수 있습니다.
 
-```ts {5}
-import { Buffer } from 'node:buffer';
+```ts {4}
 import sizeOf from 'image-size';
 
 const res = await fetch('https://picsum.photos/200/300');
-const buffer = Buffer.from(await res.arrayBuffer());
+const buffer = new Uint8Array(await res.arrayBuffer());
 const dimension = sizeOf(buffer);
 
 console.log(dimension);
@@ -75,17 +74,27 @@ console.log(dimension);
 // }
 ```
 
-참고로 [Node의 Buffer](https://nodejs.org/api/buffer.html#buffer)는 [JavaScript의 Uint8Array](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)를 상속 받는 객체로, 바이너리 데이터를 저장합니다. 여기서 `fetch`를 통해 받아온 `ArrayBuffer`를 8비트 무부호 정수로 해석
-[`Buffer.from`](https://nodejs.org/api/buffer.html#static-method-bufferfromarraybuffer-byteoffset-length)을 통해서 문자열,
+`image-size` 내부에선 [Uint8Array](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)(8비트 무부호 정수 배열)를 기준으로 데이터를 파싱하고 있어 이를 건네주면 됩니다.
+
+Fetch Response의 `arrayBuffer` 메소드를 통해서 바이너리 데이터([ArrayBuffer](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer))를 얻을 수 있고, Uint8Array의 생성자를 통해서 바이너리 데이터를 Uint8Array 객체로 변환할 수 있습니다.
+
+참고로 [Node의 Buffer](https://nodejs.org/api/buffer.html#buffer)는 [JavaScript의 Uint8Array](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)를 상속 받는 객체로, Node 런타임에서 아래와 같이 작성해도 무방합니다.
+
+```js
+// Buffer는 Node 런타임에서 전역변수 이지만, 쉽게 참조하기 위해 import하여 사용할 것을 권장합니다.
+import { Buffer } from 'node:buffer';
+
+const buffer = Buffer.from(await res.arrayBuffer());
+```
 
 Node의 Buffer에 대해 더 알고 싶다면, [여기 글](https://yceffort.kr/2021/10/understanding-of-nodejs-buffer)을 참고해보면 좋을 것 같습니다.
 
 ## 최종 코드
 
-[라이브러리 코드](https://github.com/image-size/image-size/blob/9120bfb0b1dc0dab5456f22c94133b6fc3f5f0a4/lib/index.ts#L140-L141)를 보면, 로컬 이미지도 결국 바이너리 데이터로 변환하여 이미지 크기를 얻습니다. 따라서 내부 이미지든 외부 이미지든, 모두 바이너리 데이터로 변환하여 크기를 구하면 꽤나 깔끔한 코드를 작성할 수 있습니다.
+[라이브러리 코드](https://github.com/image-size/image-size/blob/9120bfb0b1dc0dab5456f22c94133b6fc3f5f0a4/lib/index.ts#L140-L141)를 보면, 로컬 이미지도 결국 바이너리 데이터로 변환하여 이미지 크기를 얻습니다.
+따라서 내부 이미지든 외부 이미지든, 모두 바이너리 데이터로 변환하여 크기를 구하면 꽤나 깔끔한 코드를 작성할 수 있습니다.
 
-```ts {18-21}
-import { Buffer } from 'node:buffer';
+```ts {17-20}
 import fs from 'node:fs/promises';
 import sizeOf from 'image-size';
 
@@ -94,18 +103,19 @@ const getImageBuffer = async (src: string) => {
 
   if (isExternalImage) {
     const res = await fetch(src);
-    return Buffer.from(await res.arrayBuffer());
+    return new Uint8Array(await res.arrayBuffer());
   }
 
   const localSrc = `public/${src}`;
   const file = await fs.readFile(localSrc);
-  return Buffer.from(file);
+  return new Uint8Array(file);
 };
 
-export const getImageDimension = async () => {
+export const getImageDimension = async (src: string) => {
   const buffer = await getImageBuffer(src);
   return sizeOf(buffer);
 };
 ```
 
-저는 블로그 빌드 시점에서 글 이미지 크기를 지정하여 글의 layout shift를 방지하고자 했는데요. 더 이상 브라우저에 종속되지 않고 이미지 크기를 구하는 방법이 독자분들께도 도움이 되었으면 합니다.
+저는 블로그 빌드 시점에서 글 이미지 크기를 지정하여 글의 layout shift를 방지하고자 했는데요.
+더 이상 브라우저에 종속되지 않고 이미지 크기를 구해보세요.

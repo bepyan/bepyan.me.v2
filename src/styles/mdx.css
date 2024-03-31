@@ -157,6 +157,11 @@
   @apply border-r;
 }
 
+.mdx figure {
+  overflow: hidden;
+  border-radius: 6px;
+}
+
 .mdx img {
   display: flex;
   overflow: hidden;

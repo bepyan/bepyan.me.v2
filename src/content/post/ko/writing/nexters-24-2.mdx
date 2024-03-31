@@ -1,0 +1,105 @@
+---
+title: 'NEXTERS 24기를 맺으면서 [2부]'
+description: '3년차 프론트엔드 개발자의 넥스터즈 24기 활동 회고록 ☘️'
+date: 2024-03-31 17:59:21
+draft: true
+tags:
+  - nexters
+  - 회고
+---
+
+### 5주차(02.03) - 중간발표
+
+벌써 활동 절반이 지나간 것이 믿기지가 않았다. 세션에서는 팀별로 작업 진행 상황과 발생했던 이슈들을 공유했다.
+
+곧 있을 설날 전에 릴리즈를 목표한 팀(우리 팀)들이 있어서 파이팅 넘치는 분위기였다.
+
+개인적으론 최대한 layout shift 발생되지 않도록 노력했었다.
+이미지 업로드시 이미지의 비율도 저장하여 이미지가 표기 되기 전에도 형태가 유지되게 했고, 스켈레톤도 부지런히 적용했다.
+
+<div class="mx-auto flex gap-2">
+  ![1](https://velog.velcdn.com/images/bepyan/post/1d43adb2-d4c8-40a9-acdf-3973774c416d/image.gif)
+  ![2](https://velog.velcdn.com/images/bepyan/post/4613f5b1-f44d-4c5f-9424-bc06d57b625d/image.gif)
+</div>
+
+### 6주차(02.17) - 넥밋업
+
+직군별로 네트워킹하고 초빙 연사와의 밋업이 있는 주차였다.
+
+네트워킹 때 확실히 같은 직군 분들이여서 그런지, 뭔가 내적 친밀감이 있어 편하게 이야기 나누고
+
+밋업의 경우, 보통 넥스터즈 출신의 선배님을 초청해서 커리어 경험을 나눠줬다고 하는데, 이번 기수엔 특별히 외부 초청한 분들이 계셨다.
+
+<div class="mx-auto w-2/3">
+  ![https://instagram.com/p/C3mXdHRpxgZ](/img/nexters-24/240331-173822.png)
+</div>
+
+### 7주차(02.24) - 넥나잇
+
+밤샘작업을 진행하는 헤커톤하는 주차이다.
+
+### 8주차(03.02) - 최종발표
+
+결과물은 아래 링크에서 만나 볼 수 있다.
+
+- [웹사이트](https://daily-phrase.com/)
+- [Play Store](https://play.google.com/store/apps/details?id=com.silvertown.android.dailyphrase)
+- [인스타그램 피드](https://www.instagram.com/p/C4HtdkRJ4nL/)
+
+## 내가 얻어간 것
+
+### 문어발 기술 스택 찍먹
+
+서비스 스팩이 어렵지 않으니
+
+[**StyleX**](https://github.com/facebook/stylex)
+메타에서 만든 차세대 css-in-js 라이브러리이다.
+기존 단점을 컴파일러로 보완했고, [StyleX의 철학](https://stylexjs.com/docs/learn/thinking-in-stylex/)이 무척 매력적이어서 한번 경험해보기로 했다.
+
+하지만 결국 tailwind로 마이그레이션 했다.
+현재 Babel을 써야하는데 느리기도 하고, 자꾸 알 수 없는 이유로 스타일이 뻑났다. 팀 중간 공유 시간에, 스타일이 깨져 있어서 상당히 머쓱했었던 기억이 있었다... 물론 내가 뭔갈 잘못 했겠지만 서버 사이드, 클라이언트 사이드
+
+[**Biome**](https://github.com/biomejs/biome)
+Rust로 작성된 eslint + prettier 이다.
+Rust답게 올인원 플러그인답게 세팅이 무척 간편했고,
+
+기본룰이 조금 깐깐해서 아쉬웠다.
+예로 forEach 대신 for…of 써야하는 [noForEach](https://biomejs.dev/linter/rules/no-for-each/) 룰이
+
+[tailwind class sort](https://biomejs.dev/linter/rules/use-sorted-classes/) 기능이 아직 지원되지 않는 점도 아쉬웠다.
+[📎 Tailwind class sorting lint rule](https://github.com/biomejs/biome/issues/1274) 이슈가 클로즈 되면 본격적으로 써보지 않을까 싶다.
+
+[**shadcn-ui**](https://github.com/shadcn-ui/ui) + [**tanstack/table**](https://github.com/TanStack/table)
+현업에서 이를 쓸 기회가 없었지만
+자세한 설명을 생략한다.
+
+## 느낀 것
+
+운영진들의 열정
+
+### 넥스터즈의 장단점
+
+장점
+
+- PM의 포지션, 확실한 기획을 가지고 시작
+- 2개월(8주)의 진행시간
+  - 주로 1차 MVP까지 진행
+  - 진짜 하고픈 사람들이 2차, 3차 MVP까지
+- 커뮤니팅
+- 프로젝트 인지도
+
+### 아쉬운 점
+
+단점 보다는 아쉬운 점이라고 해야 할 것 같다.
+
+- 디자이너와 인터렉션적인 고민을 못함
+- 멋지게 고민한 것이 드러내지 못함
+
+## 맺으면서
+
+25기 COO로 활동하게 됨
+
+사실 아래 기술 스택으로 프젝을 하려했지만, 이젠 개인 사이드 프로젝트로...
+Nextjs 14, tailwind, shadcn-ui, tPRC, Drizzle ORM, Lucia, Resend
+
+넥스터즈가 어떻게 12년을 운영하면서 1티어 개발 커뮤니티로 자리 잡혔는지

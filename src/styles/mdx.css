@@ -2,7 +2,7 @@
   width: 100%;
   max-width: max-content;
   color: var(--text-second);
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 350;
   letter-spacing: 0px;
   line-height: 1.75;
@@ -170,7 +170,7 @@
   margin-top: 8px;
   color: var(--shiki-token-comment);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 0.9rem;
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
@@ -221,7 +221,7 @@
   padding: 0px;
   border-radius: 6px;
   color: var(--shiki-color-text);
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 .mdx code:not(pre code, [data-rehype-pretty-code-fragment] code)::before {
@@ -255,13 +255,13 @@
 [data-rehype-pretty-code-title] {
   margin-bottom: 4px;
   color: var(--shiki-token-comment);
-  font-size: 14px;
+  font-size: 0.9rem;
 }
 
 [data-rehype-pretty-code-caption] {
   margin-top: 4px;
   color: var(--shiki-token-comment);
-  font-size: 14px;
+  font-size: 0.9rem;
 }
 
 [data-line] {

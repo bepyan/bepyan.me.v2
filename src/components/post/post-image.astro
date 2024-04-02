@@ -20,6 +20,10 @@ const getImageBuffer = async (src: string) => {
     return Buffer.from(await res.arrayBuffer());
   }
 
+  if (src.startsWith('/')) {
+    src = src.slice(1);
+  }
+
   const localSrc = `public/${src}`;
   const file = await fs.readFile(localSrc);
   return Buffer.from(file);
@@ -33,8 +37,8 @@ const {
 ---
 
 <figure>
-  <div class="relative block overflow-hidden">
-    <div style={css} class="absolute inset-0 -z-10 blur-2xl filter"></div>
+  <div class='relative block overflow-hidden'>
+    <div style={css} class='absolute inset-0 -z-10 blur-2xl filter'></div>
     <img {src} {alt} {width} {height} />
   </div>
   {isVaildCaption && <figcaption>{alt}</figcaption>}

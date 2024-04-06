@@ -20,7 +20,7 @@ export default function TableOfContent({
         <li key={i} className="flex">
           <a
             className={cn(
-              'text-second transition-colors hover:text-heading',
+              'link text-second',
               currentSectionSlug === section.slug && 'font-medium text-body',
             )}
             href={`#${section.slug}`}

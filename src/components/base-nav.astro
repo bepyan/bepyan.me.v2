@@ -30,19 +30,20 @@ const t = useTranslations(lang);
 <div class={cn('flex items-center gap-2 font-serif text-sm', props.class)}>
   <div>
     <span>by</span>
-    <a class="link ml-0.5" href={p('/')}>
+    <a class='link ml-0.5' href={p('/')}>
       {t('index.name')}
     </a>
   </div>
-  <DotIcon className="h-2 w-2 text-second" />
-  <div class="flex items-center gap-2">
+  <DotIcon className='h-2 w-2 text-second' />
+  <div class='flex items-center gap-2'>
     {
       NAV_ITEM_LIST.filter((navItem) => navItem !== currentNavItem).map(
         (navItem) => (
           <a
             class={cn(
               'external-link',
-              navItem === props.hightlightNavItem && 'font-bold',
+              navItem === props.hightlightNavItem &&
+                'font-bold no-underline before:bg-selection before:ring-border hover:before:ring-1',
             )}
             href={p(`/${navItem}`)}
           >

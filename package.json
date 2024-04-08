@@ -55,7 +55,7 @@
     "bun-types": "^1.0.19",
     "eslint": "^8.49.0",
     "eslint-plugin-astro": "^0.29.0",
-    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-simple-import-sort": "^12.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "prettier": "^3.0.3",
     "prettier-plugin-astro": "^0.12.0",

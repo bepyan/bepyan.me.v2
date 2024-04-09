@@ -35,7 +35,7 @@
     "date-fns": "^3.6.0",
     "leva": "^0.9.35",
     "lodash-es": "^4.17.21",
-    "lucide-react": "^0.279.0",
+    "lucide-react": "^0.366.0",
     "medium-zoom": "^1.1.0",
     "nanostores": "^0.9.5",
     "plaiceholder": "^3.0.0",

@@ -68,7 +68,7 @@
     "remark-gfm": "^4.0.0",
     "sharp": "^0.33.1",
     "shiki": "^0.14.4",
-    "stylelint": "^15.10.3",
+    "stylelint": "^16.3.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "stylelint-config-standard": "^36.0.0",
     "tailwind-merge": "^2.2.2",

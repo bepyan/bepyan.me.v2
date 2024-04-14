@@ -1,6 +1,6 @@
 ---
 title: '(DB) PlanetScale에서 Neon으로 이사가기'
-description: 'PlanetScale에 있는 MySQL 데이터를 Neon의 PostgreSQL로 마이그레이션 했습니다. Prisma를 곁들인.'
+description: 'PlanetScale에 있는 MySQL 데이터를 Neon의 PostgreSQL로 마이그레이션 했습니다. 근데 Prisma를 곁들인.'
 date: 2024-04-13 11:31:00
 draft: false
 tags:
@@ -39,7 +39,7 @@ brew install pgloader
 pgloader --with "quote identifiers" mysql://myuser@myhost/dbname pgsql://pguser@pghost/dbname
 ```
 
-자세한 옵션명은 하나 하나 정리하면 아래와 같다.
+자세한 옵션명을 하나 하나 정리하면 아래와 같다.
 
 ### `--with "quote identifiers"`
 
@@ -65,17 +65,21 @@ mysql://127.0.0.1:8080/mildvu"
 
 ### `pgsql://pguser@pghost/dbname`
 
-neon에서 제공하는 url를 입력하면 된다.
+neon 대시보드에서 데이터베이스 connection string을 받아오면 된다.
 
-```
+![240415-000917](/img/migrating-planetscale-to-neon/240415-000917.avif)
+
+마이그레이션 할 땐 Pooled connection 옵션을 적용하지 않아도 괜찮다.
+
+추가적으로 `endpoint` 옵션을 넣어줘야 하는데 `ep-xxx` 부분을 잘 찾아서 입력해주면 된다.
+
+```shell /endpoint/#v /ep-xxx/#s
 postgresql://mildvu_owner:endpoint=ep-xxx;[password]@ep-xxx.ap-southeast-1.aws.neon.tech/main?sslmode=require
 ```
 
-참고로 `endpoint` 옵션을 넣어줘야 하는데 `ep-xxx` 부분을 잘 찾아서 입력해주면 된다.
-
 ### 최종 형태 및 결과물
 
-이제 터미널에 메모장에 잘 조합한 명령어를 입력하면 된다.
+메모장에서 위 내용을 잘 조합하고, 이제 터미널에 명령어를 입력하면 된다.
 
 ```shell
 pgloader --with "quote identifiers" mysql://127.0.0.1:8080/mildvu "postgresql://mildvu_owner:endpoint=ep-xxx;[password]@ep-xxx.ap-southeast-1.aws.neon.tech/main?sslmode=require"
@@ -85,11 +89,11 @@ pgloader --with "quote identifiers" mysql://127.0.0.1:8080/mildvu "postgresql://
 
 ![240414-234023](/img/migrating-planetscale-to-neon/240414-234023.avif)
 
-크흠.. 나의 데이터는 사실 117.3KB 밖에 되지 않았다..
-
-neon의 Tables에도 데이터가 잘 이전된 것을 확인 할 수 있다 ✨
+크흠.. 나의 데이터는 사실 117.3KB 밖에 되지 않았다.. ~~작지만 소중해~~
 
 ![240414-234137](/img/migrating-planetscale-to-neon/240414-234137.avif)
+
+neon의 Tables에도 데이터가 잘 이전된 것을 확인 할 수 있다 ✨
 
 ## neon 스키마 이름 변경
 
@@ -97,7 +101,7 @@ neon의 Tables에도 데이터가 잘 이전된 것을 확인 할 수 있다 ✨
 
 이래 저래 시도해봤지만 결국 스키마명을 수정하여 문제를 해결했다.
 
-neon 대시보드에 있는 `SQL Editor`에서 스키마명을 다룰 수 있다.
+neon 대시보드에 있는 `SQL Editor`에서 아래 명령어로 스키마명을 변경할 수 있다.
 
 ```sql
 ALTER SCHEMA "mildvu" RENAME TO "public"
@@ -105,9 +109,27 @@ ALTER SCHEMA "mildvu" RENAME TO "public"
 
 - https://github.com/dimitri/pgloader/issues/594#issuecomment-315696831
 
-## prisma schema
+## prisma 설정
 
-```prisma
+prisma에서 neon의 사용법은 공식문서 가이드 대로 진행하면 된다.
+
+- [neon의 가이드](https://neon.tech/docs/guides/prisma)
+- [prisma의 가이드](https://www.prisma.io/docs/orm/overview/databases/neon#what-is-neon)
+
+### prisma env
+
+neon 대시보드에 있는 Connection string을 가져오면 된다.
+여기서는 Pooled connection을 활성화시키자.
+
+```txt title=".env"
+DATABASE_URL=postgresql://mildvu_owner:[password]@ep-ancient-firefly-a1fdd8wb-pooler.ap-southeast-1.aws.neon.tech/main?sslmode=require
+```
+
+### prisma schema
+
+MySQL 대신 PostgreSQL을 명시하면 된다.
+
+```prisma title="prisma/schema.prisma"
 generator client {
   provider        = "prisma-client-js"
 -  previewFeatures = ["referentialIntegrity"]
@@ -123,22 +145,20 @@ datasource db {
 }
 ```
 
-특이사항은 크게 없었다.
-기존 MySQL에서 나는 문자열 관련 변수명만을 수정해주면 되었다.
+생각보다 큰 충돌은 없었다.
 
+추가적으로 문자열 관련 어노테이션을 수정해주면 되었다.
 `@db.MediumText`, `@db.LongText` → `@db.VarChar()`
 
-## prisma client
+### prisma client
 
-DB를 접근하는 prisma client도 수정이 필요하다.
-
-우선 변경된 스키마 바탕으로 prisma 타입을 생성하고,
+변경된 스키마 바탕으로 prisma client을 생성하고,
 
 ```shell
 npx prisma generate
 ```
 
-공식 문서에 맞춰 코드를 수정하면 된다.
+가이드 대로 코드를 수정하면 된다.
 
 ```ts
 import { neonConfig, Pool } from '@neondatabase/serverless';
@@ -164,6 +184,14 @@ if (process.env.NODE_ENV === 'development') {
 export default _prisma;
 ```
 
-## 참고
+`npx prisma generate`을 하지 않으면 타입 에러, 런타임 에러가 발생하니 꼭 유의하도록 하자.
 
-- https://medium.com/@kaloyan_17221/migrating-from-planetscale-to-neon-33e57fef36ae
+## 맺으면서
+
+사이드 프로젝트를 유지보수하는 것이 쉽지가 않는 것 같다.
+특히 인프라 이슈가 있을 땐 진짜 맨땅에 헤딩이다.
+
+하지만 덕분에 더 다양한 serverless 플랫폼을 알게 되었고, DB와도 조금 더 친해졌다.
+앞으로 더 친해져 봐요 우리...
+
+한편으로 Vercel이 무료 플랜을 종료한다면 어떻하지 머리가 아찔해졌다.

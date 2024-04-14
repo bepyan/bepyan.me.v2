@@ -1,0 +1,169 @@
+---
+title: '(DB) PlanetScale에서 Neon으로 이사가기'
+description: 'PlanetScale에 있는 MySQL 데이터를 Neon의 PostgreSQL로 마이그레이션 했습니다. Prisma를 곁들인.'
+date: 2024-04-13 11:31:00
+draft: false
+tags:
+  - planetscale
+  - neon
+  - db migration
+  - prisma
+---
+
+어느날, PlanetScale의 [무료 플랜 종료 소식](https://planetscale.com/docs/concepts/hobby-plan-deprecation-faq)이 다가왔다.
+얼른 이사가라고 수 통의 이메일을 받았다.
+
+![240408-171031](/img/migrating-planetscale-to-neon/240408-171031.avif)
+
+~~억장 와르르멘션이었다.~~
+편리하게 사이드 프로젝트 데이터베이스를 무료 호스팅하고 있었는데 대안이 필요했다.
+
+[planetscale alternative free](https://www.google.com/search?q=planetscale+alternative+free&oq=planetscale+alter&sourceid=chrome&ie=UTF-8)를 검색해보면 PostgreSQL은 [supabase](https://supabase.com/), [neon](https://neon.tech/) SQLite은 [turso](https://turso.tech/), MySQL은 [cockroach](https://www.cockroachlabs.com/) 등 선택지가 있다.
+
+모두 매력적인 선택지이지만, [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)에서 neon을 래핑해서 서빙하다는 [소식](https://neon.tech/blog/neon-postgres-on-vercel), 또 요즘 핫한 PostgreSQL를 경험해보고 싶은 마음에 neon을 새둥지로 이사 가보기로 했다.
+
+## pgloader로 데이터 옮기기
+
+[pgloader](https://github.com/dimitri/pgloader)는 PostgreSQL 데이터를 등록할 수 있는 오픈소스이다.
+이를 활용해 MySQL 데이터를 PostgresSQL로 쉽게 옮길 수 있다.
+
+MacOS 기준, brew로 쉽게 설치를 할 수 있으며,
+
+```shell
+brew install pgloader
+```
+
+아래 명령어로 MySQL에서 PostgreSQL로 데이터 마이그레이션 할 수 있다.
+
+```shell
+pgloader --with "quote identifiers" mysql://myuser@myhost/dbname pgsql://pguser@pghost/dbname
+```
+
+자세한 옵션명은 하나 하나 정리하면 아래와 같다.
+
+### `--with "quote identifiers"`
+
+카멜 케이스를 그대로 유지시키는 명령어이다.
+그게 아니면 테이블명도 그렇고 칼럼명도 그렇고 스네이크 케이스로 적용된다.
+
+자세한 내용은 [공식문서](https://pgloader.readthedocs.io/en/latest/ref/mysql.html?highlight=quote+identifiers#mysql-database-migration-options-with) 참고하면 된다.
+
+### `mysql://myuser@myhost/dbname`
+
+우선 [PlanetScale CLI](https://planetscale.com/features/cli)를 통해서 로컬 호스트로 DB를 접근할 수 있다.
+
+```shell
+pscale login
+pscale connect mildvu --port 8080
+```
+
+따라서 MySQL 데이터베이스 호스트는 아래같이 입력하면 된다.
+
+```shell
+mysql://127.0.0.1:8080/mildvu"
+```
+
+### `pgsql://pguser@pghost/dbname`
+
+neon에서 제공하는 url를 입력하면 된다.
+
+```
+postgresql://mildvu_owner:endpoint=ep-xxx;[password]@ep-xxx.ap-southeast-1.aws.neon.tech/main?sslmode=require
+```
+
+참고로 `endpoint` 옵션을 넣어줘야 하는데 `ep-xxx` 부분을 잘 찾아서 입력해주면 된다.
+
+### 최종 형태 및 결과물
+
+이제 터미널에 메모장에 잘 조합한 명령어를 입력하면 된다.
+
+```shell
+pgloader --with "quote identifiers" mysql://127.0.0.1:8080/mildvu "postgresql://mildvu_owner:endpoint=ep-xxx;[password]@ep-xxx.ap-southeast-1.aws.neon.tech/main?sslmode=require"
+```
+
+그러면 아래 같은 리포트를 볼 수 있다.
+
+![240414-234023](/img/migrating-planetscale-to-neon/240414-234023.avif)
+
+크흠.. 나의 데이터는 사실 117.3KB 밖에 되지 않았다..
+
+neon의 Tables에도 데이터가 잘 이전된 것을 확인 할 수 있다 ✨
+
+![240414-234137](/img/migrating-planetscale-to-neon/240414-234137.avif)
+
+## neon 스키마 이름 변경
+
+현재 데이터는 기존 데이터베이스명인 "mildvu"로 neon의 스키마로 이관이 되었지만, prisma는 이름이 "public"인 스키마를 접근하게 되는 것 같다.
+
+이래 저래 시도해봤지만 결국 스키마명을 수정하여 문제를 해결했다.
+
+neon 대시보드에 있는 `SQL Editor`에서 스키마명을 다룰 수 있다.
+
+```sql
+ALTER SCHEMA "mildvu" RENAME TO "public"
+```
+
+- https://github.com/dimitri/pgloader/issues/594#issuecomment-315696831
+
+## prisma schema
+
+```prisma
+generator client {
+  provider        = "prisma-client-js"
+-  previewFeatures = ["referentialIntegrity"]
++  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+-  provider     = "mysql"
++  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+-  referentialIntegrity = "prisma"
++  relationMode = "prisma"
+}
+```
+
+특이사항은 크게 없었다.
+기존 MySQL에서 나는 문자열 관련 변수명만을 수정해주면 되었다.
+
+`@db.MediumText`, `@db.LongText` → `@db.VarChar()`
+
+## prisma client
+
+DB를 접근하는 prisma client도 수정이 필요하다.
+
+우선 변경된 스키마 바탕으로 prisma 타입을 생성하고,
+
+```shell
+npx prisma generate
+```
+
+공식 문서에 맞춰 코드를 수정하면 된다.
+
+```ts
+import { neonConfig, Pool } from '@neondatabase/serverless';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { PrismaClient } from '@prisma/client';
+import ws from 'ws';
+
+declare global {
+  var _prisma: PrismaClient | undefined;
+}
+
+neonConfig.webSocketConstructor = ws;
+const connectionString = `${process.env.DATABASE_URL}`;
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaNeon(pool);
+const _prisma = global._prisma || new PrismaClient({ adapter });
+
+if (process.env.NODE_ENV === 'development') {
+  global._prisma = _prisma;
+}
+
+export default _prisma;
+```
+
+## 참고
+
+- https://medium.com/@kaloyan_17221/migrating-from-planetscale-to-neon-33e57fef36ae

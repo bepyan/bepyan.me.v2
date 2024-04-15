@@ -50,7 +50,7 @@
     "@types/lodash-es": "^4.17.10",
     "@types/react": "^18.0.21",
     "@types/three": "^0.160.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.5.0",
     "bun-types": "^1.0.19",
     "eslint": "^8.49.0",

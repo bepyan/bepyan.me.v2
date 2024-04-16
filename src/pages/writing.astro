@@ -33,37 +33,37 @@ const yearList = Object.entries(
 ).sort((a, b) => +b[0] - +a[0]);
 ---
 
-<MainLayout seo={{ title, description }} class="font-serif">
+<MainLayout seo={{ title, description }} class='font-serif'>
   <BaseHeader {title} {description}>
-    <BaseNav class="mt-1.5" />
+    <BaseNav class='mt-1.5' />
   </BaseHeader>
 
-  <section data-animate class="group my-14">
+  <section data-animate class='group my-14'>
     {
       yearList.map(([year, postList], index) => {
         return (
-          <div class=" group/year relative z-0 border-t last-of-type:border-b">
-            <h3 class="absolute top-[26px] -z-10 -mx-1.5 -my-0.5 rounded-md px-1.5 py-0.5 text-sm text-second transition group-hover/year:bg-selection group-hover/year:text-heading">
+          <div class=' group/year relative z-0 border-t last-of-type:border-b'>
+            <h3 class='absolute top-[26px] -z-10 -mx-1.5 -my-0.5 rounded-md px-1.5 py-0.5 text-sm text-second transition group-hover/year:bg-selection group-hover/year:text-heading'>
               {year}
             </h3>
-            <ul data-animate class="py-4">
+            <ul data-animate class='py-4'>
               {postList.sort(sortDateDesc).map((post) => {
                 return (
                   <li style={`--lv-wait: ${index}`}>
                     <a
                       href={p(post.href)}
-                      class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-40"
+                      class='group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-60'
                       target={post.isExternal ? '_blank' : '_self'}
                     >
-                      <div class="ml-[15%] flex flex-1 items-start border-t py-2 group-first-of-type/item:border-t-0">
-                        <div class="flex items-center gap-0.5 text-heading">
-                          <span class="mx-1 rounded-md px-1 transition group-hover/item:bg-selection">
+                      <div class='ml-[15%] flex flex-1 items-start border-t py-2 group-first-of-type/item:border-t-0'>
+                        <div class='flex items-center gap-0.5 text-heading'>
+                          <span class='mx-1 rounded-md px-1 transition group-hover/item:bg-selection'>
                             {post.title}
                           </span>
                         </div>
-                        <div class="ml-auto mt-1 flex flex-shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-sm text-second transition group-hover/item:bg-selection group-hover/item:text-heading">
+                        <div class='ml-auto mt-1 flex flex-shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-sm text-second transition group-hover/item:bg-selection group-hover/item:text-heading'>
                           {post.isExternal && (
-                            <BxLinkExternal className="text-disabled" />
+                            <BxLinkExternal className='text-disabled' />
                           )}
                           <span>{format(new Date(post.date), 'MM. dd.')}</span>
                         </div>

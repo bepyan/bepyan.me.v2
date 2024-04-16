@@ -2,10 +2,16 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
+import {
+  transformerMetaHighlight,
+  transformerMetaWordHighlight,
+  transformerNotationDiff,
+  transformerNotationFocus,
+  transformerNotationHighlight,
+} from '@shikijs/transformers';
 import { defineConfig } from 'astro/config';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeExternalLinks from 'rehype-external-links';
-import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
@@ -21,7 +27,18 @@ export default defineConfig({
     react(),
     svelte(),
     mdx({
-      syntaxHighlight: false,
+      syntaxHighlight: 'shiki',
+      shikiConfig: {
+        theme: 'css-variables',
+        // https://shiki.style/packages/transformers
+        transformers: [
+          transformerNotationDiff,
+          transformerNotationHighlight,
+          transformerNotationFocus,
+          transformerMetaHighlight,
+          transformerMetaWordHighlight,
+        ],
+      },
       remarkPlugins: [remarkGfm, remarkBreaks],
       rehypePlugins: [
         rehypeSlug,
@@ -42,12 +59,6 @@ export default defineConfig({
             },
             target: '_blank',
             rel: ['noopener noreferrer'],
-          },
-        ],
-        [
-          rehypePrettyCode,
-          {
-            theme: 'css-variables',
           },
         ],
       ],

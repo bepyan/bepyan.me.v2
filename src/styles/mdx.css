@@ -1,3 +1,5 @@
+@import './shiki.css';
+
 .mdx {
   width: 100%;
   max-width: max-content;
@@ -182,7 +184,6 @@
 }
 
 /* medium zoom */
-
 .mdx img,
 .medium-zoom-image--opened {
   filter: drop-shadow(0 25px 20px rgba(0, 0, 0, 0.1));
@@ -194,33 +195,6 @@
 }
 
 /* code */
-:root {
-  --shiki-color-text: var(--gray-800);
-  --shiki-color-background: var(--gray-100);
-
-  --shiki-token-constant: #171717;
-  --shiki-token-string: #6f6f6f;
-  --shiki-token-comment: #8f8f8f;
-  --shiki-token-keyword: #858585;
-  --shiki-token-parameter: #171717;
-  --shiki-token-function: #171717;
-  --shiki-token-string-expression: #6f6f6f;
-  --shiki-token-punctuation: #8f8f8f;
-  --shiki-token-link: #171717;
-}
-
-.dark {
-  --shiki-token-constant: #ededed;
-  --shiki-token-string: #a0a0a0;
-  --shiki-token-comment: #707070;
-  --shiki-token-keyword: #858585;
-  --shiki-token-parameter: #ededed;
-  --shiki-token-function: #ededed;
-  --shiki-token-string-expression: #a0a0a0;
-  --shiki-token-punctuation: #707070;
-  --shiki-token-link: #ededed;
-}
-
 .mdx code:not(pre code) {
   position: relative;
   padding: 0px;
@@ -331,7 +305,6 @@ code[data-line-numbers-max-digits='3'] > [data-line]::before {
 }
 
 /* rehype-autolink-headings */
-
 .mdx .anchor {
   text-decoration: none;
 }

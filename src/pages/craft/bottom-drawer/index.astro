@@ -1,13 +1,12 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
+import BottomDrawer from '~/components/examples/bottom-drawer';
 import { GiscusSection } from '~/components/giscus';
 import MainLayout from '~/layouts/main-layout.astro';
 import type { Language } from '~/libs/i18n';
 
-import App from './app';
-
-const lang: Language = 'en';
+const lang: Language = 'ko';
 
 const title = 'bottom drawer';
 const description = 'A bottom drawer with framer-motion.';
@@ -15,157 +14,14 @@ const description = 'A bottom drawer with framer-motion.';
 
 <MainLayout {lang} seo={{ title, description }}>
   <BaseHeader {title} {description} noI18n>
-    <BaseNav class="mt-1.5" lang="en" />
+    <BaseNav class="mt-1.5" lang={lang} />
   </BaseHeader>
   <div class="w-full max-w-content">
-    <App client:only="react" />
+    <div>
+      <div class="flex h-[500px] w-full items-center justify-center">
+        <BottomDrawer client:only="react" />
+      </div>
+    </div>
   </div>
   <GiscusSection className="mx-auto mt-20" {lang} client:idle />
 </MainLayout>
-
-<style is:global>
-  .feedback-button {
-    position: relative;
-    display: flex;
-    height: 36px;
-    align-items: center;
-    border-radius: 8px;
-    border: 1px solid #e9e9e7;
-    background: white;
-    padding: 0 12px;
-    font-weight: 500;
-    outline: none;
-  }
-
-  .feedback-button span {
-    display: block;
-    font-size: 14px;
-  }
-
-  .feedback-popover {
-    position: absolute;
-    height: 192px;
-    width: 364px;
-    overflow: hidden;
-    border-radius: 12px;
-    background: #f5f6f7;
-    padding: 4px;
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.08),
-      0px 2px 2px rgba(0, 0, 0, 0.04);
-    outline: none;
-  }
-
-  .placeholder {
-    position: absolute;
-    font-size: 14px;
-    color: #63635d;
-    left: 16px;
-    top: 17px;
-  }
-
-  .placeholder[data-feedback='true'] {
-    opacity: 0 !important;
-  }
-
-  .success-wrapper {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .success-wrapper svg {
-    margin-top: -4px;
-  }
-
-  .success-wrapper h3 {
-    margin-bottom: 4px;
-    margin-top: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #21201c;
-  }
-
-  .success-wrapper p {
-    font-size: 14px;
-    color: #63635d;
-  }
-
-  .feedback-form {
-    border-radius: 8px;
-    border: 1px solid #e6e7e8;
-    background: white;
-  }
-
-  .textarea {
-    height: 128px;
-    resize: none;
-    border-radius: 8px 0;
-    padding: 12px;
-    font-size: 14px;
-    outline: none;
-  }
-
-  .textarea::placeholder {
-    opacity: 0;
-  }
-
-  .feedback-footer {
-    position: relative;
-    display: flex;
-    height: 48px;
-    align-items: center;
-    padding: 0 10px;
-  }
-
-  .dotted-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -1px;
-  }
-
-  .half-circle-left {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform: translateX(-1.5px) translateY(-50%);
-  }
-
-  .half-circle-right {
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translateX(1.5px) translateY(-50%) rotate(180deg);
-  }
-
-  .submit-button {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 12px;
-    height: 24px;
-    width: 104px;
-    overflow: hidden;
-    background: linear-gradient(180deg, #1994ff 0%, #157cff 100%);
-    box-shadow:
-      0px 0px 1px 1px rgba(255, 255, 255, 0.08) inset,
-      0px 1px 1.5px 0px rgba(0, 0, 0, 0.32),
-      0px 0px 0px 0.5px #1a94ff;
-    position: relative;
-  }
-
-  .submit-button span {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-shadow: 0px 1px 1.5px rgba(0, 0, 0, 0.16);
-  }
-</style>

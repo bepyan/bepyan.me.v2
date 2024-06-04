@@ -1,38 +1,48 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useOnClickOutside } from 'usehooks-ts';
 
+import Spinner from '~/components/ui/spinner';
 import { cn } from '~/libs/utils';
+
+const submitButtonText = {
+  idle: '참석합니다',
+  loading: <Spinner size={16} color="rgba(0, 0, 0, 0.65)" />,
+  success: '요청 완료',
+};
 
 export function DynamicMail() {
   const [open, setOpen] = useState(false);
-  const [formState, setFormState] = useState('idle');
+  const [formState, setFormState] =
+    useState<keyof typeof submitButtonText>('idle');
+
+  const ref = useRef<HTMLDivElement>(null);
+  useOnClickOutside(ref, () => {
+    if (formState === 'loading') return;
+    setOpen(false);
+  });
 
   function submit() {
-    // setFormState('loading');
-    // setTimeout(() => {
-    setFormState('success');
-    // }, 1500);
+    if (formState === 'success') return;
 
-    // setTimeout(() => {
-    //   setOpen(false);
-    // }, 3300);
+    setFormState('loading');
+
+    setTimeout(() => {
+      setFormState('success');
+    }, 1500);
+
+    setTimeout(() => {
+      setOpen(false);
+    }, 3300);
   }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        if (formState === 'loading') return;
         setOpen(false);
-      }
-
-      if (
-        (event.ctrlKey || event.metaKey) &&
-        event.key === 'Enter' &&
-        open &&
-        formState === 'idle'
-      ) {
-        submit();
       }
     };
 
@@ -58,6 +68,7 @@ export function DynamicMail() {
       <AnimatePresence>
         {open ? (
           <motion.div
+            ref={ref}
             layoutId="wrapper"
             className="absolute h-[180px] w-[300px] overflow-hidden rounded-xl border bg-gray-100 p-2"
           >
@@ -111,10 +122,26 @@ export function DynamicMail() {
                         취소
                       </button>
                       <button
-                        className="transition-colors hover:text-heading focus:text-heading focus:outline-none"
+                        className="h-[30px] w-[80px] overflow-hidden transition-colors hover:text-heading focus:text-heading focus:outline-none"
                         onClick={submit}
+                        disabled={formState === 'loading'}
                       >
-                        참석합니다.
+                        <AnimatePresence mode="popLayout" initial={false}>
+                          <motion.span
+                            transition={{
+                              type: 'spring',
+                              duration: 0.3,
+                              bounce: 0,
+                            }}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            key={formState}
+                            className="inline-flex h-full w-full items-center justify-center"
+                          >
+                            {submitButtonText[formState]}
+                          </motion.span>
+                        </AnimatePresence>
                       </button>
                     </div>
                   </div>

@@ -7,16 +7,11 @@ import { useOnClickOutside } from 'usehooks-ts';
 import Spinner from '~/components/ui/spinner';
 import { cn } from '~/libs/utils';
 
-const submitButtonText = {
-  idle: '참석합니다',
-  loading: <Spinner size={16} color="rgba(0, 0, 0, 0.65)" />,
-  success: '요청 완료',
-};
+type FormState = 'idle' | 'loading' | 'success';
 
 export function DynamicMail() {
   const [open, setOpen] = useState(false);
-  const [formState, setFormState] =
-    useState<keyof typeof submitButtonText>('idle');
+  const [formState, setFormState] = useState<FormState>('idle');
 
   const ref = useRef<HTMLDivElement>(null);
   useOnClickOutside(ref, () => {
@@ -100,17 +95,7 @@ export function DynamicMail() {
                   key="form"
                   className="relative h-full overflow-hidden rounded-lg bg-page pt-10"
                 >
-                  <svg
-                    id="dotted-line"
-                    className="absolute left-0 right-0 top-10 stroke-border"
-                    width="300"
-                    height="2"
-                    viewBox="0 0 300 2"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M0 1H300" strokeDasharray="4 4" />
-                  </svg>
+                  <DotLine className="absolute left-0 right-0 top-10 stroke-border" />
                   <div className="p-3">
                     <div>FE 네트워킹 데이에 초대합니다.</div>
                     <div>24.06.03 17시 - 세미나홀</div>
@@ -139,7 +124,11 @@ export function DynamicMail() {
                             key={formState}
                             className="inline-flex h-full w-full items-center justify-center"
                           >
-                            {submitButtonText[formState]}
+                            {formState === 'idle' ? (
+                              '참석합니다'
+                            ) : (
+                              <Spinner size={16} color="rgba(0, 0, 0, 0.65)" />
+                            )}
                           </motion.span>
                         </AnimatePresence>
                       </button>
@@ -152,5 +141,20 @@ export function DynamicMail() {
         ) : null}
       </AnimatePresence>
     </div>
+  );
+}
+
+function DotLine({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="300"
+      height="2"
+      viewBox="0 0 300 2"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M0 1H300" strokeDasharray="4 4" />
+    </svg>
   );
 }

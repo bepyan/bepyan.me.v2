@@ -37,11 +37,11 @@ Vercel의 Design Engineer인 [**Emil Kowalski**](https://emilkowal.ski/)이 어�
 
 여러 요소가 있겠지만 그 중 가장 기본이 되는 것은 easing, 즉 "편안함" 입니다.
 
-음악에서 [샘플링 기법](https://namu.wiki/w/%EB%94%94%EC%A7%80%ED%84%B8#s-3.1)을 활용하여 디지털의 불연속적인 간극을 메울 수 있듯이, 웹에서는 css의 [transition](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)을 활용해 동떨어진 두 상태를 연결할 수 있습니다.
+음악에서 [샘플링 기법](https://namu.wiki/w/%EB%94%94%EC%A7%80%ED%84%B8#s-3.1)을 활용하여 디지털의 불연속적인 간극을 메울 수 있듯이, 웹에서는 css의 [transition](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)과 [animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation)을 활용해 동떨어진 두 상태를 연결할 수 있습니다.
 
 아래는 transition을 간단하게 활용하는 예시 코드입니다.
 
-```css
+```css {3}
 .thing {
   transform: translateX(0px);
   transition: transform 400ms ease-in-out;
@@ -76,7 +76,7 @@ Vercel의 Design Engineer인 [**Emil Kowalski**](https://emilkowal.ski/)이 어�
   <Linear client:only="react" />
 </div>
 
-https://easings.net/ 에서 easing 그래프에 대해서 살펴보고 그래프의 청사진을 기억하면 이러한 디테일을 활용하는데 도움이 될 것입니다.
+이러한 특징과 easing 그래프의 [청사진](https://easings.net/)을 기억하면 애니메이션 디테일을 다루는데 도움이 될 것입니다.
 
 ### 2. spring
 
@@ -90,7 +90,7 @@ easing 보다 더 자연스럽게 다가오는 애니메이션이 있으니, 바
 
 애플은 이를 잘 이해하고 적극적으로 사용하고 있습니다. 특히 Swift UI의 기본 애니메이션으로 spring 애니메이션을 적용하고 있고, 많은 사람들의 호평을 받은 dynamic island의 움직임 역시 spring 애니메이션 기반입니다.
 
-wwdc에서도 관련된 발표내용이 있는 것을 볼 수 있습니다.
+wwdc에서도 관련된 발표내용을 찾아볼 수 있습니다.
 [wwdc2023 - Animate with springs](https://developer.apple.com/videos/play/wwdc2023/10158/)
 
 애플은 또한 mass, tension, friction 속성 대신 **duration, bounce** 속성으로 spring을 다루는 방법을 창안했습니다. 아직 미묘한 움직임이 보이고 있음에도 불구하고 애니메이션이 완성된 것처럼 느끼게 되면서 더 연속적이고 더 자연스러운 애니메이션을 선보일 수 있습니다.
@@ -120,23 +120,22 @@ Emil는 보통 아래와 같이 duration을 적용한다고 합니다.
 
 Emil는 좋게 느껴졌던 애니메이션을 다시 만드는 것을 좋아합니다. 좋은 애니메이션을 촬영하여 한 프레임 한 프레임을 뜯어보면서 어떤 디테일이 좋은 맛을 내는지 살펴봅니다. [vault](https://animations.dev/vault), [ui.land](https://ui.land/)에 자신에게 영감을 준 것을 기록하고, 자신이 새롭게 만든 애니메이션을 [트위터](https://x.com/emilkowalski_) 같은 공개된 공간에 공유합니다.
 
-좋은 맛을 내기 위해서, **신선한 눈으로 되돌아보는 것** 또한 중요합니다.
-반복해서 애니메이션을 접하게 되면 익숙해져 실제보다 빠르게 동작을 인지하게 됩니다. 자신에게 잠시 쉼을 주고 나중에 다시 살펴봐보세요!
+추가적으로, 좋은 맛을 내기 위해서 **신선한 눈으로 다시 보는 것**도 중요합니다.
+반복해서 애니메이션을 접하게 되면 익숙해져 실제보다 빠르게 동작을 인지하게 됩니다. 자신에게 잠시 쉼을 주고 나중에 다시 살펴봐보세요.
 
 ## Framer Motion
 
-웹에서 애니메이션을 다루는 방법은 여러가지가 있으나 [framer-motion](https://www.framer.com/motion/)을 가장 추천합니다.
+앞서 웹 애니메이션에 대한 이해를 갖고 이제 멋지게 만들면 될 것 같습니다.
 
-크게 2가지 이유가 있는데요.
+애니메이션을 다루는 방법은 여러가지가 있으나 Emil는 [framer-motion](https://www.framer.com/motion/)을 추천합니다. Framer Motion이 제공하는 강력한 기능이 타 애니메이션 라이브러리 사이에서 자신을 돋보적이게 만듭니다.
 
-- 빠르게 애니메이션을 구현할 수 있음
-- spring animation 지원
+이를 간단하게 살펴보도록 합시다.
 
 ### `AnimatePresence`
 
 React에선 컴포넌트를 DOM에서 제거될 때 애니메이션시키기 정말 까다롭습니다. 컴포넌트가 unmount될 때 그냥 사라지기 때문에죠. Framer Motion의 [AnimatePresence](https://www.framer.com/motion/animate-presence/)을 사용하면 간단하게 문제를 해결할 수 있습니다.
 
-```tsx
+```tsx /AnimatePresence/
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Component({ isVisible }: { isVisible: boolean }) {
@@ -158,23 +157,35 @@ export function Component({ isVisible }: { isVisible: boolean }) {
 
 [Layout animations](https://www.framer.com/motion/layout-animations/)은 Framer Motion의 꽃이라고 할 수 있습니다.
 
-`layout`이라는 속성을 추가해주는 것 만으로 `width`, `position`, `flexbox` 등 CSS Animation으론 다룰 수 없는 애니메이션을 만들 수 있습니다.
+`layout`이라는 속성을 추가해주는 것 만으로 CSS Animation으론 다룰 수 없는 `auto hight`, `position`, `flexbox` 등의 애니메이션을 만들 수 있습니다.
 
-```tsx
+```html /layout/
 <motion.div layout />
+```
+
+추가적으로, [Shared Layout Animations](https://www.framer.com/motion/layout-animations/#shared-layout-animations)의 `layoutId`를 활용해서 독립적인 컴포넌트간의 애니메이션을 쉽게 적용할 수 있습니다.
+
+```html /layoutId/
+<div>
+  <!-- ... -->
+  {!isSelected && <motion.div layoutId="title">hello wold</motion.div>}
+  <!-- ... -->
+</div>
+<div>
+  <!-- ... -->
+  {isSelected && <motion.div layoutId="title">hello wold</motion.div>}
+  <!-- ... -->
+</div>
 ```
 
 ### alternative
 
 물론 Framer Motion이 언제나 정답이 되진 않습니다.
-
-무겁고 JS 기반으로 애니메이션을 구동하기에,
-
-Framer Motion으로 구현 가능한 모든 것은 vanilla CSS, JS로도 구현할 수 있습니다.
+Framer Motion의 번들 사이즈가 웹 개발에 있어서 큰 제약을 줍니다. 그리고 Framer Motion으로 구현한 모든 것은 vanilla CSS, JS로도 동일하게 구현할 수 있기에 상황에 따라 알맞는 방법을 활용하면 좋습니다.
 
 Vercel 팀은 Next.js 공식문서에서 페이지 번들 사이즈를 줄이기 위해 Framer Motion을 최대한 지양합니다. 실제로 이전에 Framer Motion으로 개발된 [코드 복사하기 버튼](https://nextjs.org/docs/getting-started/installation)을 CSS animations으로 리팩토링했다고 합니다.
 
-상황에 따라 알맞는 라이브러리를 활용하면 좋습니다.
+전체적인 장단점을 정리하면 아래와 같습니다.
 
 [Framer Motion](https://www.framer.com/motion/)
 
@@ -202,7 +213,7 @@ Vercel 팀은 Next.js 공식문서에서 페이지 번들 사이즈를 줄이기
 
 - pros
   - A very useful [timeline feature](https://gsap.com/docs/v3/GSAP/Timeline/).
-  - Easier to learn than the alternatives (in my opinion).
+  - Easier to learn than the alternatives.
   - Framework-agnostic can be seen as a pro to some.
   - Large [community](https://gsap.com/community/) and good documentation.
 - cons
@@ -213,14 +224,16 @@ Vercel 팀은 Next.js 공식문서에서 페이지 번들 사이즈를 줄이기
 
 그외
 
-- [Anime.js](https://animejs.com/)
-- [Popmotion](https://popmotion.io/)
-- [Web Animation API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Web_Animations_API_Concepts)
-- [Motion One](https://motion.dev/) for non-React projects
+- [Web Animation API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Web_Animations_API_Concepts), native browser API for animations.
+- [Anime.js](https://animejs.com/), lightweight JavaScript animation library.
+- [Popmotion](https://popmotion.io/), framer motion core JavaScript library.
+- [Motion One](https://motion.dev/), for non-React projects.
 
 ### demo
 
-[layout and shared layout animations](https://www.framer.com/motion/layout-animations/)
+강좌에서 다뤘던 `AnimatePresence`, `layoutId`, `key`, `blur`, `spring transition` 등 내용을 활용하면 아래 같은 애니메이션을 구현해봤습니다.
+
+자세한 코드는 [여기서](https://github.com/bepyan/bepyan.me.v2/blob/main/src/components/examples/dynamic-mail.tsx) 확인할 수 있습니다.
 
 <div>
   <DynamicMail client:idle />
@@ -231,3 +244,5 @@ Vercel 팀은 Next.js 공식문서에서 페이지 번들 사이즈를 줄이기
 내용도 좋지만 Emil이 [직접 만든 강좌 사이트 자체](https://animations.dev/)도 제게 좋은 경험이 되었습니다. 단순히 영상만 있는 것이 아닌 직접 다뤄볼 수 있는 플레이그라운드가 있고 과제를 풀어볼 수 있는 온라인 에디터도 있습니다.
 
 추가로 강좌에서는 애니메이션 접근성, 성능 등 훨씬 디테일한 내용도 다루고 있으니 웹 애니메이션에 관심이 있으면 꼭 수강해보길 추천 드립니다.
+
+긴 글 읽어주셔서 감사합니다.

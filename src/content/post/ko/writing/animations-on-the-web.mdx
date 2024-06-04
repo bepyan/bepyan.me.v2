@@ -1,0 +1,233 @@
+---
+title: 'Animations on the web'
+description: ''
+date: 2024-06-03 14:38:59
+draft: false
+tags:
+  - 리뷰
+  - 후기
+---
+
+import { DynamicMail } from '~/components/examples/dynamic-mail';
+import { Easing, Linear } from '~/components/examples/easing';
+
+## 들어가면서
+
+최근 아주 흥미롭게 수강했던 강좌, [**Animations on the web**](https://animations.dev/)에 대한 후기입니다.
+
+Vercel의 Design Engineer인 [**Emil Kowalski**](https://emilkowal.ski/)이 어떻게 애니메이션을 다루고, 그 가운데 어떤 인사이트를 얻었는지 공유해주는 강좌입니다. (최근엔 [Clerk로 이직](https://x.com/emilkowalski_/status/1766101835511660599)가셨다고 합니다.)
+
+저는 [sonner](https://ui.shadcn.com/docs/components/sonner)를 계기로 Emil를 알게 되었고, [Emil의 트위터](https://x.com/emilkowalski_)를 팔러우하면서 여러 고퀄리티의 인터랙션 UX에 매료되었습니다. 그러던 중에 Emil가 [애니메이션 강좌를 개설한다는 소식](https://x.com/emilkowalski_/status/1747257917919932905)을 듣고 제빨리 수강신청 했습니다.
+
+배운 내용을 저의 언어로 다시 정리해보고, 간단하게 실습해본 것을 공유드려 봅니다.
+
+## Animations?
+
+애니메이션을 다루기 전에 고민해야할 것이 있습니다. 바로 애니메이션이란 무엇이고 왜 필요한지 말입니다. Emil는 자신이 다루는 애니메이션에 대해서 아래와 같이 설명합니다.
+
+> craft animations that **make people feel something.**
+
+애니메이션은 사람들로 하여금 **무언가를 느끼게 한다**는 것이죠. 사전적인 의미로 이를 풀어서 설명해보면 "감각 기관을 통해 받은 어떤 흐름을 깨닫게 한다"는 것입니다. 굉장히 직관적이고 본능적인 반응을 일으킨다는 것을 알 수 있습니다.
+
+따라서 올바른 느낌을 주는 애니메이션은 사람들로 하여금 웹에서 더 지속적으로 반응하게하고 활동하게 할 것입니다. 자신이 올바른 흐름 가운데 있다고 인지하기 때문입니다.
+
+그렇다면 이제 무엇이 애니메이션을 올바르게 느끼게 하는지 함께 살펴 보도록 합시다.
+
+### 1. easing
+
+여러 요소가 있겠지만 그 중 가장 기본이 되는 것은 easing, 즉 "편안함" 입니다.
+
+음악에서 [샘플링 기법](https://namu.wiki/w/%EB%94%94%EC%A7%80%ED%84%B8#s-3.1)을 활용하여 디지털의 불연속적인 간극을 메울 수 있듯이, 웹에서는 css의 [transition](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)을 활용해 동떨어진 두 상태를 연결할 수 있습니다.
+
+아래는 transition을 간단하게 활용하는 예시 코드입니다.
+
+```css
+.thing {
+  transform: translateX(0px);
+  transition: transform 400ms ease-in-out;
+}
+.thing:hover {
+  transform: translateX(100px);
+}
+```
+
+여기서 [easing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function)을 이해하면 더욱 디테일하게 애니메이션을 적용할 수 있습니다.
+
+`ease-in`
+느린 속도로 시작해 빠른 속도로 끝납니다.
+이는 동작이 느릿 느릿하게 느껴져 일반적으로 사용하지 않는 것을 권장합니다.
+
+`ease-out`
+빠른 속도로 시작해 느린 속도로 끝납니다.
+빠르게 먼저 움직이기에, enter 및 exit 애니메이션으로 사용하기 자연스럽습니다.
+
+`ease-in-out`
+느린 속도로 시작해 빨라지다가 다시 느린 속도로 끝납니다.
+부드럽게 시작하고 끝나기에, 기존 화면에 있는 무언가를 애니메이션 시킬 때 자연스럽습니다.
+
+<div>
+  <Easing client:idle />
+</div>
+
+`linear`
+일정한 속도로 움직입니다. 좀 딱딱하고 부자연스럽다고 느낄 수 있지만, 인터랙션이 없이 무언가 전시하는 애니메이션으로 사용하기 적합합니다.
+
+<div>
+  <Linear client:only="react" />
+</div>
+
+https://easings.net/ 에서 easing 그래프에 대해서 살펴보고 그래프의 청사진을 기억하면 이러한 디테일을 활용하는데 도움이 될 것입니다.
+
+### 2. spring
+
+easing 보다 더 자연스럽게 다가오는 애니메이션이 있으니, 바로 spring 애니메이션이 있습니다.
+
+기존 css에서 animations과 transitions 속성은 `duration`을 반드시 제공해줘야 합니다. 반면 현실에서의 움직임은 고정된 duration을 갖지 않을 때가 많습니다. 물리적인 환경에 따라 다른 움직임을 보여 주죠.
+
+따라서 spring 애니메이션 에서는 duration 대신에 **mass, tension, friction** 이 3가지 속성으로 움직임을 다루게 됩니다. [A Friendly Introduction to Spring Physics](https://www.joshwcomeau.com/animation/a-friendly-introduction-to-spring-physics/)에서 이를 직접적으로 체험해보기를 추천드립니다.
+
+덕분에 spring 애니메이션은 **interruptible** 한 특징을 갖고 있습니다. 움직임이 끝나지 않는 상태에서 새로운 움직임을 부여받게 되는 경우, 현재 갖고 있는 velocity 바탕으로 새롭게 움직임을 적용하기에 더욱 자연스럽고 부드러운 움직임을 보일 수 있습니다.
+
+애플은 이를 잘 이해하고 적극적으로 사용하고 있습니다. 특히 Swift UI의 기본 애니메이션으로 spring 애니메이션을 적용하고 있고, 많은 사람들의 호평을 받은 dynamic island의 움직임 역시 spring 애니메이션 기반입니다.
+
+wwdc에서도 관련된 발표내용이 있는 것을 볼 수 있습니다.
+[wwdc2023 - Animate with springs](https://developer.apple.com/videos/play/wwdc2023/10158/)
+
+애플은 또한 mass, tension, friction 속성 대신 **duration, bounce** 속성으로 spring을 다루는 방법을 창안했습니다. 아직 미묘한 움직임이 보이고 있음에도 불구하고 애니메이션이 완성된 것처럼 느끼게 되면서 더 연속적이고 더 자연스러운 애니메이션을 선보일 수 있습니다.
+
+### 3. timing
+
+애니메이션되는 시간, 즉 `duration` 또한 올바른 애니메이션을 주는데 결정적인 역할을 합니다.
+
+[Human processor model](https://en.wikipedia.org/wiki/Human_processor_model)에 따르면, 사람은 시각적인 변화에 반응하는데 평균 230ms이 소요되고, 상황에 따라 70–700ms 범위 안에서 반응합니다.
+
+Emil는 보통 아래와 같이 duration을 적용한다고 합니다.
+
+- `hover` 150ms
+- `enter` 200ms
+- `exit` 150ms
+
+물론 예외 케이스가 발생되는데요, 화면 전체적인 변화가 있을 땐 시간을 더 부여하는 것이 적절합니다. [Vaul](https://vaul.emilkowal.ski/)에서는 500ms의 enter duration을 설정했다고 합니다.
+
+그렇다면 상황에 따라 어떻게 좋은 수치를 적용할 수 있을까요?
+
+### Taste
+
+이는 요리하는 것과 비슷합니다. 바로 "**맛**"을 아는 것입니다.
+얼마나 많은 기술이 들어가든 결국 어떤 맛이 나는지에 따라 이 느낌이 좋은지 나쁜지가 결정됩니다.
+
+그러나 맛을 아는 것과 그러한 맛을 만들어 내는 것에는 엄연한 차이가 있고 아쉽게도 그 간극을 마법같이 메울 수 없습니다. **끊임 없이 연습하고 요리를 만들어 봐야 합니다.** 내가 만든 요리가 맛이 없다고해서 실망할 필요도 없습니다. 뭐가 아쉬운지를 알면 더 좋은 것을 만들어 낼 수 있기 때문이죠.
+
+Emil는 좋게 느껴졌던 애니메이션을 다시 만드는 것을 좋아합니다. 좋은 애니메이션을 촬영하여 한 프레임 한 프레임을 뜯어보면서 어떤 디테일이 좋은 맛을 내는지 살펴봅니다. [vault](https://animations.dev/vault), [ui.land](https://ui.land/)에 자신에게 영감을 준 것을 기록하고, 자신이 새롭게 만든 애니메이션을 [트위터](https://x.com/emilkowalski_) 같은 공개된 공간에 공유합니다.
+
+좋은 맛을 내기 위해서, **신선한 눈으로 되돌아보는 것** 또한 중요합니다.
+반복해서 애니메이션을 접하게 되면 익숙해져 실제보다 빠르게 동작을 인지하게 됩니다. 자신에게 잠시 쉼을 주고 나중에 다시 살펴봐보세요!
+
+## Framer Motion
+
+웹에서 애니메이션을 다루는 방법은 여러가지가 있으나 [framer-motion](https://www.framer.com/motion/)을 가장 추천합니다.
+
+크게 2가지 이유가 있는데요.
+
+- 빠르게 애니메이션을 구현할 수 있음
+- spring animation 지원
+
+### `AnimatePresence`
+
+React에선 컴포넌트를 DOM에서 제거될 때 애니메이션시키기 정말 까다롭습니다. 컴포넌트가 unmount될 때 그냥 사라지기 때문에죠. Framer Motion의 [AnimatePresence](https://www.framer.com/motion/animate-presence/)을 사용하면 간단하게 문제를 해결할 수 있습니다.
+
+```tsx
+import { motion, AnimatePresence } from 'framer-motion';
+
+export function Component({ isVisible }: { isVisible: boolean }) {
+  return (
+    <AnimatePresence>
+      {isVisible ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      ) : null}
+    </AnimatePresence>
+  );
+}
+```
+
+### `Layout Animations`
+
+[Layout animations](https://www.framer.com/motion/layout-animations/)은 Framer Motion의 꽃이라고 할 수 있습니다.
+
+`layout`이라는 속성을 추가해주는 것 만으로 `width`, `position`, `flexbox` 등 CSS Animation으론 다룰 수 없는 애니메이션을 만들 수 있습니다.
+
+```tsx
+<motion.div layout />
+```
+
+### alternative
+
+물론 Framer Motion이 언제나 정답이 되진 않습니다.
+
+무겁고 JS 기반으로 애니메이션을 구동하기에,
+
+Framer Motion으로 구현 가능한 모든 것은 vanilla CSS, JS로도 구현할 수 있습니다.
+
+Vercel 팀은 Next.js 공식문서에서 페이지 번들 사이즈를 줄이기 위해 Framer Motion을 최대한 지양합니다. 실제로 이전에 Framer Motion으로 개발된 [코드 복사하기 버튼](https://nextjs.org/docs/getting-started/installation)을 CSS animations으로 리팩토링했다고 합니다.
+
+상황에 따라 알맞는 라이브러리를 활용하면 좋습니다.
+
+[Framer Motion](https://www.framer.com/motion/)
+
+- pros
+  - Spring animations.
+  - [Layout animations](https://www.framer.com/motion/layout-animations/) are an absolute game-changer.
+  - Complex animations with not a lot of code.
+  - The API ties in well with React.
+- cons
+  - Bundle size.
+  - Sometimes, it's hard to understand why an animation is not working as expected.
+
+[React Spring](https://react-spring.dev/)
+
+- pros
+  - Spring-based animations.
+  - Smaller package size than Framer Motion.
+  - Highly-configurable.
+- cons
+  - Steep learning curve.
+  - It takes more time and more code to write the same animations as in Framer Motion.
+  - Documentation is hard to parse at times.
+
+[GSAP](https://gsap.com/)
+
+- pros
+  - A very useful [timeline feature](https://gsap.com/docs/v3/GSAP/Timeline/).
+  - Easier to learn than the alternatives (in my opinion).
+  - Framework-agnostic can be seen as a pro to some.
+  - Large [community](https://gsap.com/community/) and good documentation.
+- cons
+  - Some plugins require a paid plan.
+  - No spring animations.
+  - Not tailored to React.
+  - Paid plan for commercial projects.
+
+그외
+
+- [Anime.js](https://animejs.com/)
+- [Popmotion](https://popmotion.io/)
+- [Web Animation API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Web_Animations_API_Concepts)
+- [Motion One](https://motion.dev/) for non-React projects
+
+### demo
+
+[layout and shared layout animations](https://www.framer.com/motion/layout-animations/)
+
+<div>
+  <DynamicMail client:idle />
+</div>
+
+## 맺으면서
+
+내용도 좋지만 Emil이 [직접 만든 강좌 사이트 자체](https://animations.dev/)도 제게 좋은 경험이 되었습니다. 단순히 영상만 있는 것이 아닌 직접 다뤄볼 수 있는 플레이그라운드가 있고 과제를 풀어볼 수 있는 온라인 에디터도 있습니다.
+
+추가로 강좌에서는 애니메이션 접근성, 성능 등 훨씬 디테일한 내용도 다루고 있으니 웹 애니메이션에 관심이 있으면 꼭 수강해보길 추천 드립니다.

@@ -1,5 +1,3 @@
-const colors = require('tailwindcss/colors');
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
@@ -19,7 +17,6 @@ module.exports = {
       sm: { max: '640px' },
     },
     colors: {
-      ...colors,
       transparent: 'transparent',
       gray: {
         50: 'var(--gray-50)',

@@ -43,6 +43,8 @@
     "plaiceholder": "^3.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-fast-marquee": "^1.6.4",
+    "react-tweet": "^3.2.1",
     "react-use-measure": "^2.1.1",
     "svelte": "^4.2.10",
     "three": "^0.160.0"

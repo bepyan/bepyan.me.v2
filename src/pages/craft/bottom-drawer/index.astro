@@ -1,0 +1,27 @@
+---
+import BaseHeader from '~/components/base-header.astro';
+import BaseNav from '~/components/base-nav.astro';
+import { BottomDrawer } from '~/components/examples/bottom-drawer';
+import { GiscusSection } from '~/components/giscus';
+import MainLayout from '~/layouts/main-layout.astro';
+import type { Language } from '~/libs/i18n';
+
+const lang: Language = 'ko';
+
+const title = 'bottom drawer';
+const description = 'A bottom drawer with framer-motion.';
+---
+
+<MainLayout {lang} seo={{ title, description }}>
+  <BaseHeader {title} {description} noI18n>
+    <BaseNav class="mt-1.5" lang={lang} />
+  </BaseHeader>
+  <div class="w-full max-w-content">
+    <div>
+      <div class="flex h-[500px] w-full items-center justify-center">
+        <BottomDrawer client:only="react" />
+      </div>
+    </div>
+  </div>
+  <GiscusSection className="mx-auto mt-20" {lang} client:idle />
+</MainLayout>

@@ -243,7 +243,7 @@
 
 /* animate intro stage */
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes enter {
+  @keyframes intro-stage {
     0% {
       opacity: 0;
       transform: translateY(5px);
@@ -258,7 +258,7 @@
     --lv-wait: 0;
     --delay: 50ms;
     --start: 0ms;
-    animation: enter 0.5s both;
+    animation: intro-stage 0.5s both;
     animation-delay: calc(
       var(--lv) * var(--delay) + var(--lv-wait) * var(--delay) + var(--start)
     );

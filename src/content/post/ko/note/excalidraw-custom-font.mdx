@@ -1,0 +1,79 @@
+---
+title: 'Excalidraw 커스텀 폰트 적용하기 (한글 손글씨)'
+description: ''
+date: 2024-07-11 13:49:29
+draft: false
+tags:
+  - Excalidraw
+---
+
+[Excalidraw(엑스칼리드로우)](https://excalidraw.com/)
+
+사용성이 무척 좋은 손글씨 감성의 그림판이지만..
+한글은 손글씨가 적용이 안됩니다.
+
+한글도 손글씨로 나오도록 해봅시다.
+
+## 1. 크롬 플러그인 설치
+
+**Excalidraw Custom Font**이라는 크롬 플로그인이 있습니다.
+https://chromewebstore.google.com/detail/afbeaojffbjckicjpkecknoocdpmgoah
+
+설치하도록 합니다.
+
+## 2. 폰트 링크 구하기
+
+플러그인에 온라인으로 접근이 가능한 폰트 링크를 입력해야 합니다.
+
+폰트 링크는 [눈누](https://noonnu.cc/index?category_style_ids=3&order_by=pd)에서 찾는 것을 추천합니다.
+눈누 페이지 우측에서 `font-face` 코드 중에서 폰트 링크 부분을 복사하면 됩니다.
+
+저의 경우 [온글잎 류뚱체](https://noonnu.cc/font_page/1389)을 사용했고 폰트 링크는 아래와 같습니다.
+
+```
+https://fastly.jsdelivr.net/gh/projectnoonnu/2405-2@1.0/Ownglyph_ryuttung-Rg.woff2
+```
+
+## 3. Excalidraw에 적용
+
+이제 [Excalidraw](https://excalidraw.com/)에서 커스텀 폰트를 적용하면 됩니다.
+
+플러그인을 열어 링크를 복사하고 `Change Font` 버튼을 클릭합니다.
+
+<div class="flex items-start gap-4">
+  ![240711-144314](/img/excalidraw-custom-font/240711-144314.avif)
+  ![240711-144607](/img/excalidraw-custom-font/240711-144607.avif)
+</div>
+
+바로 폰트가 적용되지 않을 수 있는데요.
+Excalidraw의 **다크모드 테마**를 변경해 보면 폰트가 적용될 것입니다.
+
+![240711-151702](/img/excalidraw-custom-font/240711-151702.gif)
+
+## 번외: 옵시디언
+
+옵시디언에서도 Excalidraw을 사용할 수 있고 커스텀 폰트를 적용할 수 있습니다.
+
+옵시디언 설정 > 커뮤니티 플러그인(Community plugins)에서 Excalidraw를 설치하여 옵시디언에서 Excalidraw을 사용할 수 있습니다.
+
+### 1. 폰트 파일 로드 및 설정
+
+다운받은 폰트파일(.ttf)을 옵시디언 폴더 중 원하는 곳 옮깁니다.
+
+이후 Excalidraw 설정에서 `Non-Excalidraw.com supported features` > `Enable fourth font option` 활성화 > `Fourth font file`에서 원하는 폰트 선택하면 됩니다.
+
+![240711-140412](/img/excalidraw-custom-font/240711-140412.avif)
+
+### 2. 한글 손글씨 폰트 적용
+
+이제 텍스트 박스를 선택하고 4번째 폰트를 적용하면 이쁜 한글 손글씨가 적용됩니다.
+
+![240711-154726](/img/excalidraw-custom-font/240711-154726.gif)
+
+## 맺으면서
+
+플러그인으로 한글 손글씨를 적용하는 방법은 **내 컴퓨터**에서만 적용 됩니다. 따라서 함께 협업하는 동료가 있다면 같은 폰트을 적용하도록 공유해야 합니다. 페이지 접속할 때마다 설정을 해줘야하는 아쉬움도 있습니다.
+
+옵시디언에서 한글 손글씨를 적용하는 방법은 외부 이미지 리소스를 사용하는데 번거로움이 있고, 실시간 협업을 할 수 없습니다.
+
+Excalidraw에서 공식적으로 커스텀 폰트를 지원해 줬으면 좋겠네요.

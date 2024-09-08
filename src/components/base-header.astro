@@ -16,8 +16,8 @@ const { title, description, noI18n } = props;
   <div class="flex items-center justify-between">
     <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
     <div class="flex gap-1">
-      {!noI18n && <LanguageDropdown client:load {url} />}
-      <ThemeDropdown client:load />
+      {!noI18n && <LanguageDropdown client:load {url} align="end" />}
+      <ThemeDropdown client:load align="end" />
     </div>
   </div>
   {description && <p class="text-sm text-second">{description}</p>}

@@ -3,6 +3,8 @@
   import Dropdown from './ui/dropdown.svelte';
   import type { DropdownItem } from './ui/dropdown.svelte';
 
+  export let align: 'start' | 'end' = 'start';
+
   type Theme = keyof typeof THEME_MAP;
 
   const themeItems: DropdownItem[] = Object.entries(THEME_MAP).map(
@@ -19,6 +21,7 @@
 </script>
 
 <Dropdown
+  {align}
   items={themeItems}
   selectedValue={$themeStore}
   on:select={handleThemeSelect}

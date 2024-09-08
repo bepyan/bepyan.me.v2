@@ -14,6 +14,7 @@
   export let selectedValue: string | null = null;
   export let buttonClass: string = '';
   export let menuClass: string = '';
+  export let align: 'start' | 'end' = 'start';
 
   let isOpen: boolean = false;
   const dispatch = createEventDispatcher<{ select: { item: DropdownItem } }>();
@@ -75,6 +76,7 @@
       transition:dropdownTransition
       class={cn(
         'absolute top-full z-50 mt-1 flex min-w-[8rem] flex-col overflow-hidden rounded-md border bg-page p-1 shadow-md',
+        align === 'end' ? 'right-0' : 'left-0',
         menuClass,
       )}
     >

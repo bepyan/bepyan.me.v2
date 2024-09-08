@@ -3,6 +3,7 @@
   import { getDefaultPathname, languages, useI18n } from '~/libs/i18n';
 
   export let url: URL;
+  export let align: 'start' | 'end' = 'start';
 
   const { lang, p } = useI18n(url);
   const pathname = getDefaultPathname(url);
@@ -26,6 +27,7 @@
 
 <Dropdown
   items={languageItems}
+  {align}
   {selectedValue}
   on:select={handleLanguageSelect}
 >

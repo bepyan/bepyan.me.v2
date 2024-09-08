@@ -16,6 +16,12 @@
   "files.associations": {
     "*.mdx": "markdown"
   },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
   "css.lint.unknownAtRules": "ignore",
   "cSpell.words": ["Pretendard"],
   "pasteImage.defaultName": "YYMMDD-HHmmss",

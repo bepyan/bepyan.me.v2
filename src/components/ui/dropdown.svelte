@@ -9,6 +9,7 @@
   import { createEventDispatcher } from 'svelte';
   import { cn } from '~/libs/utils';
   import { buttonVariants } from '~/components/ui/button';
+  import clickOutside from '~/libs/svelte/use-click-outside';
 
   export let items: DropdownItem[] = [];
   export let selectedValue: string | null = null;
@@ -30,16 +31,6 @@
     isOpen = !isOpen;
   }
 
-  function handleFocusLoss(event: FocusEvent): void {
-    const relatedTarget = event.relatedTarget as HTMLElement | null;
-    const currentTarget = event.currentTarget as HTMLElement;
-
-    if (relatedTarget && currentTarget.contains(relatedTarget)) {
-      return;
-    }
-    isOpen = false;
-  }
-
   function selectItem(item: DropdownItem): void {
     selectedValue = item.value;
     isOpen = false;
@@ -58,7 +49,10 @@
   }
 </script>
 
-<div class="relative font-sans" on:focusout={handleFocusLoss}>
+<div
+  class="relative font-sans"
+  use:clickOutside={{ enabled: isOpen, callback: () => (isOpen = false) }}
+>
   <button
     class={cn(
       buttonVariants({

@@ -23,5 +23,8 @@
   "pasteImage.path": "${projectRoot}/public/img/${currentFileNameWithoutExt}",
   "pasteImage.forceUnixStyleSeparator": true,
   "pasteImage.insertPattern": "![${imageFileNameWithoutExt}](${imageFilePath})",
-  "pasteImage.prefix": "/"
+  "pasteImage.prefix": "/",
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  }
 }

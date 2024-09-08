@@ -57,7 +57,7 @@
   }
 </script>
 
-<div class="relative" on:focusout={handleFocusLoss}>
+<div class="relative font-sans" on:focusout={handleFocusLoss}>
   <button
     class={cn(
       buttonVariants({

@@ -127,7 +127,7 @@ export function DynamicMail() {
                             {formState === 'idle' ? (
                               '참석합니다'
                             ) : (
-                              <Spinner size={16} color="rgba(0, 0, 0, 0.65)" />
+                              <Spinner size={16} />
                             )}
                           </motion.span>
                         </AnimatePresence>

@@ -20,6 +20,7 @@
 
     --selection: hsla(0, 0%, 0%, 0.045);
     --border: hsla(0, 0%, 0%, 0.09);
+    --spinner-color: rgba(0, 0, 0, 65);
 
     --page-background: var(--gray-50);
 
@@ -45,6 +46,7 @@
 
     --selection: hsla(0, 0%, 100%, 0.077);
     --border: hsla(0, 0%, 100%, 0.1);
+    --spinner-color: rgba(255, 255, 255, 65);
 
     --page-background: var(--gray-75);
 

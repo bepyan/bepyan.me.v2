@@ -2,6 +2,7 @@
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
 import { BottomDrawer } from '~/components/examples/bottom-drawer';
+import { DynamicMail } from '~/components/examples/dynamic-mail';
 import { GiscusSection } from '~/components/giscus';
 import MainLayout from '~/layouts/main-layout.astro';
 import type { Language } from '~/libs/i18n';
@@ -18,8 +19,11 @@ const description = 'A bottom drawer with framer-motion.';
   </BaseHeader>
   <div class="w-full max-w-content">
     <div>
-      <div class="flex h-[500px] w-full items-center justify-center">
+      <div class="flex h-[300px] w-full items-center justify-center">
         <BottomDrawer client:only="react" />
+      </div>
+      <div class="flex h-[300px] w-full items-center justify-center">
+        <DynamicMail client:only="react" />
       </div>
     </div>
   </div>

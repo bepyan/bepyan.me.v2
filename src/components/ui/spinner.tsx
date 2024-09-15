@@ -2,20 +2,13 @@ import styles from './spinner.module.css';
 
 const bars = Array(12).fill(0);
 
-export default function Spinner({
-  color,
-  size = 20,
-}: {
-  color: string;
-  size?: number;
-}) {
+export default function Spinner({ size = 20 }: { size?: number }) {
   return (
     <div
       className={styles.wrapper}
       style={
         {
           ['--spinner-size']: `${size}px`,
-          ['--spinner-color']: color,
         } as React.CSSProperties
       }
     >

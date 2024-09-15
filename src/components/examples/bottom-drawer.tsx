@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@radix-ui/react-dialog';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MailIcon, SearchIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 import useMeasure from 'react-use-measure';
 
@@ -32,7 +32,7 @@ export function BottomDrawer() {
         </div>
       </DialogTrigger>
       <DialogPortal>
-        <DialogOverlay className="fixed inset-0 z-50 bg-gray-900 opacity-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogOverlay className="fixed inset-0 z-50 bg-gray-900 opacity-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 dark:bg-gray-200" />
         <DialogContent
           className={cn(
             'fixed bottom-0 left-[50%] right-0 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-20',
@@ -69,7 +69,6 @@ function Card() {
                 exit={{ opacity: 0.5 }}
               >
                 <div>
-                  <MailIcon className="h-6 w-6" />
                   <div className="mt-3 text-xl font-bold text-gray-700">
                     FE 네트워킹 데이 초대장
                   </div>

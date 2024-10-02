@@ -55,8 +55,8 @@ draft: false
 [외부 링크](https://bepyan.me/)는 "새 탭이 열릴 것"을 나타내는 아이콘이 생깁니다.
 https://github.com/bepyan 기본적으로 링크는 자동으로 파싱됩니다.
 
-구분선은 은은하게 눈에 띄지 않습니다.
-전반적으로 여백이 충분하기 때문에 이를 자주 활용하진 않습니다.
+**구분선**은 글의 컨텍스트를 전환하기 위해서 사용됩니다.
+독자가 크게 환기될 수 있도록 위아래로 `h2`의 여백 만큼 적용합니다.
 
 ---
 
@@ -90,7 +90,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 ```
 
-```tsx {3} title="layout.tsx" caption="가난한 별 이제 까닭이요, 벌레는 그 때 까닭이요, 버리었습니다." showLineNumbers /className/ /fontMono/#v /fontSans/#s /fontSerif/#i
+```tsx {3} title="layout.tsx" caption="코드 상하단에 설명 문구를 작성할 수 있습니다." showLineNumbers /className/ /fontMono/#v /fontSans/#s /fontSerif/#i
 import '~/styles/globals.css';
 
 import type { Metadata } from 'next';

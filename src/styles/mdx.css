@@ -127,9 +127,21 @@
 }
 
 .mdx hr {
-  height: 1px;
+  overflow: visible;
+  width: 100%;
+  height: 0;
+  padding: 0;
   border: none;
-  background-color: var(--border);
+  margin: var(--page-top) auto;
+  text-align: center;
+}
+
+.mdx hr::after {
+  display: inline-block;
+  margin: -1rem 0 0;
+  color: var(--text-disabled);
+  content: '* * *';
+  font-size: 1.5rem;
 }
 
 .mdx table {

@@ -1,0 +1,68 @@
+.border_effect {
+  --active: 1;
+  --start: 0;
+
+  --border-width: 2px;
+  --border-radius: 9999px;
+  --border: #393a3c;
+
+  --spread: 60;
+  --blur: 40;
+
+  border-radius: var(--border-radius);
+}
+
+.border_effect:after,
+.border_effect:before {
+  position: absolute;
+  border-radius: var(--border-radius);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 1s;
+}
+
+.border_effect:before {
+  border: var(--border-width) solid transparent;
+  background: var(--border);
+  background-attachment: fixed;
+  mask: linear-gradient(#0000, #0000),
+    conic-gradient(
+      from
+        calc(
+          ((var(--start) + (var(--spread) * 0.25)) - (var(--spread) * 1.5)) *
+            1deg
+        ),
+      hsla(0, 0%, 100%, 0.15) 0deg,
+      #fff,
+      hsla(0, 0%, 100%, 0.15) calc(var(--spread) * 2.5deg)
+    );
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+  opacity: var(--active, 0);
+}
+
+.border_effect:after {
+  --bg-size: 100%;
+  border: var(--border-width) solid transparent;
+  background: conic-gradient(
+    from 180deg at 50% 70%,
+    #fafafa 0deg,
+    #fafafa 1turn
+  );
+  background-attachment: fixed;
+  mask: linear-gradient(#0000, #0000),
+    conic-gradient(
+      from
+        calc(
+          ((var(--start) + (var(--spread) * 0.25)) - (var(--spread) * 0.5)) *
+            1deg
+        ),
+      #0000 0deg,
+      #fff,
+      #0000 calc(var(--spread) * 0.5deg)
+    );
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+  opacity: var(--active, 0);
+}

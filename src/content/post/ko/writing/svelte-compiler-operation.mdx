@@ -10,7 +10,7 @@ tags:
 
 최근 프론트엔드 분야에서 React와 Vue에 이어 Svelte가 종종 거론되고 있습니다. 흥미롭게도, 구글 검색에서 'React Vue'를 입력하면, 늘 같이 거론되었던 Angular 대신 Svelte가 상단에 추천되는 것을 볼 수 있습니다.
 
-![231210-211816](/img/svelte-compiler-operation/231210-211816.png)
+![231210-211816](/img/svelte-compiler-operation/231210-211816.avif)
 
 Svelte의 핵심은 **효율적인 컴파일**에 있습니다.
 DOM을 조작하는 JavaScript 코드를 최적화하여 생성하는 것이죠.
@@ -61,7 +61,7 @@ const ast = parse(source);
 Svelte 소스코드를 AST로 변환함으로써 **컴파일러는 코드간의 연관관계를 알 수 있게 됩니다.**
 Svelte 파일에 작성된 script, html, css 코드를 분리하여 하나의 컴포넌트 객체(root)를 만드는 것이죠. 아래 그림을 보면 쉽게 이해할 수 있을 겁니다.
 
-![231213-030554](/img/svelte-compiler-operation/231213-030554.png)
+![231213-030554](/img/svelte-compiler-operation/231213-030554.avif)
 
 컴파일러 소스코드 단에서는 어떤 일이 일어나는지 살펴봅시다.
 `parse(source)`가 실행하면, [`Parser`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/index.js#L13) 객체가 생성되면서 AST를 반환합니다.
@@ -128,7 +128,7 @@ const analysis = analyze_component(ast);
 다음 단계로 만들어진 AST에서 **컴포넌트의 다양한 동작을 수행하기 위한 정보를 추출**합니다.
 참고로 하나의 Svelte 파일이 곧 하나의 컴포넌트입니다.
 
-![231222-173628](/img/svelte-compiler-operation/231222-173628.png)
+![231222-173628](/img/svelte-compiler-operation/231222-173628.avif)
 
 컴포넌트가 갖는 주요 속성을 정리하면 아래와 같습니다. [원본 코드 참고](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/index.js#L292)
 
@@ -257,7 +257,7 @@ const compiled = transform_component(analysis, source);
 
 마지막으로, Svelte 컴파일러는 변환 과정을 거쳐 렌더링 코드을 생성합니다.
 
-![231222-173647](/img/svelte-compiler-operation/231222-173647.png)
+![231222-173647](/img/svelte-compiler-operation/231222-173647.avif)
 
 이 과정에서 SSR(Server-Side Rendering), CSR(Client-Side Rendering)를 위한 코드 생성 로직이 각각 다릅니다. 컴파일러는 `server_component`, `client_component` 두 함수를 사용하여 각각의 상황에 최적화된 코드를 생성합니다.
 

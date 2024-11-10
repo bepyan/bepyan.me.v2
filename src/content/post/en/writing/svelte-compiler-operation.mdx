@@ -10,7 +10,7 @@ tags:
 
 Recently, in the frontend development field, Svelte is increasingly being mentioned alongside React and Vue. Interestingly, when you search 'React Vue' on Google, Svelte is now often recommended at the top, instead of the traditionally mentioned Angular.
 
-![231210-211816](/img/svelte-compiler-operation/231210-211816.png)
+![231210-211816](/img/svelte-compiler-operation/231210-211816.avif)
 
 The essence of Svelte lies in **efficient compilation**, creating optimized JavaScript code for manipulating the DOM.
 
@@ -56,7 +56,7 @@ const ast = parse(source);
 
 By converting the Svelte source code into an AST, **the compiler understands the relationships between the codes**. The Svelte file's script, HTML, and CSS codes are separated to form a single component object (root). Below is a diagram for easy understanding.
 
-![231213-030554](/img/svelte-compiler-operation/231213-030554.png)
+![231213-030554](/img/svelte-compiler-operation/231213-030554.avif)
 
 Let's examine what happens at the compiler source code level.
 Executing `parse(source)` creates a [`Parser`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/index.js#L13) object, returning an AST.
@@ -121,7 +121,7 @@ const analysis = analyze_component(ast);
 
 The next step involves extracting information for performing various actions of a component from the created AST. It's worth noting that each Svelte file represents a single component.
 
-![231222-173628](/img/svelte-compiler-operation/231222-173628.png)
+![231222-173628](/img/svelte-compiler-operation/231222-173628.avif)
 
 The primary properties of a component can be summarized as follows, with reference to the [original code](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/2-analyze/index.js#L292):
 
@@ -250,7 +250,7 @@ const compiled = transform_component(analysis, source);
 
 Finally, the Svelte compiler undergoes a transformation process to generate rendering code.
 
-![231222-173647](/img/svelte-compiler-operation/231222-173647.png)
+![231222-173647](/img/svelte-compiler-operation/231222-173647.avif)
 
 In this process, the logic for generating code for SSR (Server-Side Rendering) and CSR (Client-Side Rendering) differs. The compiler uses two functions, `server_component` and `client_component`, to create code optimized for each scenario.
 

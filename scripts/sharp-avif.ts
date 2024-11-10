@@ -1,17 +1,38 @@
-// import { unlink } from 'node:fs/promises';
+import { readFile, unlink, writeFile } from 'node:fs/promises';
 
 import { Glob } from 'bun';
 import sharp from 'sharp';
 
-const ignoreList = ['og1.png', 'og2.png'];
+const config = {
+  imageGlobPattern: 'public/img/**/*.png',
+  ignoreList: ['og1.png', 'og2.png'],
+};
 
-(async () => {
-  const glob = new Glob(`public/img/**/*.png`);
+async function updateMdx(oldName: string, newName: string) {
+  const mdxGlob = new Glob('src/content/post/**/*.mdx');
+
+  for await (const mdxPath of mdxGlob.scan('.')) {
+    try {
+      const content = await readFile(mdxPath, 'utf-8');
+      const updatedContent = content.replaceAll(oldName, newName);
+
+      if (content !== updatedContent) {
+        await writeFile(mdxPath, updatedContent, 'utf-8');
+        console.log(`✦ Updated references in ${mdxPath}`);
+      }
+    } catch (e) {
+      console.error(`Error updating MDX file ${mdxPath}:`, e);
+    }
+  }
+}
+
+async function convertImages() {
+  const glob = new Glob(config.imageGlobPattern);
 
   for await (const filePath of glob.scan('.')) {
     const filename = filePath.split('/').pop()!;
 
-    if (ignoreList.includes(filename)) {
+    if (config.ignoreList.includes(filename)) {
       continue;
     }
 
@@ -21,13 +42,15 @@ const ignoreList = ['og1.png', 'og2.png'];
         .avif()
         .toFile(filePath.replace('.png', '.avif'));
 
-      // await unlink(filePath);
-      // 마크다운에서 .png 부분을 .avif로 변경하는 코드 추가 필요
+      await updateMdx(filename, filename.replace('.png', '.avif'));
+      await unlink(filePath);
 
-      console.log(`✦ ${filePath} complete`);
+      console.log(`✦ ${filePath} converted to AVIF`);
     } catch (e) {
       console.error(e);
       console.log(`✧ ${filePath} error`);
     }
   }
-})().then(console.error);
+}
+
+convertImages().catch(console.error);

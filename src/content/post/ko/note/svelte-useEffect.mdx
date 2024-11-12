@@ -68,7 +68,7 @@ useEffect(() => {
 <script>
   const effect = (state1) => {
     console.log(state1, state2, state3);
-  }
+  };
   $: effect(state1);
 </script>
 ```
@@ -79,7 +79,7 @@ useEffect(() => {
 <script>
   const effect = () => {
     console.log(state1, state2, state3);
-  }
+  };
   $: effect(), [state1];
 
   // $: (() => {
@@ -96,25 +96,25 @@ Svelte는 React와 다르게 랜더링과 상태 구독이 별개로 진행됩�
 
 ```svelte {11}
 <script>
-  import {tick} from "svelte";
+  import { tick } from 'svelte';
 
   let btnEl;
   let cnt = 1;
 
   const checkBtnWidth = async () => {
-    if(!btnEl) return;
+    if (!btnEl) return;
 
     // 상태가 DOM에 적용되는 것을 보장하는 promise
     await tick();
 
     const { width } = btnEl.getBoundingClientRect();
     console.log(width);
-  }
+  };
   $: checkBtnWidth(), [cnt];
 
   const onClick = () => {
     cnt = cnt * 10;
-  }
+  };
 </script>
 
 <button bind:this={btnEl} on:click={onClick}>

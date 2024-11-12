@@ -54,9 +54,8 @@ export const sharpImages = async () => {
         `.sharp.${fileType}`,
       );
 
-      await sharp(filePath)
-        [sharpOptionType](sharpOption)
-        .toFile(sharpedFilePath);
+      // prettier-ignore
+      await sharp(filePath)[sharpOptionType](sharpOption).toFile(sharpedFilePath);
 
       const file = Bun.file(filePath);
       const sharpedFile = Bun.file(sharpedFilePath);

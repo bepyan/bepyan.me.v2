@@ -1,0 +1,3 @@
+{
+  "extends": ["stylelint-config-recess-order"]
+}

@@ -15,17 +15,18 @@
 .border_effect:after,
 .border_effect:before {
   position: absolute;
-  border-radius: var(--border-radius);
-  content: '';
   inset: 0;
   pointer-events: none;
+  content: '';
+  border-radius: var(--border-radius);
   transition: opacity 1s;
 }
 
 .border_effect:before {
-  border: var(--border-width) solid transparent;
   background: var(--border);
   background-attachment: fixed;
+  border: var(--border-width) solid transparent;
+  opacity: var(--active, 0);
   mask: linear-gradient(#0000, #0000),
     conic-gradient(
       from
@@ -39,18 +40,18 @@
     );
   mask-clip: padding-box, border-box;
   mask-composite: intersect;
-  opacity: var(--active, 0);
 }
 
 .border_effect:after {
   --bg-size: 100%;
-  border: var(--border-width) solid transparent;
   background: conic-gradient(
     from 180deg at 50% 70%,
     #fafafa 0deg,
     #fafafa 1turn
   );
   background-attachment: fixed;
+  border: var(--border-width) solid transparent;
+  opacity: var(--active, 0);
   mask: linear-gradient(#0000, #0000),
     conic-gradient(
       from
@@ -64,5 +65,4 @@
     );
   mask-clip: padding-box, border-box;
   mask-composite: intersect;
-  opacity: var(--active, 0);
 }

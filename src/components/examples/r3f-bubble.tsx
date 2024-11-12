@@ -41,7 +41,7 @@ export const R3FBubbleApp = () => {
           <Bauble key={i} {...props} />
         ))}
       </Physics>
-      <EffectComposer disableNormalPass multisampling={0}>
+      <EffectComposer multisampling={0}>
         <N8AO aoRadius={2} intensity={1} />
       </EffectComposer>
     </Canvas>

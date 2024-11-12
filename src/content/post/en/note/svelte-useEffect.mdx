@@ -67,7 +67,7 @@ To address this, you can extract unnecessary dependencies outside the `$:` expre
 <script>
   const effect = (state1) => {
     console.log(state1, state2, state3);
-  }
+  };
   $: effect(state1);
 </script>
 ```
@@ -78,7 +78,7 @@ For a more React-like approach, you can write it as follows:
 <script>
   const effect = () => {
     console.log(state1, state2, state3);
-  }
+  };
   $: effect(), [state1];
 
   // $: (() => {
@@ -95,25 +95,25 @@ Unlike React, rendering and state subscription in Svelte are separate processes.
 
 ```svelte {11}
 <script>
-  import {tick} from "svelte";
+  import { tick } from 'svelte';
 
   let btnEl;
   let cnt = 1;
 
   const checkBtnWidth = async () => {
-    if(!btnEl) return;
+    if (!btnEl) return;
 
     // Promise that ensures state updates are applied to the DOM
     await tick();
 
     const { width } = btnEl.getBoundingClientRect();
     console.log(width);
-  }
+  };
   $: checkBtnWidth(), [cnt];
 
   const onClick = () => {
     cnt = cnt * 10;
-  }
+  };
 </script>
 
 <button bind:this={btnEl} on:click={onClick}>

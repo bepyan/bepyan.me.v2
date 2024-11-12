@@ -131,7 +131,7 @@ export const parseToc = (source: string) => {
       const nac = [...ac];
       const removeMdx = rawHeading
         .replace(/^##*\s/, '')
-        .replace(/[\*,\~]{2,}/g, '')
+        .replace(/[*,~]{2,}/g, '')
         .replace(/(?<=\])\((.*?)\)/g, '')
         .replace(/(?<!\S)((http)(s?):\/\/|www\.).+?(?=\s)/g, '');
 
@@ -161,7 +161,7 @@ export const contentToDescription = (content: string) => {
   const parsedContent = content
     .replace(/(?<=\])\((.*?)\)/g, '')
     .replace(/(?<!\S)((http)(s?):\/\/|www\.).+?(?=\s)/g, '')
-    .replace(/[#*\|\[\]]|(\-{3,})|(`{3})(\S*)(?=\s)/g, '')
+    .replace(/[#*|[\]]|(-{3,})|(`{3})(\S*)(?=\s)/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 157);

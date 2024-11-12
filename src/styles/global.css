@@ -141,8 +141,8 @@
   mark {
     @apply rounded-sm bg-selection font-medium text-body;
     padding: 3px 5px;
-    border-radius: 4px;
     margin: 0 2px;
+    border-radius: 4px;
   }
 
   .link,
@@ -163,16 +163,16 @@
   }
   .external-link::after {
     @apply m-0 inline-block h-3.5 w-3.5;
+    content: '';
     background: url('data:image/svg+xml;utf8,<svg color="%23464646" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
     background-repeat: no-repeat;
     background-size: cover;
-    content: '';
   }
   .dark .external-link::after {
+    content: '';
     background: url('data:image/svg+xml;utf8,<svg color="%23B0B0B0" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
     background-repeat: no-repeat;
     background-size: cover;
-    content: '';
   }
 
   /* ---- scrollbar ---- */
@@ -193,10 +193,10 @@
   ::-webkit-scrollbar-thumb {
     min-width: var(--scrollbar-size-min);
     min-height: var(--scrollbar-size-min);
+    background-color: var(--scrollbar-color);
+    background-clip: padding-box;
     border: 5px solid transparent;
     border-radius: var(--scrollbar-size);
-    background-clip: padding-box;
-    background-color: var(--scrollbar-color);
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -222,24 +222,24 @@
   .blur-layer {
     --h: min(96px, var(--page-top));
     position: fixed;
-    z-index: 1;
     top: 0;
+    z-index: 1;
     width: calc(100% + var(--body-margin-left) + var(--body-margin-right));
     height: var(--h);
     margin-bottom: calc(-1 * var(--h));
     margin-left: calc(-1 * var(--body-margin-left));
-    backdrop-filter: blur(5px);
-    mask-image: linear-gradient(to bottom, #000000 25%, transparent);
-    opacity: 0.95;
     pointer-events: none;
     user-select: none;
+    backdrop-filter: blur(5px);
+    opacity: 0.95;
+    mask-image: linear-gradient(to bottom, #000000 25%, transparent);
   }
 
   .blur-layer:after {
     position: absolute;
-    background: linear-gradient(to bottom, var(--page-background), transparent);
-    content: '';
     inset: 0;
+    content: '';
+    background: linear-gradient(to bottom, var(--page-background), transparent);
   }
 }
 

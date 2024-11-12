@@ -42,7 +42,7 @@ const initThemeStoreSubscribe = () => {
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    if (!!mediaQuery.addEventListener) {
+    if (mediaQuery.addEventListener) {
       mediaQuery.removeEventListener('change', handleMediaQuery);
       mediaQuery.addEventListener('change', handleMediaQuery);
     } else {

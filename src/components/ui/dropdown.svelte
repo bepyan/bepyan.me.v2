@@ -26,18 +26,19 @@
     buttonClass = '',
     menuClass = '',
     align = 'start',
-    button
+    button,
   }: Props = $props();
 
   let isOpen: boolean = $state(false);
   const dispatch = createEventDispatcher<{ select: { item: DropdownItem } }>();
 
-  let selectedItem =
-    $derived(items.find(
+  let selectedItem = $derived(
+    items.find(
       (item) =>
         item.value === selectedValue ||
         (selectedValue === null && item.value === undefined),
-    ) ?? null);
+    ) ?? null,
+  );
 
   function toggleDropdown(): void {
     isOpen = !isOpen;
@@ -75,7 +76,9 @@
     )}
     onclick={toggleDropdown}
   >
-    {#if button}{@render button()}{:else}{selectedItem ? selectedItem.label : 'Select'}{/if}
+    {#if button}{@render button()}{:else}{selectedItem
+        ? selectedItem.label
+        : 'Select'}{/if}
   </button>
   {#if isOpen}
     <div

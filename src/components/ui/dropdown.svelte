@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export interface DropdownItem {
     label: string;
     value: string;
@@ -11,21 +11,33 @@
   import { buttonVariants } from '~/components/ui/button';
   import clickOutside from '~/libs/svelte/use-click-outside';
 
-  export let items: DropdownItem[] = [];
-  export let selectedValue: string | null = null;
-  export let buttonClass: string = '';
-  export let menuClass: string = '';
-  export let align: 'start' | 'end' = 'start';
+  interface Props {
+    items?: DropdownItem[];
+    selectedValue?: string | null;
+    buttonClass?: string;
+    menuClass?: string;
+    align?: 'start' | 'end';
+    button?: import('svelte').Snippet;
+  }
 
-  let isOpen: boolean = false;
+  let {
+    items = [],
+    selectedValue = $bindable(null),
+    buttonClass = '',
+    menuClass = '',
+    align = 'start',
+    button
+  }: Props = $props();
+
+  let isOpen: boolean = $state(false);
   const dispatch = createEventDispatcher<{ select: { item: DropdownItem } }>();
 
-  $: selectedItem =
-    items.find(
+  let selectedItem =
+    $derived(items.find(
       (item) =>
         item.value === selectedValue ||
         (selectedValue === null && item.value === undefined),
-    ) ?? null;
+    ) ?? null);
 
   function toggleDropdown(): void {
     isOpen = !isOpen;
@@ -61,9 +73,9 @@
         className: buttonClass,
       }),
     )}
-    on:click={toggleDropdown}
+    onclick={toggleDropdown}
   >
-    <slot name="button">{selectedItem ? selectedItem.label : 'Select'}</slot>
+    {#if button}{@render button()}{:else}{selectedItem ? selectedItem.label : 'Select'}{/if}
   </button>
   {#if isOpen}
     <div
@@ -77,7 +89,7 @@
       {#each items as item}
         <button
           class="inline-flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-sm capitalize text-heading hover:bg-selection"
-          on:click={() => selectItem(item)}
+          onclick={() => selectItem(item)}
         >
           {item.label}
           {#if selectedItem === item}

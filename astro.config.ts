@@ -2,16 +2,21 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
+import {
+  transformerMetaHighlight,
+  transformerMetaWordHighlight,
+  transformerNotationDiff,
+  transformerNotationErrorLevel,
+  transformerNotationFocus,
+  transformerNotationHighlight,
+} from '@shikijs/transformers';
+import { transformerTwoslash } from '@shikijs/twoslash';
 import { defineConfig } from 'astro/config';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeExternalLinks from 'rehype-external-links';
-import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
-import remarkGfm from 'remark-gfm';
 
-// https://astro.build/config
-/** @type {import('astro/config').defineConfig} */
 export default defineConfig({
   site: 'https://bepyan.me',
   integrations: [
@@ -21,8 +26,22 @@ export default defineConfig({
     react(),
     svelte(),
     mdx({
-      syntaxHighlight: false,
-      remarkPlugins: [remarkGfm, remarkBreaks],
+      syntaxHighlight: 'shiki',
+      shikiConfig: {
+        theme: 'css-variables',
+        transformers: [
+          transformerTwoslash({
+            explicitTrigger: true,
+          }),
+          transformerNotationHighlight(),
+          transformerNotationDiff(),
+          transformerNotationFocus(),
+          transformerNotationErrorLevel(),
+          transformerMetaHighlight(),
+          transformerMetaWordHighlight(),
+        ],
+      },
+      remarkPlugins: [remarkBreaks],
       rehypePlugins: [
         rehypeSlug,
         [
@@ -42,12 +61,6 @@ export default defineConfig({
             },
             target: '_blank',
             rel: ['noopener noreferrer'],
-          },
-        ],
-        [
-          rehypePrettyCode,
-          {
-            theme: 'css-variables',
           },
         ],
       ],

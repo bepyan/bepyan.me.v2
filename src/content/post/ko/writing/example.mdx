@@ -75,13 +75,13 @@ https://github.com/bepyan 기본적으로 링크는 자동으로 파싱됩니다
 
 ## 코드 블록
 
-`inline code` `[1, 2, 3]{:js}`
+`inline code`
 
 ```
-Block code
+Plain Text
 ```
 
-```ts
+```ts twoslash
 import clsx, { type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -90,13 +90,27 @@ export function cn(...inputs: ClassValue[]) {
 }
 ```
 
-```tsx {3} title="layout.tsx" caption="코드 상하단에 설명 문구를 작성할 수 있습니다." showLineNumbers /className/ /fontMono/#v /fontSans/#s /fontSerif/#i
+```js
+export default {
+  data() {
+    return {
+      msg: 'Focused!', // [!code focus]
+    };
+  },
+};
+```
+
+```tsx title="layout.tsx" caption="코드 상하단에 설명 문구를 작성할 수 있습니다." /fontMono/ /fontSans/ /fontSerif/
 import '~/styles/globals.css';
 
 import type { Metadata } from 'next';
 
 import { fontMono, fontSans, fontSerif } from '~/libs/fonts';
 import { cn } from '~/libs/utils';
+
+console.log('highlight'); // [!code highlight]
+console.log('goodbye'); // [!code --]
+console.log('hello'); // [!code ++]
 
 export default function RootLayout({
   children,
@@ -114,7 +128,7 @@ export default function RootLayout({
         )}
       >
         <div className="blur" aria-hidden="true"></div>
-        <div className="container mx-auto max-w-page pt-32">
+        <div className="max-w-page container mx-auto pt-32">
           <div className="main-grid">{children}</div>
         </div>
       </body>

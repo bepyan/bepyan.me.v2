@@ -89,7 +89,7 @@ Just `import` them.
 
 However, you should properly verify [Client Directives](https://docs.astro.build/en/reference/directives-reference/#client-directives) which is Astro's unique feature. Since Astro essentially deals with HTML only, React codes are not delivered to users. A button without React code becomes empty and unresponsive no matter how much you click it. Therefore, you should set Client Directives so that when the page is loaded, React code runs in the user's browser.
 
-```astro /client:load/#v
+```astro /client:load/
 ---
 import ThemeDropdown from './theme-dropdown';
 ---
@@ -147,7 +147,7 @@ You should also note Astro's unique feature, [**Script & Style Directives**](htt
 
 In Astro, you can declare [`is:inline`](https://docs.astro.build/en/reference/directives-reference/#isinline) on the script tag to prevent the script from being optimized into a module bundle, and directly insert it into HTML. When working that way, server-side data can be passed using `define:vars`.
 
-```astro title="theme-head-script.astro" /is:inline/#v
+```astro title="theme-head-script.astro" /is:inline/
 ---
 const theme = 'dark';
 ---

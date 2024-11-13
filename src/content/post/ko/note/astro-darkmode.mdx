@@ -90,7 +90,7 @@ React 컴포넌트를 Astro에서 사용하는 방법은 간단합니다.
 
 다만 Astro 고유 문법인 [Client Directives](https://docs.astro.build/en/reference/directives-reference/#client-directives)을 제대로 확인하고 넘어가야 합니다. Astro는 기본적으로 HTML만을 렌더링해서 응답하기에, React 코드가 사용자에게 전달되지 않습니다. React 코드가 없는 버튼은 아무리 클릭해도 반응이 없는 깡통이 되지요. 그렇기에 Client Directives 설정을 통해서 페이지가 로드될 때 React 코드가 사용자 브라우저에서 실행되도록 해야 합니다.
 
-```astro /client:load/#v
+```astro /client:load/
 ---
 import ThemeDropdown from './theme-dropdown';
 ---
@@ -150,7 +150,7 @@ Astro는 기본적으로 스크립트를 모듈 번들(`type="module"`)로 추�
 
 Astro에서는 스크립트 태그에 [`is:inline`](https://docs.astro.build/en/reference/directives-reference/#isinline)를 선언하여 스크립트가 모듈 번들로 최적화되지 않고 HTML에 그대로 삽입되게 할 수 있습니다. 그럴경우 서버 사이드 데이터는 `define:vars`를 통해서 넘겨주면 되는 점도 같이 확인하시면 좋습니다.
 
-```astro title="theme-head-script.astro" /is:inline/#v
+```astro title="theme-head-script.astro" /is:inline/
 ---
 const theme = 'dark';
 ---

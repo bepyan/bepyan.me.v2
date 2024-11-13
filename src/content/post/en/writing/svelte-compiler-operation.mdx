@@ -67,7 +67,7 @@ const ast = new Parser(source).root;
 
 Inside the `Parser` constructor, the [`fragment`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/fragment.js) function is used to recursively parse itself.
 
-```js /fragment/#i
+```js /fragment/
 /** @type {ParserState} */
 let state = fragment;
 
@@ -78,7 +78,7 @@ while (this.index < this.template.length) {
 
 Inside the `fragment`, functions like [`element`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/element.js), [`tag`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/tag.js), and [`text`](https://github.com/sveltejs/svelte/blob/8b60b07f42d515f926a1d04ed2597e085060155b/packages/svelte/src/compiler/phases/1-parse/state/text.js) are executed based on conditions to extract information from the source code.
 
-```js /fragment/#i
+```js /fragment/
 import element from './element.js';
 import tag from './tag.js';
 import text from './text.js';

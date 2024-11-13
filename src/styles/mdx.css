@@ -390,16 +390,37 @@ pre.astro-code {
 
 /* custom transformer */
 
+[data-code-fragment] {
+  position: relative;
+}
+
 [data-code-fragment] [data-code-title] {
   margin-bottom: 4px;
   font-size: 0.9rem;
-  color: var(--shiki-token-comment);
+  color: var(--astro-code-token-comment);
 }
 
 [data-code-fragment] [data-code-caption] {
   margin-top: 4px;
   font-size: 0.9rem;
-  color: var(--shiki-token-comment);
+  color: var(--astro-code-token-comment);
+}
+
+[data-code-fragment] span.lang {
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--astro-code-token-comment);
+  transition:
+    color 0.4s,
+    opacity 0.4s;
+}
+
+[data-code-fragment] [data-code-title] + span.lang {
+  top: 32px;
 }
 
 /* rehype-autolink-headings */

@@ -388,19 +388,15 @@ pre.astro-code {
   border-radius: 4px;
 }
 
-/* rehype-code-fragment */
+/* custom transformer */
 
-[data-rehype-code-fragment] pre {
-  padding-left: 0;
-}
-
-[data-rehype-code-fragment] [data-rehype-code-title] {
+[data-code-fragment] [data-code-title] {
   margin-bottom: 4px;
   font-size: 0.9rem;
   color: var(--shiki-token-comment);
 }
 
-[data-rehype-code-fragment] [data-rehype-code-caption] {
+[data-code-fragment] [data-code-caption] {
   margin-top: 4px;
   font-size: 0.9rem;
   color: var(--shiki-token-comment);

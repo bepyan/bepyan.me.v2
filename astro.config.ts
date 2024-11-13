@@ -17,6 +17,8 @@ import rehypeExternalLinks from 'rehype-external-links';
 import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
 
+import { transformerFragment } from './plugins/transformer-fragment';
+
 export default defineConfig({
   site: 'https://bepyan.me',
   integrations: [
@@ -39,6 +41,7 @@ export default defineConfig({
           transformerNotationErrorLevel(),
           transformerMetaHighlight(),
           transformerMetaWordHighlight(),
+          transformerFragment(),
         ],
       },
       remarkPlugins: [remarkBreaks],

@@ -1,0 +1,45 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+import { resolveSlug } from '~/libs/mdx';
+
+interface Props {
+  prevPost?: CollectionEntry<'post'>;
+  nextPost?: CollectionEntry<'post'>;
+}
+
+const { prevPost, nextPost } = Astro.props;
+---
+
+<section class="text-tx flex items-stretch justify-between gap-1 text-sm">
+  {
+    prevPost && (
+      <a
+        class="group flex flex-col gap-1"
+        href={`/post/${resolveSlug(prevPost.slug)}`}
+      >
+        <div class="text-disabled transition-colors group-hover:text-second">
+          Previous
+        </div>
+        <span class="-mx-1 rounded px-1 text-second transition-colors group-hover:bg-selection group-hover:text-heading">
+          {prevPost.data.title}
+        </span>
+      </a>
+    )
+  }
+  {
+    nextPost && (
+      <a
+        class="group ml-auto flex flex-col gap-1 text-right text-second hover:text-body"
+        href={`/post/${resolveSlug(nextPost.slug)}`}
+      >
+        <div class="text-disabled transition-colors group-hover:text-second">
+          Next
+        </div>
+        <span class="-mx-1 rounded px-1 text-second transition-colors group-hover:bg-selection group-hover:text-heading">
+          {nextPost.data.title}
+        </span>
+      </a>
+    )
+  }
+</section>

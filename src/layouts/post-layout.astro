@@ -1,6 +1,6 @@
 ---
+import '@shikijs/twoslash/style-rich.css';
 import '~/styles/mdx.css';
-import '~/styles/twoslash.css';
 
 import { type CollectionEntry } from 'astro:content';
 import { format } from 'date-fns';
@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import BaseHeader from '~/components/base-header.astro';
 import BaseLeftAside from '~/components/base-left-aside.astro';
 import BaseNav from '~/components/base-nav.astro';
+import BasePaginator from '~/components/base-paginator.astro';
 import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
@@ -15,12 +16,7 @@ import PostImage from '~/components/post/post-image.astro';
 import TableOfContent from '~/components/table-of-content';
 import MainLayout from '~/layouts/main-layout.astro';
 import type { Language } from '~/libs/i18n';
-import {
-  contentToDescription,
-  getPostType,
-  parseToc,
-  resolveSlug,
-} from '~/libs/mdx';
+import { contentToDescription, getPostType, parseToc } from '~/libs/mdx';
 
 export type Props = {
   lang: Language;
@@ -58,38 +54,7 @@ const { Content } = await post.render();
   <footer>
     <CopyRight class="mt-page text-right text-xs" />
     <hr class="mb-7 mt-4" />
-    <section class="text-tx flex items-stretch justify-between gap-1 text-sm">
-      {
-        !!prevPost && (
-          <a
-            class="group flex flex-col gap-1"
-            href={`/post/${resolveSlug(prevPost.slug)}`}
-          >
-            <div class="text-disabled transition-colors group-hover:text-second">
-              Previous
-            </div>
-            <span class="-mx-1 rounded px-1 text-second transition-colors group-hover:bg-selection group-hover:text-heading">
-              {prevPost.data.title}
-            </span>
-          </a>
-        )
-      }
-      {
-        !!nextPost && (
-          <a
-            class="group ml-auto flex flex-col gap-1 text-right text-second hover:text-body"
-            href={`/post/${resolveSlug(nextPost.slug)}`}
-          >
-            <div class="text-disabled transition-colors group-hover:text-second">
-              Next
-            </div>
-            <span class="-mx-1 rounded px-1 text-second transition-colors group-hover:bg-selection group-hover:text-heading">
-              {nextPost.data.title}
-            </span>
-          </a>
-        )
-      }
-    </section>
+    <BasePaginator {prevPost} {nextPost} />
     <GiscusSection className="mx-auto mt-20" {lang} client:load />
   </footer>
   <MediumZoomScript />

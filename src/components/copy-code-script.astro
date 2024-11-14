@@ -1,0 +1,23 @@
+<script type="module">
+  const codeBlockList = document.querySelectorAll('.mdx [data-code-fragment]');
+
+  codeBlockList.forEach((codeBlock) => {
+    const code = codeBlock.querySelector('pre > code').innerText;
+    const copyButton = codeBlock.querySelector('.copy');
+
+    let timeoutId = null;
+
+    copyButton.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(code);
+      copyButton.classList.add('copied');
+
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(() => {
+        copyButton.classList.remove('copied');
+      }, 2000);
+    });
+  });
+</script>

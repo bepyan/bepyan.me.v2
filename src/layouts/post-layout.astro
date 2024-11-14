@@ -9,6 +9,7 @@ import BaseHeader from '~/components/base-header.astro';
 import BaseLeftAside from '~/components/base-left-aside.astro';
 import BaseNav from '~/components/base-nav.astro';
 import BasePaginator from '~/components/base-paginator.astro';
+import CopyCodeScript from '~/components/copy-code-script.astro';
 import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
@@ -60,4 +61,5 @@ const { Content } = await post.render();
   </footer>
   <MediumZoomScript />
   <TwoslashFloatingScript />
+  <CopyCodeScript />
 </MainLayout>

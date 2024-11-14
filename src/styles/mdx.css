@@ -1,4 +1,3 @@
-/* code block */
 :root {
   --vp-c-white: #ffffff;
   --vp-c-black: #000000;
@@ -98,25 +97,12 @@
 
 .mdx blockquote {
   position: relative;
+  padding-left: 1rem;
+  margin: 1.75rem 0;
   font-family: var(--font-serif), sans-serif;
   font-weight: 400;
   color: var(--text-second);
-  quotes: '“' '”' '‘' '’';
-  --quote-offset: 3px;
-}
-
-.mdx blockquote:before {
-  position: absolute;
-  left: calc(-1 * var(--quote-offset));
-  color: var(--text-second);
-  content: open-quote;
-  transform: translateX(-100%);
-}
-
-.mdx blockquote :last-child:after {
-  margin-left: var(--quote-offset);
-  color: var(--text-second);
-  content: close-quote;
+  border-left: 4px solid var(--border);
 }
 
 .mdx > :has(+ :where(ul, ol)) {

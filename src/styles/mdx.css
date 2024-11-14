@@ -123,36 +123,33 @@
   @apply mb-2;
 }
 
-.mdx ul {
+.mdx > ul,
+.mdx > ul ul {
   padding-left: 16px;
   list-style-position: outside;
   list-style-type: disc;
 }
 
-.mdx li > ul {
+.mdx > ul li > ul {
   @apply list-[circle];
 }
 
-.mdx li {
+.mdx > ul li {
   @apply list-item leading-7;
 }
 
-.mdx li::marker {
+.mdx > ul li::marker {
   color: var(--gray-300);
 }
 
-.mdx li + li,
-.mdx li > ul {
+.mdx > ul li + li,
+.mdx > ul li > ul {
   @apply mt-[7px];
 }
 
-.mdx li > div,
-.mdx li > p {
+.mdx > ul li > div,
+.mdx > ul li > p {
   @apply mb-3;
-}
-
-.mdx li:has([data-rehype-pretty-code-fragment])::marker {
-  content: none;
 }
 
 .mdx ol {
@@ -162,13 +159,13 @@
   counter-reset: basics-ol;
 }
 
-.mdx ol li {
+.mdx > ol li {
   --l: calc(2 * var(--counter-space));
   padding-left: var(--l);
   text-indent: calc(-1 * var(--l));
 }
 
-.mdx ol li:before {
+.mdx > ol li:before {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
@@ -295,6 +292,18 @@
   --vp-code-line-warning-color: var(--vp-c-yellow-soft);
   --vp-code-line-diff-remove-symbol-color: var(--vp-c-red-1);
   --vp-code-line-error-color: var(--vp-c-red-soft);
+
+  --twoslash-popup-bg: var(--astro-code-color-background);
+  --twoslash-popup-color: var(--astro-code-color-text);
+  --twoslash-docs-color: var(--astro-code-color-text);
+  --twoslash-docs-font: var(--vp-font-family-base);
+  --twoslash-code-font: var(--vp-font-family-mono);
+  --twoslash-code-size: var(--vp-code-font-size);
+  --twoslash-underline-color: var(--border);
+  --twoslash-border-color: var(--border);
+  --twoslash-cursor-color: var(--border);
+  --twoslash-matched-color: var(--vp-c-brand);
+  --twoslash-unmatched-color: var(--vp-c-text-2);
 }
 
 .mdx code:not(pre code) {
@@ -317,10 +326,10 @@ pre.astro-code {
   position: relative;
   display: grid;
   padding: 20px var(--astro-code-px);
-  overflow: auto;
+  overflow-x: auto;
   font-size: 14px;
   line-height: 1.5;
-  color: var(astro-code-color-text);
+  color: var(--astro-code-color-text);
   -moz-tab-size: 2;
   -o-tab-size: 2;
   tab-size: 2;
@@ -386,6 +395,14 @@ pre.astro-code {
   background-color: var(--selection);
   border: 1px solid var(--selection);
   border-radius: 4px;
+}
+
+.astro-code .twoslash-popup-container {
+  position: fixed;
+  z-index: 10;
+  width: max-content;
+  max-width: var(--content-width);
+  white-space: normal;
 }
 
 /* custom transformer */

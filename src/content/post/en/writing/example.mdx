@@ -9,7 +9,7 @@ draft: false
 
 This post documents how I utilize Markdown in this blog.
 
-## h2 Minimalism
+## Minimalism
 
 As a frontend developer, I want to convey something through layout.
 **I hope the text feels comfortable to the reader.**
@@ -31,7 +31,7 @@ Here are some hidden details of the layout:
   - Titles and bold text are easily recognized.
   - Important content is quickly identifiable.
 
-### h3 Titles
+### Titles
 
 This blog uses only `h2` and `h3` titles.
 It’s to maintain the **beauty of Semantic HTML**. ~~(Occupational hazard)~~
@@ -134,6 +134,31 @@ export default function RootLayout({
     </html>
   );
 }
+```
+
+```ts twoslash
+// @errors: 2540
+interface Todo {
+  title: string;
+}
+
+const todo: Readonly<Todo> = {
+  title: 'Delete inactive users'.toUpperCase(),
+  //  ^?
+};
+
+todo.title = 'Hello';
+
+Number.parseInt('123', 10);
+//      ^|
+
+// @log: Custom log message
+const a = 1;
+// @error: Custom error message
+const b = 1;
+// @warn: Custom warning message
+const c = 1;
+// @annotate: Custom annotation message
 ```
 
 ## Table

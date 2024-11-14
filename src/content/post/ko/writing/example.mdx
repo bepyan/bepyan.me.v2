@@ -10,7 +10,7 @@ draft: false
 
 이 글은 제가 마크다운을 이 블로그에서 어떻게 활용하는지 기록하는 글입니다.
 
-## h2 미니멀리즘
+## 미니멀리즘
 
 제가 프론트엔드 개발자이여서 그런지, 레이아웃으로 무언가를 전달해주고 싶습니다.
 **글이 편안하게 다가갔으면 합니다.**
@@ -32,7 +32,7 @@ draft: false
   - 제목 및 굵은 글씨가 쉽게 인식됩니다.
   - 중요한 내용을 쉽게 파악할 수 있습니다.
 
-### h3 제목
+## 제목
 
 이 블로그의 제목은 `h2`와 `h3`만을 사용합니다.
 **[시멘틱(Semantics) HTML](https://developer.mozilla.org/docs/Glossary/Semantics)의 아름다움**을 지키위해서 입니다. ~~(직업병)~~
@@ -44,6 +44,8 @@ draft: false
 
 > 인용문구는 [명조체](https://ko.wikipedia.org/wiki/%EB%AA%85%EC%A1%B0%EC%B2%B4)를 사용합니다.
 > 인용한 문구인 만큼 글씨체부터 뭔가 있어보이죠!
+>
+> > 인용문구 안에 또 인용문구를 작성할 수 있습니다.
 
 글 가운데서 *명조체*를 쓸 수도 있습니다.
 하지만 글의 밸런스가 깨져 사용하는 것을 추천하진 않습니다.
@@ -56,9 +58,10 @@ draft: false
 https://github.com/bepyan 기본적으로 링크는 자동으로 파싱됩니다.
 
 **구분선**은 글의 컨텍스트를 전환하기 위해서 사용됩니다.
-독자가 크게 환기될 수 있도록 위아래로 `h2`의 여백 만큼 적용합니다.
 
 ---
+
+독자가 크게 환기될 수 있도록 위아래로 `h2`의 여백 만큼 적용합니다.
 
 목록
 
@@ -70,8 +73,6 @@ https://github.com/bepyan 기본적으로 링크는 자동으로 파싱됩니다
 
 1. 헌법개정은 국회재적의원 과반수 또는 대통령의 발의로 제안된다.
 2. 국군은 국가의 안전보장과 국토방위의 신성한 의무를 수행함을 사명으로 하며, 그 정치적 중립성은 준수된다.
-
----
 
 ## 코드 블록
 
@@ -102,9 +103,7 @@ export default {
 
 ```tsx title="layout.tsx" caption="코드 상하단에 설명 문구를 작성할 수 있습니다." /fontMono/ /fontSans/ /fontSerif/
 import '~/styles/globals.css';
-
 import type { Metadata } from 'next';
-
 import { fontMono, fontSans, fontSerif } from '~/libs/fonts';
 import { cn } from '~/libs/utils';
 
@@ -135,6 +134,31 @@ export default function RootLayout({
     </html>
   );
 }
+```
+
+```ts twoslash
+// @errors: 2540
+interface Todo {
+  title: string;
+}
+
+const todo: Readonly<Todo> = {
+  title: 'Delete inactive users'.toUpperCase(),
+  //  ^?
+};
+
+todo.title = 'Hello';
+
+Number.parseInt('123', 10);
+//      ^|
+
+// @log: Custom log message
+const a = 1;
+// @error: Custom error message
+const b = 1;
+// @warn: Custom warning message
+const c = 1;
+// @annotate: Custom annotation message
 ```
 
 ## 테이블

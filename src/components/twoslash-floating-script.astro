@@ -1,0 +1,49 @@
+<script type="module">
+  import {
+    autoUpdate,
+    computePosition,
+    flip,
+    offset,
+    shift,
+  } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.3/+esm';
+
+  function update(button, tooltip) {
+    computePosition(button, tooltip, {
+      strategy: 'fixed',
+      placement: 'bottom-start',
+      middleware: [flip(), shift(), offset(-15)],
+    }).then(({ x, y }) => {
+      Object.assign(tooltip.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    let cleanup = null;
+
+    const twoslashElements = document.querySelectorAll(
+      '.twoslash-hover:not(.twoslash-query-presisted)',
+    );
+
+    twoslashElements.forEach((element) => {
+      element.addEventListener('mouseenter', () => {
+        const tooltip = element.querySelector('.twoslash-popup-container');
+
+        if (tooltip) {
+          cleanup = autoUpdate(element, tooltip, () => {
+            update(element, tooltip);
+          });
+        }
+      });
+
+      element.addEventListener('mouseleave', function () {
+        if (cleanup) {
+          cleanup();
+          cleanup = null;
+        }
+      });
+    });
+  });
+</script>

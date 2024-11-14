@@ -14,6 +14,7 @@ import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import PostImage from '~/components/post/post-image.astro';
 import TableOfContent from '~/components/table-of-content';
+import TwoslashFloatingScript from '~/components/twoslash-floating-script.astro';
 import MainLayout from '~/layouts/main-layout.astro';
 import type { Language } from '~/libs/i18n';
 import { contentToDescription, getPostType, parseToc } from '~/libs/mdx';
@@ -58,4 +59,5 @@ const { Content } = await post.render();
     <GiscusSection className="mx-auto mt-20" {lang} client:load />
   </footer>
   <MediumZoomScript />
+  <TwoslashFloatingScript />
 </MainLayout>

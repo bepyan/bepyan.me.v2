@@ -6,14 +6,20 @@
     const copyButton = codeBlock.querySelector('.copy');
 
     let timeoutId = null;
+    let blurTimeoutId = null;
 
     copyButton.addEventListener('click', async () => {
       await navigator.clipboard.writeText(code);
       copyButton.classList.add('copied');
 
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      timeoutId && clearTimeout(timeoutId);
+      blurTimeoutId && clearTimeout(blurTimeoutId);
+
+      blurTimeoutId = setTimeout(() => {
+        if (document.activeElement === copyButton) {
+          copyButton.blur();
+        }
+      }, 1500);
 
       timeoutId = setTimeout(() => {
         copyButton.classList.remove('copied');

@@ -427,26 +427,26 @@ pre.astro-code {
 }
 
 [data-code-fragment] .copy {
-  direction: ltr;
   position: absolute;
   top: 16px;
   right: 16px;
   z-index: 3;
-  border: 1px solid transparent;
-  border-radius: 4px;
   width: 28px;
   height: 28px;
-  opacity: 0;
   cursor: pointer;
+  background-color: var(--astro-code-color-background);
   background-image: var(--copy-icon);
+  background-repeat: no-repeat;
   background-position: 50%;
   background-size: 18px;
-  background-repeat: no-repeat;
-  background-color: var(--astro-code-color-background);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  opacity: 0;
   transition:
     border-color 0.25s,
     background-color 0.25s,
     opacity 0.25s;
+  direction: ltr;
 }
 [data-code-fragment] .copy.copied {
   background-image: var(--copied-icon);

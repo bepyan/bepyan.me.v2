@@ -132,16 +132,16 @@ MySQL 대신 PostgreSQL을 명시하면 된다.
 ```prisma title="prisma/schema.prisma"
 generator client {
   provider        = "prisma-client-js"
--  previewFeatures = ["referentialIntegrity"]
-+  previewFeatures = ["driverAdapters"]
+  previewFeatures = ["referentialIntegrity"] // [!code --]
+  previewFeatures = ["driverAdapters"] // [!code ++]
 }
 
 datasource db {
--  provider     = "mysql"
-+  provider     = "postgresql"
+  provider     = "mysql" // [!code --]
+  provider     = "postgresql" // [!code ++]
   url          = env("DATABASE_URL")
--  referentialIntegrity = "prisma"
-+  relationMode = "prisma"
+  referentialIntegrity = "prisma" // [!code --]
+  relationMode = "prisma" // [!code ++]
 }
 ```
 

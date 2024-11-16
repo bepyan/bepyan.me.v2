@@ -1,5 +1,5 @@
-import type { Element } from 'hast';
-import type { ShikiTransformer } from 'shiki';
+import type { Element } from 'node_modules/@astrojs/markdown-remark/node_modules/remark-rehype/node_modules/@types/hast/index';
+import { addClassToHast, type ShikiTransformer } from 'shiki';
 
 const ignoreLangList = ['', 'plaintext'];
 
@@ -10,18 +10,31 @@ export function transformerFragment(): ShikiTransformer {
       const metaString = this.options.meta?.__raw || '';
       const title = metaString.match(/title="([^"]+)"/)?.[1];
       const caption = metaString.match(/caption="([^"]+)"/)?.[1];
-      const noCopy = metaString.includes('noCopy');
+
+      const preElement = root.children[0] as Element;
+      const codeElement = preElement.children[0] as Element;
+
+      const isShowLineNumbers = metaString.includes('line-numbers');
+      if (isShowLineNumbers) {
+        addClassToHast(preElement, 'has-line-numbers');
+        preElement.children.push(createLineNumbersElement(codeElement));
+      }
+
       const lang = this.options.lang;
+      const isShowLang = !ignoreLangList.includes(lang);
+      if (isShowLang) {
+        preElement.children.push(createLanguageElement(lang));
+      }
+
+      const isShowCopy = !metaString.includes('noCopy');
+      if (isShowCopy) {
+        preElement.children.push(createCopyElement());
+      }
 
       root.children = [
-        // @ts-expect-error hast type conflict internally
         createFragmentElement(
           title && createTitleElement(title),
-          createCodeWrapperElement(
-            !ignoreLangList.includes(lang) && createLanguageElement(lang),
-            !noCopy && createCopyElement(),
-            root.children[0],
-          ),
+          preElement,
           caption && createCaptionElement(caption),
         ),
       ];
@@ -63,17 +76,6 @@ function createCaptionElement(caption: string): Element {
   };
 }
 
-function createCodeWrapperElement(...children: unknown[]): Element {
-  return {
-    type: 'element',
-    tagName: 'div',
-    properties: {
-      'data-code-wrapper': '',
-    },
-    children: (children as Element[]).filter(Boolean),
-  };
-}
-
 function createLanguageElement(lang: string): Element {
   return {
     type: 'element',
@@ -94,5 +96,27 @@ function createCopyElement() {
       title: 'Copy Code',
     },
     children: [],
+  } satisfies Element;
+}
+
+function createLineNumbersElement(codeElement: Element): Element {
+  const lineNumbers = codeElement.children
+    .filter((child) => child.type === 'text')
+    .map((_, i) => {
+      return {
+        type: 'element',
+        tagName: 'span',
+        properties: { class: 'line-number' },
+        children: [{ type: 'text', value: `${i + 1}` }],
+      } satisfies Element;
+    });
+
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: {
+      class: 'line-numbers',
+    },
+    children: [...lineNumbers],
   };
 }

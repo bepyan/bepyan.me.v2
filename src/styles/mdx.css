@@ -304,13 +304,13 @@
 pre.astro-code {
   --astro-code-px: 24px;
   --astro-code-py: 20px;
-  font-size: 14px;
-  color: var(--astro-code-color-text);
   position: relative;
   display: grid;
   padding: var(--astro-code-py) var(--astro-code-px);
-  line-height: 1.5;
   overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--astro-code-color-text);
   -moz-tab-size: 2;
   -o-tab-size: 2;
   tab-size: 2;
@@ -420,15 +420,15 @@ pre.astro-code code {
 }
 .astro-code .line-numbers {
   position: absolute;
-  z-index: 3;
   top: 0;
   left: 0;
-  width: 2rem;
-  color: #888;
+  z-index: 3;
   display: grid;
+  width: 2rem;
   padding: var(--astro-code-py) 0;
-  border-right: 1px solid var(--border);
+  color: #888;
   text-align: center;
+  border-right: 1px solid var(--border);
 }
 
 /* copy-code */

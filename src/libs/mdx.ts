@@ -1,6 +1,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 
 import { externalWritings } from '~/content/_constants';
+import { compareTwoStrings } from '~/libs/dice-coefficient-kr';
 import { getLangFromSlug, type Language } from '~/libs/i18n';
 
 import { isDev } from './utils';
@@ -111,6 +112,27 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
   ];
 
   return postList.sort(sortDateDesc);
+};
+
+export const getRelatedPosts = (
+  post: CollectionEntry<'post'>,
+  postList: CollectionEntry<'post'>[],
+) => {
+  return postList
+    .filter((p) => p.slug !== post.slug)
+    .map((p) => {
+      const tagPoint = post.data.tags
+        ? post.data.tags.filter((tag) => p.data.tags?.includes(tag)).length
+        : 0;
+      const titlePoint = compareTwoStrings(post.data.title, p.data.title);
+      return {
+        post: p,
+        similarity: tagPoint + 3.0 * titlePoint,
+      };
+    })
+    .toSorted((a, b) => b.similarity - a.similarity)
+    .map((p) => p.post)
+    .slice(0, 4);
 };
 
 /** table-of-content */

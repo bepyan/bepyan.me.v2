@@ -14,6 +14,7 @@ import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
 import MediumZoomScript from '~/components/medium-zoom-script.astro';
 import PostImage from '~/components/post/post-image.astro';
+import PostRelated from '~/components/post-related.astro';
 import TableOfContent from '~/components/table-of-content';
 import TwoslashFloatingScript from '~/components/twoslash-floating-script.astro';
 import MainLayout from '~/layouts/main-layout.astro';
@@ -25,10 +26,11 @@ export type Props = {
   post: CollectionEntry<'post'>;
   prevPost: CollectionEntry<'post'>;
   nextPost: CollectionEntry<'post'>;
+  relatedPostList: CollectionEntry<'post'>[];
   noI18n?: boolean;
 };
 
-const { lang, post, prevPost, nextPost, noI18n } = Astro.props;
+const { lang, post, prevPost, nextPost, relatedPostList, noI18n } = Astro.props;
 
 const postType = getPostType(post);
 const { title, date } = post.data;
@@ -57,6 +59,7 @@ const { Content } = await post.render();
     <CopyRight class="mt-page text-right text-xs" />
     <hr class="mb-7 mt-4" />
     <BasePaginator {prevPost} {nextPost} />
+    <PostRelated {relatedPostList} />
     <GiscusSection className="mx-auto mt-20" {lang} client:load />
   </footer>
   <MediumZoomScript />

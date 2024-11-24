@@ -1,7 +1,13 @@
 ---
 import PostLayout from '~/layouts/post-layout.astro';
 import { getLangFromSlug } from '~/libs/i18n/utils';
-import { getPostCollection, isNote, isWriting, resolveSlug } from '~/libs/mdx';
+import {
+  getPostCollection,
+  getRelatedPosts,
+  isNote,
+  isWriting,
+  resolveSlug,
+} from '~/libs/mdx';
 
 export async function getStaticPaths() {
   const posts = await getPostCollection();
@@ -15,6 +21,7 @@ export async function getStaticPaths() {
         return true;
       });
       const postIndex = postList.findIndex((item) => item.id === post.id);
+      const relatedPostList = getRelatedPosts(post, list);
 
       return {
         params: { slug: resolveSlug(post.slug) },
@@ -23,6 +30,7 @@ export async function getStaticPaths() {
           post,
           prevPost: postList[postIndex + 1],
           nextPost: postList[postIndex - 1],
+          relatedPostList,
         },
       };
     });

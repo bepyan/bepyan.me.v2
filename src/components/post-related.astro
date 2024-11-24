@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+import { useI18n } from '~/libs/i18n';
+import { resolveSlug } from '~/libs/mdx';
+
+interface Props {
+  relatedPostList: CollectionEntry<'post'>[];
+}
+
+const { lang, p, t } = useI18n(Astro.url);
+const { relatedPostList } = Astro.props;
+---
+
+{
+  relatedPostList.length && (
+    <div class="my-10 text-sm text-disabled">
+      <p class="text-sm">Related Posts</p>
+      <ul class="mt-1 space-y-1">
+        {relatedPostList.map((post) => {
+          return (
+            <li>
+              <span class="font-mono">&gt; </span>
+              <a
+                class="link text-second"
+                href={p(`/post/${resolveSlug(post.slug)}`)}
+              >
+                {post.data.title}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  )
+}

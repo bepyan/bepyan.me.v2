@@ -17,12 +17,12 @@ const { p, t } = useI18n(url);
 <MainLayout class="font-serif">
   <BaseHeader title={`${t('index.name')} ﹒ bepyan`} />
   <div data-animate data-animate-speed="slow">
-    <!-- 소개 -->
+    {/* 소개 */}
     <div class="my-7" set:html={t('index.desc')} />
     <div class="my-7">
-      <!-- 현재 -->
+      {/* 현재 */}
       <p set:html={t('index.currentWork')} />
-      <!-- SNS -->
+      {/* SNS */}
       <div data-animate class="mt-1 flex gap-0.5">
         <a
           style="--lv-wait: 1;"
@@ -70,7 +70,7 @@ const { p, t } = useI18n(url);
         </a>
       </div>
     </div>
-    <!-- 나의 공간 -->
+    {/* 나의 공간 */}
     <div class="my-14 flex gap-7">
       <div>{t('nav.title')}</div>
       <div data-animate class="flex flex-col gap-1">

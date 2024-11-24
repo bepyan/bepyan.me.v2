@@ -1,0 +1,21 @@
+---
+import { SITE } from '~/consts';
+import { useI18n } from '~/libs/i18n';
+
+const { t } = useI18n(Astro.url);
+---
+
+<footer
+  class="my-half-page mx-auto w-full max-w-content font-serif text-sm text-second"
+>
+  <div class="flex items-center">
+    <div>
+      © <a class="link" href="/">{t('index.name')}</a>. All rights reserved.
+    </div>
+    <div class="ml-auto" aria-label="More on this site">
+      <a class="link whitespace-nowrap" href={SITE.source} target="_blank">
+        {t('footer.source')}
+      </a>
+    </div>
+  </div>
+</footer>

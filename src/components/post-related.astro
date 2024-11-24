@@ -8,13 +8,13 @@ interface Props {
   relatedPostList: CollectionEntry<'post'>[];
 }
 
-const { lang, p, t } = useI18n(Astro.url);
+const { p } = useI18n(Astro.url);
 const { relatedPostList } = Astro.props;
 ---
 
 {
   relatedPostList.length && (
-    <div class="my-10 text-sm text-disabled">
+    <div class="my-14 text-sm text-disabled">
       <p class="text-sm">Related Posts</p>
       <ul class="mt-1 space-y-1">
         {relatedPostList.map((post) => {

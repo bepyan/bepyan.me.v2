@@ -60,11 +60,13 @@
 /* -- variable --- */
 @layer base {
   :root {
+    --xl: 1200px;
     --lg: 1024px;
     --md: 768px;
     --sm: 640px;
 
     --page-top: 128px;
+    --page-half-top: 64px;
     --page-width: 1072px;
     --content-width: 640px;
     --body-margin-left: max(24px, env(safe-area-inset-left));
@@ -83,6 +85,7 @@
   @media (max-width: 768px) {
     :root {
       --page-top: 96px;
+      --page-half-top: 48px;
       --body-margin-left: max(16px, env(safe-area-inset-left));
       --body-margin-right: max(16px, env(safe-area-inset-right));
     }
@@ -110,7 +113,8 @@
   }
 
   .container > main {
-    @apply mx-auto max-w-content py-page;
+    @apply mx-auto max-w-content pt-page;
+    min-height: calc(100vh - var(--page-half-top) * 2 - 20px);
   }
 
   * {

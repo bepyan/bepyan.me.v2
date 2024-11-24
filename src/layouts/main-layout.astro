@@ -1,4 +1,5 @@
 ---
+import BaseFooter from '~/components/base-footer.astro';
 import BaseHead from '~/components/base-head.astro';
 import MonitoringScript from '~/components/monitoring-script.astro';
 import ThemeHeadScript from '~/components/theme-head-script.astro';
@@ -29,5 +30,6 @@ const lang = props.lang ?? getLangFromUrl(Astro.url);
         <slot />
       </main>
     </div>
+    <BaseFooter />
   </body>
 </html>

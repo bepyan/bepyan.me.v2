@@ -57,6 +57,7 @@ export default {
       },
       spacing: {
         page: 'var(--page-top)',
+        'half-page': 'var(--page-half-top)',
       },
     },
     plugins: [tailwindcssAnimate],

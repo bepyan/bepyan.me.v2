@@ -1,21 +1,10 @@
 ---
 const { props } = Astro;
-
-const year = new Date().getFullYear();
 ---
 
 {/* @ts-expect-error xmlns:cc */}
 <p {...props} xmlns:cc="http://creativecommons.org/ns#">
-  © {year} by
-  <a
-    class="link"
-    rel="cc:attributionURL dct:creator"
-    property="cc:attributionName"
-    href="/"
-  >
-    Edward Kim
-  </a>
-  is licensed under <a
+  This post is licensed under <a
     class="link"
     href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1"
     target="_blank"

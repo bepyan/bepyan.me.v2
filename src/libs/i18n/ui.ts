@@ -17,6 +17,8 @@ export const ui = {
     'nav.note.desc': 'A space for recording useful knowledge',
     'nav.craft': 'Craft',
     'nav.craft.desc': 'A space for creating something interesting',
+    'footer.time': '2023-PRESENT',
+    'footer.source': 'Source Code',
     'index.name': 'Edward Kim',
     'index.desc':
       `<p>Passionate about interacting <b>smoothly</b> with users and <b>simplifying</b> complex things into simple and convenient forms.</p>` +
@@ -45,6 +47,8 @@ export const ui = {
     'nav.note.desc': '유용한 지식을 기록하는 공간',
     'nav.craft': '공방',
     'nav.craft.desc': '무언가 흥미로운 것을 만드는 공간',
+    'footer.time': '2023-현재',
+    'footer.source': '소스코드',
     'index.name': '김평안',
     'index.desc':
       `<p>사용자와 <b>부드럽게</b> 상호작용하는 것, 복잡한 것을 <b>단순하고 간편하게</b> 만드는 것에 열광합니다.</p>` +

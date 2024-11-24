@@ -60,7 +60,7 @@ const { Content } = await post.render();
     <hr class="mb-7 mt-4" />
     <BasePaginator {prevPost} {nextPost} />
     <PostRelated {relatedPostList} />
-    <GiscusSection className="mx-auto mt-20" {lang} client:load />
+    <GiscusSection className="my-half-page mx-auto" {lang} client:load />
   </footer>
   <MediumZoomScript />
   <TwoslashFloatingScript />

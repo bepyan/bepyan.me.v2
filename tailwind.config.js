@@ -14,6 +14,7 @@ export default {
       mono: ['var(--font-mono)', 'monospace'],
     },
     screens: {
+      xl: { max: '1200px' },
       lg: { max: '1074px' },
       md: { max: '768px' },
       sm: { max: '640px' },

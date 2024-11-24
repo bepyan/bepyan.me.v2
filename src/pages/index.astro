@@ -7,6 +7,7 @@ import {
   NotionIcon,
   TwitterXIcon,
 } from '~/components/ui/icons';
+import { NAV } from '~/consts';
 import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 
@@ -75,7 +76,7 @@ const { p, t } = useI18n(url);
       <div>{t('nav.title')}</div>
       <div data-animate class="flex flex-col gap-1">
         {
-          (['writing', 'note', 'craft'] as const).map((item) => (
+          NAV.map((item) => (
             <div style="--lv-wait: 2;">
               <a class="link font-bold" href={p(`/${item}`)}>
                 {t(`nav.${item}`)}

@@ -1,4 +1,5 @@
 ---
+import { NAV } from '~/consts';
 import {
   getLangFromUrl,
   type Language,
@@ -9,13 +10,10 @@ import { cn } from '~/libs/utils';
 
 import { DotIcon } from './ui/icons';
 
-const NAV_ITEM_LIST = ['writing', 'note', 'craft'] as const;
-type NavItem = (typeof NAV_ITEM_LIST)[number];
-
 type Props = {
   class?: string;
   lang?: Language;
-  highlightNavItem?: NavItem;
+  highlightNavItem?: (typeof NAV)[number];
 };
 
 const { props, url } = Astro;
@@ -37,7 +35,7 @@ const t = useTranslations(lang);
   <DotIcon className="h-2 w-2 text-second" />
   <div class="flex items-center gap-2">
     {
-      NAV_ITEM_LIST.map((navItem) => (
+      NAV.map((navItem) => (
         <a
           class={cn(
             'external-link',

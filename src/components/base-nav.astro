@@ -15,7 +15,7 @@ type NavItem = (typeof NAV_ITEM_LIST)[number];
 type Props = {
   class?: string;
   lang?: Language;
-  hightlightNavItem?: NavItem;
+  highlightNavItem?: NavItem;
 };
 
 const { props, url } = Astro;
@@ -42,7 +42,7 @@ const t = useTranslations(lang);
           class={cn(
             'external-link',
             (navItem === currentNavItem ||
-              navItem === props.hightlightNavItem) &&
+              navItem === props.highlightNavItem) &&
               'font-bold no-underline before:bg-selection before:ring-border hover:before:ring-1',
           )}
           href={p(`/${navItem}`)}

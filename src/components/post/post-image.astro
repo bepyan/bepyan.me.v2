@@ -10,7 +10,7 @@ type Props = {
 
 const { src, alt } = Astro.props;
 
-const isVaildCaption = alt && Number.isInteger(+alt[0]) === false;
+const isValidCaption = alt && Number.isInteger(+alt[0]) === false;
 
 const getImageBuffer = async (src: string) => {
   const isExternalImage = src.startsWith('https');
@@ -31,7 +31,7 @@ const getImageBuffer = async (src: string) => {
 
 const imageBuffer = await getImageBuffer(src);
 const {
-  metadata: { height, width },
+  metadata: { width, height },
   css,
 } = await getPlaiceholder(imageBuffer);
 ---
@@ -41,5 +41,35 @@ const {
     <div style={css} class="absolute inset-0 -z-10 blur-2xl filter"></div>
     <img {src} {alt} {width} {height} />
   </div>
-  {isVaildCaption && <figcaption>{alt}</figcaption>}
+  {isValidCaption && <figcaption>{alt}</figcaption>}
 </figure>
+
+<style>
+  figure {
+    animation: fadeIn 0.2s ease-out;
+  }
+  img.loaded {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const imgList = document.querySelectorAll('.mdx figure img');
+
+    imgList.forEach((img) => {
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+      });
+    });
+  });
+</script>

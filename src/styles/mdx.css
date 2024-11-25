@@ -286,19 +286,18 @@
   --twoslash-unmatched-color: var(--astro-code-token-comment);
 }
 
-.mdx code:not(pre code) {
+.mdx code:not(pre code),
+.astro-code .highlighted-word {
   position: relative;
-  padding: 0px;
-  font-size: 0.9rem;
-  font-weight: 700;
+  display: inline;
+  padding: 1px 1px;
+  margin: -1px -1px;
   color: var(--astro-code-color-text);
-  border-radius: 6px;
-}
-.mdx code:not(pre code)::before {
-  content: '`';
-}
-.mdx code:not(pre code)::after {
-  content: '`';
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: var(--selection);
+  border: 1px solid var(--selection);
+  border-radius: 4px;
 }
 
 pre.astro-code {
@@ -374,14 +373,6 @@ pre.astro-code code {
   opacity: 1;
 }
 
-.astro-code .highlighted-word {
-  padding: 1px 3px;
-  margin: -1px -3px;
-  background-color: var(--selection);
-  border: 1px solid var(--selection);
-  border-radius: 4px;
-}
-
 .astro-code .twoslash-popup-container {
   position: fixed;
   z-index: 10;
@@ -444,7 +435,7 @@ pre.astro-code code {
 }
 
 [data-code-fragment] .copy {
-  position: absolute;
+  position: fixed;
   top: 16px;
   right: 16px;
   z-index: 3;

@@ -5,12 +5,11 @@ import { useI18n } from '~/libs/i18n';
 const { t } = useI18n(Astro.url);
 ---
 
-<footer class="my-half-page container">
+<footer class="container my-half-page">
   <div class="mx-auto max-w-content font-serif text-sm text-second">
     <div class="flex items-center">
       <div>
-        Copyright © <a class="link" href="/">{t('index.name')}</a>. All rights
-        reserved.
+        Copyright © <a class="link" href="/">{t('index.name')}</a>
       </div>
       <div class="ml-auto" aria-label="More on this site">
         <a class="link whitespace-nowrap" href={SITE.source} target="_blank">

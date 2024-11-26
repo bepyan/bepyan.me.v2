@@ -40,7 +40,7 @@ const toc = parseToc(post.body);
 const { Content } = await post.render();
 ---
 
-<MainLayout seo={{ title, description }}>
+<MainLayout pagefind seo={{ title, description }}>
   <BaseLeftAside>
     <TableOfContent
       data-animate
@@ -60,7 +60,7 @@ const { Content } = await post.render();
     <hr class="mb-7 mt-4" />
     <BasePaginator {prevPost} {nextPost} />
     <PostRelated {relatedPostList} />
-    <GiscusSection className="my-half-page mx-auto" {lang} client:load />
+    <GiscusSection className="mx-auto my-half-page" {lang} client:load />
   </footer>
   <MediumZoomScript />
   <TwoslashFloatingScript />

@@ -1,4 +1,6 @@
 ---
+import SearchButton from '~/components/ui/search-button';
+
 import LanguageDropdown from './language-dropdown.svelte';
 import ThemeDropdown from './theme-dropdown.svelte';
 
@@ -16,6 +18,7 @@ const { title, description, noI18n } = props;
   <div class="flex items-center justify-between">
     <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
     <div class="flex gap-1">
+      <SearchButton client:load />
       {!noI18n && <LanguageDropdown client:load {url} align="end" />}
       <ThemeDropdown client:load align="end" />
     </div>

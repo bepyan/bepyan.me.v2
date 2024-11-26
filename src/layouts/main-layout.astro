@@ -2,6 +2,7 @@
 import BaseFooter from '~/components/base-footer.astro';
 import BaseHead from '~/components/base-head.astro';
 import MonitoringScript from '~/components/monitoring-script.astro';
+import PagefindScript from '~/components/pagefind-script.astro';
 import ThemeHeadScript from '~/components/theme-head-script.astro';
 import { getLangFromUrl, type Language } from '~/libs/i18n';
 import type { SEOProps } from '~/types';
@@ -10,9 +11,10 @@ type Props = {
   lang?: Language;
   seo?: SEOProps;
   class?: string;
+  pagefind?: boolean;
 };
 
-const { seo, ...props } = Astro.props;
+const { seo, pagefind, ...props } = Astro.props;
 
 const lang = props.lang ?? getLangFromUrl(Astro.url);
 ---
@@ -26,10 +28,14 @@ const lang = props.lang ?? getLangFromUrl(Astro.url);
   <body>
     <div class="blur-layer" aria-hidden="true"></div>
     <div class="container">
-      <main {...props} class={Astro.props.class}>
+      <main
+        class={Astro.props.class}
+        {...pagefind && { 'data-pagefind-body': '' }}
+      >
         <slot />
       </main>
     </div>
     <BaseFooter />
+    <PagefindScript />
   </body>
 </html>

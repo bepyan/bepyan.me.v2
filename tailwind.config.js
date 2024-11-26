@@ -7,6 +7,7 @@ export default {
     hoverOnlyWhenSupported: true,
   },
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  plugins: [tailwindcssAnimate],
   theme: {
     fontFamily: {
       sans: ['var(--font-sans)', 'sans'],
@@ -60,6 +61,5 @@ export default {
         'half-page': 'var(--page-half-top)',
       },
     },
-    plugins: [tailwindcssAnimate],
   },
 };

@@ -1,0 +1,21 @@
+---
+import { PagefindRaycast } from '~/components/pagefind-raycast';
+---
+
+<script is:inline>
+  window.addEventListener('DOMContentLoaded', async () => {
+    window.pagefind = await import('/pagefind/pagefind.js');
+    window.pagefind.init();
+  });
+</script>
+
+<PagefindRaycast client:idle />
+
+<script>
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
+      const event = new Event('openSearch');
+      document.dispatchEvent(event);
+    }
+  });
+</script>

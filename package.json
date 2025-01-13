@@ -25,7 +25,9 @@
     "lint:eslint": "eslint . --fix",
     "lint:stylelint": "stylelint \"src/**/*.{css,scss}\" --fix",
     "-------- SCRIPT --------": "",
-    "sharp": "bun scripts/sharp.ts"
+    "sharp": "bun scripts/sharp.ts",
+    "img:avif": "bun scripts/sharp-avif.ts",
+    "img:cleanup": "bun scripts/cleanup-unused-images.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "3.1.9",

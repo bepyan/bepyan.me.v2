@@ -292,9 +292,9 @@
   display: inline;
   padding: 1px 1px;
   margin: -1px -1px;
-  color: var(--astro-code-color-text);
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--astro-code-color-text);
   background-color: var(--selection);
   border: 1px solid var(--selection);
   border-radius: 4px;
@@ -435,7 +435,7 @@ pre.astro-code code {
 }
 
 [data-code-fragment] .copy {
-  position: fixed;
+  position: absolute;
   top: 16px;
   right: 16px;
   z-index: 3;

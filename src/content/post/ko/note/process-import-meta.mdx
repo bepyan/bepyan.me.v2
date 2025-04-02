@@ -1,0 +1,175 @@
+---
+title: 'process.env와 import.meta.env의 차이'
+description: ''
+date: 2024-12-10 17:00:00
+draft: false
+tags:
+  - 환경 변수
+  - env
+  - vite
+  - webpack
+---
+
+개발을 하다 보면 환경 변수를 사용해야 하는 경우가 종종 있습니다.
+
+환경 변수를 다루기 위해서 webpack에서 `process.env`를 사용했는데, vite에서는 `import.meta.env`를 사용하도록 [**가이드**](https://ko.vite.dev/guide/env-and-mode)하고 있습니다.
+
+이들이 어떤 차이가 있는지 정확히 살펴봅시다.
+
+## process vs import.meta
+
+먼저, process와 import.meta의 차이에 대해서 알아야 합니다.
+
+[**process**](https://nodejs.org/api/process.html#process)는 **Node.js 환경에서 전역적으로 제공되는 객체**로, 현재 실행 중인 Node.js 프로세스에 대한 정보를 담고 있습니다. 여기서 `process.env`를 통해서 JavaScript 런타임 환경 변수를 접근할 수 있습니다.
+
+[**import.meta**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import.meta)는 **ES 모듈의 메타 데이터를 저장하는 객체**입니다. ES 모듈을 쉽게 말하면 import 문법을 사용하는 코드인데요, `import.meta.url`를 통해 모듈이 로드된 파일 경로를 얻을 수 있고, `import.meta.env`를 통해 모듈의 환경 변수를 접근할 수 있습니다.
+
+```html title="브라우저에서 module 스크립트마다 독립적인 import.meta 객체를 갖습니다."
+<script type="module" src="/js/script-a.js"></script>
+<script type="module" src="/js/script-b.js"></script>
+```
+
+결국 정리하면 `process.env`는 Node.js 런타임의 환경 변수, `import.meta.env`는 ES 모듈의 환경 변수라고 할 수 있습니다.
+
+## webpack
+
+그럼 webpack에선 왜 `process.env`를 써야할까요?
+
+webpack은 `CommonJS` 기반으로 만들어진 번들러입니다. 다른 말로 webpack은 내부적으로 import 문법이 아닌 require 문법을 사용하고 있기에 `import.meta`를 사용할 수 없어 `process.env`를 통해 환경변수를 관리합니다.
+
+`DefinePlugin`를 사용하여 빌드 시점에서 `process.env` 값들을 실제 값으로 대체합니다. 따라서 Node.js 런타임이 아닌 브라우저 런타임에서도 의도된 환경 변수값을 사용할 수 있게 됩니다.
+
+```js
+new webpack.DefinePlugin({
+  'process.env.NODE_ENV': JSON.stringify('production'),
+  'process.env.API_KEY': JSON.stringify('your-api-key'),
+});
+```
+
+`.env` 파일을 환경 변수로 적용하기 위해선 [dotenv](https://github.com/motdotla/dotenv) 라이브러리의 도움이 필요합니다. 물론 [dotenv-webpack](https://github.com/mrsteele/dotenv-webpack#readme)라이브러리로 이를 더 쉽게 설정 할 수 있습니다.
+
+```js {1}
+require('dotenv').config();
+
+module.exports = () => {
+  return {
+    plugin: [
+      new webpack.DefinePlugin({
+        'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
+      }),
+    ],
+  };
+};
+```
+
+## vite
+
+반면 vite는 `ES Modules` 환경으로 만들어진 번들러입니다.
+
+따라서 vite는 `import.meta`를 사용하여 환경 변수를 서빙하게 되는데 이는 ES 모듈(ECMAScript)에서 정의한 '**새로운 표준**'이기 때문이라고 합니다.
+
+![https://github.com/vitejs/vite/discussions/8132](/img/process-import-meta/250401-132923.avif)
+
+vite는 webpack과 달리 별도의 플러그인 설정 없이도 `import.meta.env`로 `.env` 파일을 환경 변수를 사용할 수 있습니다. 사실 이는 vite가 [dotenv](https://github.com/motdotla/dotenv) 라이브러리를 내장화했기 때문인데요.
+
+여기서 주의할 점은 `vite.config.ts` 같은 번들러 설정 코드에서는 `.env`의 환경 변수를 사용할 수 없다는 것입니다. 대안으로 vite에서 제공해주는 [`loadEnv`](https://ko.vite.dev/guide/api-javascript.html#loadenv) 함수를 통해서 `.env`의 환경 변수를 접근할 수 있습니다.
+
+```js {7}
+import { defineConfig, loadEnv } from 'vite';
+
+export default defineConfig(({ mode }) => {
+  // 현재 작업 디렉터리의 `mode`를 기반으로 env 파일을 불러옴
+  // 세 번째 매개변수를 ''로 설정하면 `VITE_` 접두사에 관계없이
+  // 모든 환경 변수를 불러옴
+  const env = loadEnv(mode, process.cwd(), '');
+  return {
+    // Vite 설정
+    define: {
+      __APP_ENV__: JSON.stringify(env.APP_ENV),
+    },
+  };
+});
+```
+
+자세한 환경 변수 관련 기능은 [공식 문서](https://ko.vite.dev/guide/env-and-mode.html)를 살펴보면 좋습니다.
+
+## 흥미로운 질문
+
+흥미로운 질문이 있습니다.
+
+### vite에서는 process.env를 사용할 수 없는걸까?
+
+반은 맞고 반은 틀립니다.
+
+먼저 vite는 `import.meta.env`만 빌드 시점에서 상수값으로 치환합니다. 즉 `process.env`는 작성된 그대로 남게 됩니다. 따라서 브라우저에서는 `process.env`를 알지 못하기 때문에 아래 에러가 발생될 것입니다.
+
+```
+Uncaught ReferenceError: process is not defined
+```
+
+하지만 Nuxt, SvelteKit, SolidStart, Astro 등 vite 기반의 프레임워크의 서버 사이드에서는 `process.env`를 접근할 수 있습니다. 서버 사이드는 결국 Node.js 런타임이기 때문입니다.
+
+다만 서버 사이드에서 `import.meta.env`와 `process.env`의 정보가 다릅니다.
+
+`import.meta.env`는 vite 같은 번들러가 주입해주는 특별한 값입니다. 따라서 vite에서 제공해주는 상수값과 `.env` 파일에 기재된 환경 변수를 접근할 수 있습니다.
+
+반면 `process.env`는 Node.js의 런타임 환경 변수를 갖기 때문에 Node.js 버전, 컴퓨터 설정 등 [다양한 값](https://man7.org/linux/man-pages/man7/environ.7.html)을 접근할 수 있습니다.
+
+```json
+{
+  "TERM": "xterm-256color",
+  "SHELL": "/usr/local/bin/bash",
+  "USER": "bepyan",
+  "PATH": "~/.bin/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin",
+  "PWD": "/Users/bepyan",
+  "EDITOR": "vim",
+  "SHLVL": "1",
+  "HOME": "/Users/maciej",
+  "LOGNAME": "maciej",
+  "_": "/usr/local/bin/node"
+}
+```
+
+그럼, 질문을 반대로도 해볼 수 있을 것 같아요.
+
+### Node.js에서는 import.meta를 사용할 수 없는걸까?
+
+이것도 반은 맞고 반은 틀립니다.
+
+Node.js도 결국 JavaScript 런타임이 이기 때문에, 프로젝트 단위로 ES 모듈을 활성화 할 수 있습니다.
+
+```jsonc title="package.json"
+{
+  "type": "module",
+  // ...
+}
+```
+
+`require`, `__filename` 등 CommonJS 문법을 못쓰는 대신 import 문법을 쓸 수 있고 `import.meta` 객체를 접근할 수 있게 됩니다. 따라서 `import.meta.url`를 활용하여 모듈 경로를 처리하게 됩니다.
+
+```js
+import { fileURLToPath } from 'url';
+import { join, dirname } from 'path';
+
+// 현재 파일 기준으로 상대 경로 처리
+const currentDir = dirname(fileURLToPath(import.meta.url));
+const configPath = join(currentDir, '../config/config.json');
+const assetsDir = join(currentDir, './assets');
+```
+
+여기서 `import.meta.env`는 번들러가 주입해주는 특별한 값임을 다시 기억해야 합니다. 번들러 없이 순수한 Node.js 런타임에서 접근하면 `undefined`가 응답될 것입니다.
+
+그럴 땐 dotenv를 사용하고 `process.env`로 `.env` 환경 변수를 접근하는 것이 올바른 접근으로 보여집니다.
+
+## 맺으면서
+
+지금까지 살펴본 것처럼 `process.env`와 `import.meta.env`로 환경 변수를 다룰 수 있지만, 둘은 아주 다른 메커니즘에 의해 동작합니다. 이 메커티즘을 모를 땐 디버깅할 때 정말 많이 헤매게 되는 것 같습니다. ~~그래서 공부하게 되었는데요..~~
+
+마지막으로, 표로 이 둘의 핵심 차이를 정리하며 글을 마치겠습니다.
+
+|           | process.env                               | import.meta.env                |
+| --------- | ----------------------------------------- | ------------------------------ |
+| 실행 환경 | Node.js                                   | ES Modules                     |
+| 사용 환경 | Node.js 런타임, webpack                   | Vite 등 모던 번들러            |
+| 값 처리   | 런타임 동적 처리 (webpack은 빌드 시 치환) | 빌드 시 정적 주입              |
+| 변수 범위 | Node.js 전체 환경 변수                    | 번들러에 의해 정의된 환경 변수 |

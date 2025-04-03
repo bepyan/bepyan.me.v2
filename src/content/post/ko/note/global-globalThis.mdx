@@ -1,0 +1,76 @@
+---
+title: 'global과 globalThis의 차이'
+description: ''
+date: 2025-01-06 13:20:21
+draft: true
+tags:
+  - 전역변수
+  - typescript
+---
+
+Node.js 환경에서 글로벌 객체에 접근하는 두 가지 주요 방법인 globalThis와 global을 비교해보자.
+
+## 글로벌 객체란?
+
+자바스크립트 환경에서 최상위 스코프를 제공하는 객체이다.
+
+브라우저: `window`
+Node.js: `global`
+
+## global 객체
+
+Node.js 전용 환경
+
+특징:
+
+- Node.js 내장 모듈 및 글로벌 변수 접근 가능
+- ECMAScript 표준에 포함되지 않음
+
+## globalThis 객체
+
+모든 자바스크립트 환경 (브라우저, Node.js, 웹 워커 등)
+
+특징:
+
+- ECMAScript 2020 (ES2020) 표준
+- 일관된 글로벌 객체 접근 방법 제공
+- 이식성 높은 코드 작성 가능 (모든 환경에서 일관된 접근 방식)
+
+## 현대 웹 프로그래밍에서 이식성이 중요한 이유
+
+## Typescript에서의 활용
+
+Typescript에서의 코드 예시는 기본적으로 아래와 같다.
+
+```ts
+declare global {
+  var myGlobalVar: string;
+}
+
+global.myGlobalVar = 'Hello from global';
+console.log(global.myGlobalVar);
+```
+
+만약 'Unexpected var, use let or const instead' eslint 룰을 회피하려하면 아래 같이 해보면 된다.
+
+```ts
+declare const global: {
+  myGlobalVar: string;
+};
+
+global.myGlobalVar = 'Hello from global';
+console.log(global.myGlobalVar);
+```
+
+```ts
+declare const globalThis: {
+  myGlobalThisVar: string;
+};
+
+globalThis.myGlobalThisVar = 'Hello from globalThis';
+console.log(globalThis.myGlobalThisVar);
+```
+
+## 맺으면서
+
+가능하면 globalThis를 사용하여 코드의 이식성과 호환성을 높이면 좋을 것 같다.

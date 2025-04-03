@@ -1,17 +1,17 @@
 import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
 
 import { SITE } from '~/consts';
 import { useTranslatedPath } from '~/libs/i18n';
 import { getPostInfoList } from '~/libs/mdx';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function GET(context: any) {
+export async function GET(context: APIContext) {
   const posts = await getPostInfoList('all');
 
   return rss({
     title: SITE.title,
     description: SITE.description,
-    site: context.site,
+    site: context.site ?? SITE.site,
     items: posts.map((post) => {
       const t = useTranslatedPath(post.lang);
       return {

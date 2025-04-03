@@ -18,9 +18,10 @@ import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
 
 import { transformerFragment } from './plugins/transformer-fragment';
+import { SITE } from './src/consts';
 
 export default defineConfig({
-  site: 'https://bepyan.me',
+  site: SITE.site,
   integrations: [
     tailwind({
       applyBaseStyles: false,

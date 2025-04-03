@@ -2,23 +2,5 @@
 import { isProd } from "~/libs/utils";
 ---
 
-{/* google analytics */}
-{isProd && <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.PUBLIC_GA_ID}`}></script>}
-<script>
-  // @ts-nocheck
-  import { isProd } from "~/libs/utils";
- 
-  if(isProd) {
-    const ga_id = import.meta.env.PUBLIC_GA_ID;
-
-    window.dataLayer = window.dataLayer || [];
-    function gtag(args) {
-      dataLayer.push(...args);
-    }
-    gtag('js', new Date());
-    gtag('config', ga_id);
-  }
-</script>
-
 {/* umami */}
-<script defer src="https://cloud.umami.is/script.js" data-website-id="f21dac65-20f2-4a8c-aaa3-3039a40a4136"></script>
+{isProd && <script defer src="https://cloud.umami.is/script.js" data-website-id="f21dac65-20f2-4a8c-aaa3-3039a40a4136"></script>}

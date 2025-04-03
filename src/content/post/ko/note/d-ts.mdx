@@ -1,0 +1,103 @@
+---
+title: '조금 다른 타입스크립트 .d.ts'
+description: ''
+date: 2025-02-20 12:55:11
+draft: true
+tags:
+  - typescript
+  - declaration files
+  - type definitions
+  - d.ts
+---
+
+`TypeScript` 환경에서 작업하다 보면 간혹 `.d.ts` 파일을 마주할 수 있는데요.
+보통 얼렁뚱땅 넘어가게 되는데 이 친구는 뭐가 다른지 재대로 알아가봅시다.
+
+## 정의
+
+**`.d.ts`는 타입 선언 전용 파일입니다.**
+
+JavaScript 런타임에 포함되지 않고 오직 컴파일 시점에서 정적인 **타입 정보를 제공하기 위해 존재**합니다. 이 파일은 개발자가 코드 작성시 타입 체크를 원활하게 하고, IDE에서 자동완성 및 문서화 기능을 제공받을 수 있도록 도와줍니다.
+
+## 언제 필요한가?
+
+보통 아래 상황에서 타입 선언을 필요하게 됩니다.
+
+- 라이브러리 개발시 타입 추출
+- 외부 모듈 타입 지원
+- 프레임워크 타입 확장
+
+프레임워크나 라이브러리 개발 시, 그리고 외부 모듈의 타입 지원이 필요할 때 사용됩니다.
+예를 들어, Vite, Next.js 같은 프레임워크에서는 내부적으로 사용하는 타입 정보를 제공하기 위해 .d.ts 파일을 활용합니다.
+
+```ts title="vite-env.d.ts"
+/// <reference types="vite/client" />
+```
+
+```ts title="next-env.d.ts"
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+```
+
+이로서 프레임워크 런타임에서 제공해주는 기능, 변수의 타입을 IDE에서 인식할 수 있게 됩니다.
+
+또한, JavaScript로 작성된 외부 라이브러리에 타입 정보를 보완하기 위해 직접 `.d.ts` 파일을 작성하거나, [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)와 같은 저장소에서 제공하는 타입 정의를 사용할 수 있습니다. 예를 들어, jQuery의 타입 정보를 유용하게 사용할 수 있을 것 같네요.
+
+## 실제 활용
+
+그럼 저희는 이 `d.ts` 파일을 어떻게 활용해 볼 수 있을까요?
+바로, **프레임워크 타입을 커스텀**을 할 수 있습니다.
+
+Vite의 경우, Vite가 주입해주는 환경 변수 타입을 커스텀할 수 있습니다.
+https://ko.vite.dev/guide/env-and-mode#intellisense-for-typescript
+
+```ts
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_APP_TITLE: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+```
+
+Astro의 경우, router context에 커스텀 변수를 주입할 수 있게 됩니다.
+https://flaviocopes.com/using-astro-locals/
+
+```ts
+/// <reference types="astro/client" />
+
+declare global {
+  namespace App {
+    interface Locals extends Record<string, any> {
+      test: string;
+    }
+  }
+}
+```
+
+```ts
+import { defineMiddleware } from 'astro:middleware';
+
+export const onRequest = defineMiddleware(async (context, next) => {
+  // type-safe
+  context.locals.test = 'test';
+
+  return await next();
+});
+```
+
+## 번외: no-namespace
+
+`typescript-eslint`의 recommended rules로 no-namespace가 있습니다.
+`declare module`은 항상 `d.ts` 파일에서 사용하도록 하는 것입니다.
+
+일반 .ts 파일에서는 ES 모듈 방식의 import/export를 사용하여 코드를 구성하는 것이 권장됩니다.
+반면 .d.ts 파일에서는 타입 정보만을 제공하기 위해 declare 키워드를 활용한 네임스페이스 또는 모듈 선언이 허용되며, 이는 런타임 코드로 변환되지 않아 안전하게 전역 타입이나 외부 모듈의 타입을 확장하는 용도로 사용됩니다.
+
+## 맺으면서

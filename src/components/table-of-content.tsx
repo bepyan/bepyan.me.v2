@@ -1,7 +1,7 @@
 import { throttle } from 'es-toolkit';
 import { useEffect, useState } from 'react';
 
-import { type TOCSection } from '~/libs/mdx';
+import { type TOCSection } from '~/libs/toc';
 import { cn } from '~/libs/utils';
 
 export default function TableOfContent({
@@ -43,9 +43,7 @@ const useTocScroll = (tableOfContents: TOCSection[]) => {
     let pageTop = 0;
 
     const onResize = () => {
-      headings = Array.from(
-        document.querySelectorAll<HTMLElement>('.mdx h2'),
-      ).map((element) => ({
+      headings = Array.from(document.querySelectorAll<HTMLElement>('.mdx h2')).map((element) => ({
         id: element.id,
         top: element.offsetTop,
       }));

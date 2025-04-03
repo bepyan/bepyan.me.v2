@@ -28,10 +28,7 @@ export const getPostType = (post: { slug: string }) => {
 };
 
 // 최신순
-export const sortCollectionDateDesc = (
-  a: CollectionEntry<'post'>,
-  b: CollectionEntry<'post'>,
-) => {
+export const sortCollectionDateDesc = (a: CollectionEntry<'post'>, b: CollectionEntry<'post'>) => {
   return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
 };
 
@@ -42,10 +39,7 @@ export const sortDateDesc = (
   return new Date(b.date).valueOf() - new Date(a.date).valueOf();
 };
 
-export const sortCollectionDateAsc = (
-  a: CollectionEntry<'post'>,
-  b: CollectionEntry<'post'>,
-) => {
+export const sortCollectionDateAsc = (a: CollectionEntry<'post'>, b: CollectionEntry<'post'>) => {
   return new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf();
 };
 
@@ -61,9 +55,7 @@ export const resolveSlug = (slug: string) => {
 
 /** 전체 글 정보 */
 export const getPostCollection = async () => {
-  return (await getCollection('post'))
-    .filter(isDraft)
-    .sort(sortCollectionDateDesc);
+  return (await getCollection('post')).filter(isDraft).sort(sortCollectionDateDesc);
 };
 
 export type PostInfo = {
@@ -77,9 +69,7 @@ export type PostInfo = {
   isExternal?: boolean;
 };
 
-export const getPostInfoList = async (
-  type: 'all' | 'writing' | 'note' = 'all',
-) => {
+export const getPostInfoList = async (type: 'all' | 'writing' | 'note' = 'all') => {
   const posts = await getPostCollection();
 
   return posts
@@ -133,49 +123,6 @@ export const getRelatedPosts = (
     .toSorted((a, b) => b.similarity - a.similarity)
     .map((p) => p.post)
     .slice(0, 4);
-};
-
-/** table-of-content */
-export type TOCSection = TOCSubSection & {
-  subSections: TOCSubSection[];
-};
-
-export type TOCSubSection = {
-  slug: string;
-  text: string;
-};
-
-export const parseToc = (source: string) => {
-  return source
-    .split('\n')
-    .filter((line) => line.match(/(^#{1,3})\s/))
-    .reduce<TOCSection[]>((ac, rawHeading) => {
-      const nac = [...ac];
-      const removeMdx = rawHeading
-        .replace(/^##*\s/, '')
-        .replace(/[*,~]{2,}/g, '')
-        .replace(/(?<=\])\((.*?)\)/g, '')
-        .replace(/(?<!\S)((http)(s?):\/\/|www\.).+?(?=\s)/g, '');
-
-      const section = {
-        slug: removeMdx
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣 -]/g, '')
-          .replace(/\s/g, '-'),
-        text: removeMdx,
-      };
-
-      const isSubTitle = rawHeading.split('#').length - 1 === 3;
-
-      if (ac.length && isSubTitle) {
-        nac.at(-1)?.subSections.push(section);
-      } else {
-        nac.push({ ...section, subSections: [] });
-      }
-
-      return nac;
-    }, []);
 };
 
 /** 글 파싱 */

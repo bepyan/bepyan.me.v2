@@ -19,7 +19,8 @@ import TableOfContent from '~/components/table-of-content';
 import TwoslashFloatingScript from '~/components/twoslash-floating-script.astro';
 import MainLayout from '~/layouts/main-layout.astro';
 import { defaultLang, getDefaultPathname, type Language, translatePath } from '~/libs/i18n';
-import { contentToDescription, getPostType, parseToc } from '~/libs/mdx';
+import { contentToDescription, getPostType } from '~/libs/mdx';
+import { parseToc } from '~/libs/toc';
 
 export type Props = {
   lang: Language;

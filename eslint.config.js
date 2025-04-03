@@ -16,10 +16,7 @@ export default [
     rules: {
       'no-undef': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/no-unused-expressions': [
-        'error',
-        { allowShortCircuit: true },
-      ],
+      '@typescript-eslint/no-unused-expressions': ['error', { allowShortCircuit: true }],
     },
   },
   // @see https://github.com/lydell/eslint-plugin-simple-import-sort

@@ -7,19 +7,42 @@ import { type SEOProps } from '~/types';
 
 import BaseFonts from './base-fonts.astro';
 
-type Props = SEOProps & {};
+type Props = SEOProps & {
+  lang: string;
+};
 
 const { props } = Astro;
 
-const title =
-  props.title && SITE.titleTemplate
-    ? SITE.titleTemplate.replace('%s', props.title)
-    : SITE.title;
+const title = props.title;
 const description = props.description ?? SITE.description;
-
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
 const imageURL = props.image ?? SITE.image;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: title,
+  headline: title,
+  description,
+  image: imageURL,
+  url: canonicalURL,
+  author: {
+    '@type': 'Person',
+    name: '김평안',
+    url: `${Astro.site}`,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.title,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${Astro.site}favicon.svg`,
+    },
+  },
+  inLanguage: props.lang,
+  ...props.jsonLd,
+};
 ---
 
 {/* Global Metadata */}
@@ -52,12 +75,10 @@ const imageURL = props.image ?? SITE.image;
 
 {/* Sitemap */}
 <link rel="sitemap" href="/sitemap.xml" />
-<link
-  rel="alternate"
-  type="application/rss+xml"
-  title={SITE.title}
-  href="/rss.xml"
-/>
+<link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
 
 {/* Fonts */}
 <BaseFonts />
+
+{/* JSON-LD */}
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

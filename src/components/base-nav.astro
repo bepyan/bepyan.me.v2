@@ -1,11 +1,6 @@
 ---
 import { NAV } from '~/consts';
-import {
-  getLangFromUrl,
-  type Language,
-  useTranslatedPath,
-  useTranslations,
-} from '~/libs/i18n';
+import { type Language, useI18n } from '~/libs/i18n';
 import { cn } from '~/libs/utils';
 
 import { DotIcon } from './ui/icons';
@@ -20,9 +15,7 @@ const { props, url } = Astro;
 
 const currentNavItem = url.pathname.split('/').filter(Boolean).join('');
 
-const lang = props.lang ?? getLangFromUrl(url);
-const p = useTranslatedPath(lang);
-const t = useTranslations(lang);
+const { p, t } = useI18n(url);
 ---
 
 <div class={cn('flex items-center gap-2 font-serif text-sm', props.class)}>
@@ -39,8 +32,7 @@ const t = useTranslations(lang);
         <a
           class={cn(
             'external-link',
-            (navItem === currentNavItem ||
-              navItem === props.highlightNavItem) &&
+            (navItem === currentNavItem || navItem === props.highlightNavItem) &&
               'font-bold no-underline before:bg-selection before:ring-border hover:before:ring-1',
           )}
           href={p(`/${navItem}`)}

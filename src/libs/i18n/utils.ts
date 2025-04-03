@@ -14,10 +14,13 @@ export function getLangFromSlug(slug: string) {
   return defaultLang;
 }
 
+export function translatePath(path: string, lang: Language) {
+  return lang === defaultLang ? path : `/${lang}${path}`;
+}
+
 export function useTranslatedPath(lang: Language) {
-  return function translatePath(path: string, l: string = lang) {
-    return l === defaultLang ? path : `/${l}${path}`;
-  };
+  return (path: string, forceLang?: Language) =>
+    translatePath(path, forceLang ?? lang);
 }
 
 export function useTranslations(lang: Language) {

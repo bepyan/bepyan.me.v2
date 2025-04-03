@@ -18,7 +18,7 @@ import PostRelated from '~/components/post-related.astro';
 import TableOfContent from '~/components/table-of-content';
 import TwoslashFloatingScript from '~/components/twoslash-floating-script.astro';
 import MainLayout from '~/layouts/main-layout.astro';
-import type { Language } from '~/libs/i18n';
+import { defaultLang, getDefaultPathname, type Language, translatePath } from '~/libs/i18n';
 import { contentToDescription, getPostType, parseToc } from '~/libs/mdx';
 
 export type Props = {
@@ -33,21 +33,55 @@ export type Props = {
 const { lang, post, prevPost, nextPost, relatedPostList, noI18n } = Astro.props;
 
 const postType = getPostType(post);
-const { title, date } = post.data;
+const { title, date, updatedDate, tags } = post.data;
 const description = post.data.description || contentToDescription(post.body);
 const toc = parseToc(post.body);
 
 const { Content } = await post.render();
+
+const i18nJsonLd = noI18n
+  ? null
+  : lang === defaultLang
+    ? {
+        workTranslation: [
+          {
+            '@type': 'BlogPosting',
+            '@id': new URL(translatePath(Astro.url.pathname, 'en'), Astro.site).toString(),
+            inLanguage: 'en',
+          },
+        ],
+      }
+    : {
+        translationOfWork: {
+          '@type': 'BlogPosting',
+          '@id': new URL(getDefaultPathname(Astro.url.pathname), Astro.site).toString(),
+          inLanguage: 'ko',
+        },
+      };
 ---
 
-<MainLayout pagefind seo={{ title, description }}>
+<MainLayout
+  pagefind
+  seo={{
+    title,
+    description,
+    jsonLd: {
+      '@type': 'BlogPosting',
+      datePublished: date.toISOString(),
+      ...(updatedDate && {
+        dateModified: updatedDate.toISOString(),
+      }),
+      keywords: tags ?? [],
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': new URL(Astro.url.pathname, Astro.site).toString(),
+      },
+      ...i18nJsonLd,
+    },
+  }}
+>
   <BaseLeftAside>
-    <TableOfContent
-      data-animate
-      className="px-2 text-sm md:hidden"
-      toc={toc}
-      client:load
-    />
+    <TableOfContent data-animate className="px-2 text-sm md:hidden" toc={toc} client:load />
   </BaseLeftAside>
   <BaseHeader {title} description={format(date, 'MMM dd, yyyy')} {noI18n}>
     <BaseNav class="mt-1.5" highlightNavItem={postType} />

@@ -21,7 +21,7 @@ const lang = props.lang ?? getLangFromUrl(Astro.url);
 
 <html {lang}>
   <head>
-    <BaseHead {...seo} />
+    <BaseHead {lang} {...seo} />
     <ThemeHeadScript />
     <MonitoringScript />
   </head>

@@ -1,7 +1,6 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
-import tailwind from '@astrojs/tailwind';
 import {
   transformerMetaHighlight,
   transformerMetaWordHighlight,
@@ -11,6 +10,7 @@ import {
   transformerNotationHighlight,
 } from '@shikijs/transformers';
 import { transformerTwoslash } from '@shikijs/twoslash';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeExternalLinks from 'rehype-external-links';
@@ -22,10 +22,11 @@ import { SITE } from './src/consts';
 
 export default defineConfig({
   site: SITE.site,
+  output: 'static',
+  vite: {
+    plugins: [tailwindcss()],
+  },
   integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
     react(),
     svelte(),
     mdx({

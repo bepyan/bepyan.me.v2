@@ -52,7 +52,7 @@ const yearList = Object.entries(
                   <li style={`--lv-wait: ${index}`}>
                     <a
                       href={p(post.href)}
-                      class="group/item flex transition-opacity hover:!opacity-100 group-hover:opacity-40"
+                      class="group/item flex transition-opacity hover:opacity-100! group-hover:opacity-40"
                       target={post.isExternal ? '_blank' : '_self'}
                     >
                       <div class="ml-[15%] flex flex-1 items-start border-t py-2 group-first-of-type/item:border-t-0">
@@ -61,7 +61,7 @@ const yearList = Object.entries(
                             {post.title}
                           </span>
                         </div>
-                        <div class="ml-auto mt-1 flex flex-shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-sm text-second transition group-hover/item:bg-selection group-hover/item:text-heading">
+                        <div class="ml-auto mt-1 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-sm text-second transition group-hover/item:bg-selection group-hover/item:text-heading">
                           {post.isExternal && (
                             <BxLinkExternal className="text-disabled" />
                           )}

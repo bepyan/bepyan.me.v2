@@ -1,246 +1,167 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* -- colors --- */
-@layer base {
-  :root {
-    --gray-50: #ffffff;
-    --gray-75: #fdfdfd;
-    --gray-100: #f8f8f8;
-    --gray-200: #e6e6e6;
-    --gray-300: #d5d5d5;
-    --gray-400: #b1b1b1;
-    --gray-500: #909090;
-    --gray-600: #6d6d6d;
-    --gray-700: #464646;
-    --gray-800: #222222;
-    --gray-900: #000000;
-    --gray-950: #000000;
-
-    --selection: hsla(0, 0%, 0%, 0.045);
-    --border: hsla(0, 0%, 0%, 0.09);
-    --spinner-color: rgba(0, 0, 0, 65);
-
-    --page-background: var(--gray-50);
-
-    --heading: var(--gray-900);
-    --text-body: var(--gray-800);
-    --text-second: var(--gray-700);
-    --text-disabled: var(--gray-500);
-  }
-
-  .dark {
-    --gray-50: #000;
-    --gray-75: #141414;
-    --gray-100: #1d1d1d;
-    --gray-200: #303030;
-    --gray-300: #4b4b4b;
-    --gray-400: #6a6a6a;
-    --gray-500: #8d8d8d;
-    --gray-600: #b0b0b0;
-    --gray-700: #d0d0d0;
-    --gray-800: #ebebeb;
-    --gray-900: #fff;
-    --gray-950: #fff;
-
-    --selection: hsla(0, 0%, 100%, 0.077);
-    --border: hsla(0, 0%, 100%, 0.1);
-    --spinner-color: rgba(255, 255, 255, 65);
-
-    --page-background: var(--gray-75);
-
-    --heading: var(--gray-900);
-    --text-body: var(--gray-800);
-    --text-second: var(--gray-600);
-    --text-disabled: var(--gray-500);
-  }
-}
-
-/* -- variable --- */
-@layer base {
-  :root {
-    --xl: 1200px;
-    --lg: 1024px;
-    --md: 768px;
-    --sm: 640px;
-
-    --page-top: 128px;
-    --page-half-top: 64px;
-    --page-width: 1072px;
-    --content-width: 640px;
-    --body-margin-left: max(24px, env(safe-area-inset-left));
-    --body-margin-right: max(24px, env(safe-area-inset-right));
-
-    /* --font-base: calc(1rem + 0.25vw); */
-    /* font-size: var(--font-base); */
-  }
-
-  @media (max-width: var(--lg)) {
-    :root {
-      --page-top: 128px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    :root {
-      --page-top: 96px;
-      --page-half-top: 48px;
-      --body-margin-left: max(16px, env(safe-area-inset-left));
-      --body-margin-right: max(16px, env(safe-area-inset-right));
-    }
-  }
-}
+@import './tailwind.css';
+@import './animation.css';
 
 /* ---- layout ---- */
-@layer base {
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: var(--header-height);
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* react-remove-scroll 에서 강제로 body를 조작한다. */
-  body {
-    @apply m-0 min-h-screen p-0;
-    @apply font-sans text-base leading-7 tracking-normal antialiased;
-    @apply bg-page text-second;
-  }
-
-  .container {
-    padding-right: var(--body-margin-right);
-    padding-left: var(--body-margin-left);
-  }
-
-  .container > main {
-    @apply mx-auto max-w-content pt-page;
-    min-height: calc(100vh - var(--page-half-top) * 2 - 20px);
-  }
-
-  * {
-    @apply box-border border-border;
-  }
-
-  ::selection {
-    @apply bg-selection shadow-none;
-  }
-
-  h1 {
-    @apply font-serif font-bold text-heading;
-  }
-
-  b,
-  strong {
-    @apply font-bold text-body;
-  }
-
-  em {
-    @apply font-serif font-bold not-italic text-body;
-  }
-
-  del {
-    @apply text-disabled;
-  }
-
-  mark {
-    @apply rounded-sm bg-selection font-medium text-body;
-    padding: 3px 5px;
-    margin: 0 2px;
-    border-radius: 4px;
-  }
-
-  .link,
-  .external-link,
-  .mdx a {
-    @apply relative inline-block break-all text-body hover:text-heading;
-    @apply underline decoration-border decoration-1 underline-offset-4 hover:decoration-transparent;
-    @apply duration-200 ease-in-out hover:duration-100;
-  }
-  .link::before,
-  .external-link::before,
-  .mdx a:not(.anchor)::before {
-    @apply absolute -inset-x-1 bottom-0.5 top-0 -z-10 rounded transition-colors hover:bg-selection;
-    content: '';
-  }
-  .external-link::before {
-    @apply -right-0.5;
-  }
-  .external-link::after {
-    @apply m-0 inline-block h-3.5 w-3.5;
-    content: '';
-    background: url('data:image/svg+xml;utf8,<svg color="%23464646" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
-  .dark .external-link::after {
-    content: '';
-    background: url('data:image/svg+xml;utf8,<svg color="%23B0B0B0" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
-
-  /* ---- scrollbar ---- */
-  * {
-    --scrollbar-size: 16px;
-    --scrollbar-size-min: 44px;
-    --scrollbar-color: var(--gray-200);
-    scrollbar-color: var(--scrollbar-color) transparent;
-    /* firefox */
-    scrollbar-width: thin;
-  }
-
-  ::-webkit-scrollbar {
-    width: var(--scrollbar-size);
-    height: var(--scrollbar-size);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    min-width: var(--scrollbar-size-min);
-    min-height: var(--scrollbar-size-min);
-    background-color: var(--scrollbar-color);
-    background-clip: padding-box;
-    border: 5px solid transparent;
-    border-radius: var(--scrollbar-size);
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    --scrollbar-color: var(--gray-300);
-  }
-
-  ::-webkit-scrollbar-thumb:active {
-    --scrollbar-color: var(--gray-300);
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-button,
-  ::-webkit-scrollbar-corner,
-  ::-webkit-resizer {
-    display: none;
-  }
+body {
+  @apply m-0 min-h-screen p-0;
+  @apply font-sans text-base leading-7 tracking-normal antialiased;
+  @apply bg-page text-second;
 }
 
-/* header blur layer */
-@layer components {
-  .blur-layer {
-    --h: min(96px, var(--page-top));
-    position: fixed;
-    top: 0;
-    z-index: 1;
-    width: calc(100% + var(--body-margin-left) + var(--body-margin-right));
-    height: var(--h);
-    margin-bottom: calc(-1 * var(--h));
-    margin-left: calc(-1 * var(--body-margin-left));
-    pointer-events: none;
-    user-select: none;
-    backdrop-filter: blur(5px);
-    opacity: 0.95;
-    mask-image: linear-gradient(to bottom, #000000 25%, transparent);
-  }
+.container {
+  @apply w-full max-w-full;
+  padding-right: var(--body-margin-right);
+  padding-left: var(--body-margin-left);
+}
 
-  .blur-layer:after {
+.container > main {
+  @apply max-w-content pt-page mx-auto;
+  min-height: calc(100vh - var(--page-half-top) * 2 - 20px);
+}
+
+/* ---- common ---- */
+* {
+  @apply border-border box-border;
+}
+
+::selection {
+  @apply bg-selection shadow-none;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-height);
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1 {
+  @apply text-heading font-serif font-bold;
+}
+
+b,
+strong {
+  @apply text-body font-bold;
+}
+
+em {
+  @apply text-body font-serif font-bold not-italic;
+}
+
+del {
+  @apply text-disabled;
+}
+
+mark {
+  @apply bg-selection text-body mx-0.5 rounded-sm px-[3px] py-[5px] font-medium;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+/* ---- icon ---- */
+:root {
+  --ico-link: url('data:image/svg+xml;utf8,<svg color="%23464646" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
+}
+.dark {
+  --ico-link: url('data:image/svg+xml;utf8,<svg color="%23B0B0B0" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/></svg>');
+}
+
+/* ---- link ---- */
+.link,
+.external-link,
+.mdx a {
+  @apply text-body relative inline-block break-all;
+  @apply decoration-border underline decoration-1 underline-offset-4;
+  @apply duration-200 ease-in-out hover:duration-100;
+}
+.link::before,
+.external-link::before,
+.mdx a:not(.anchor)::before {
+  @apply absolute -inset-x-1 top-0 bottom-0.5 -z-10 rounded-sm transition-colors content-[''];
+}
+
+.link:hover,
+.external-link:hover,
+.mdx a:hover {
+  @apply text-heading decoration-transparent;
+}
+
+.link:hover::before,
+.external-link:hover::before,
+.mdx a:hover::before {
+  @apply bg-selection;
+}
+
+.external-link::before {
+  @apply -right-0.5;
+}
+.external-link::after {
+  @apply m-0 inline-block h-3.5 w-3.5 content-[''];
+  background: var(--ico-link);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* ---- scrollbar ---- */
+* {
+  --scrollbar-size: 16px;
+  --scrollbar-size-min: 44px;
+  --scrollbar-color: var(--gray-200);
+  scrollbar-color: var(--scrollbar-color) transparent;
+  /* firefox */
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+::-webkit-scrollbar-thumb {
+  min-width: var(--scrollbar-size-min);
+  min-height: var(--scrollbar-size-min);
+  background-color: var(--scrollbar-color);
+  background-clip: padding-box;
+  border: 5px solid transparent;
+  border-radius: var(--scrollbar-size);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  --scrollbar-color: var(--gray-300);
+}
+
+::-webkit-scrollbar-thumb:active {
+  --scrollbar-color: var(--gray-300);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-corner,
+::-webkit-resizer {
+  display: none;
+}
+
+/* ---- blur-layer ---- */
+@utility blur-layer {
+  --h: min(96px, var(--page-top));
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  width: calc(100% + var(--body-margin-left) + var(--body-margin-right));
+  height: var(--h);
+  margin-bottom: calc(-1 * var(--h));
+  margin-left: calc(-1 * var(--body-margin-left));
+  pointer-events: none;
+  user-select: none;
+  backdrop-filter: blur(5px);
+  opacity: 0.95;
+  mask-image: linear-gradient(to bottom, #000000 25%, transparent);
+
+  &:after {
     position: absolute;
     inset: 0;
     content: '';

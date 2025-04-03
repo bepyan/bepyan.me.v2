@@ -91,7 +91,7 @@
     >
       {#each items as item}
         <button
-          class="inline-flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-sm capitalize text-heading hover:bg-selection"
+          class="inline-flex w-full items-center justify-between rounded-xs px-2 py-1.5 text-left text-sm capitalize text-heading hover:bg-selection"
           onclick={() => selectItem(item)}
         >
           {item.label}

@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { getDefaultPathname, languages, useI18n } from '~/libs/i18n';
+import { getDefaultPathname, type Language, languages, useI18n } from '~/libs/i18n';
 
 import { DotIcon, HeroiconsLanguage } from './ui/icons';
 
@@ -25,7 +25,7 @@ export default function LanguageDropdown({ url }: { url: URL }) {
       <DropdownMenuContent align="end">
         {Object.entries(languages).map(([language, label]) => (
           <DropdownMenuItem key={language} className="justify-between" asChild>
-            <a href={p(pathname, language)}>
+            <a href={p(pathname, language as Language)}>
               {label}
               {language === lang && <DotIcon />}
             </a>

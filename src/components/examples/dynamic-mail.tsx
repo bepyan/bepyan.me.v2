@@ -54,7 +54,7 @@ export function DynamicMail() {
           setFormState('idle');
         }}
         key="button"
-        className="flex w-[100px] items-center justify-center gap-1 rounded-lg border border-border bg-page px-3 py-2 focus:outline-none"
+        className="flex w-[100px] items-center justify-center gap-1 rounded-lg border border-border bg-page px-3 py-2 focus:outline-hidden"
       >
         <motion.span layoutId="title" className="font-bold text-heading">
           초대장
@@ -70,7 +70,7 @@ export function DynamicMail() {
             <motion.span
               className={cn(
                 'absolute left-5 top-4 z-10 text-lg font-bold text-heading',
-                formState === 'success' && '!opacity-0',
+                formState === 'success' && 'opacity-0!',
               )}
               layoutId="title"
             >
@@ -101,13 +101,13 @@ export function DynamicMail() {
                     <div>24.06.03 17시 - 세미나홀</div>
                     <div className="mt-3 flex items-center justify-between">
                       <button
-                        className="transition-colors hover:text-heading focus:text-heading focus:outline-none"
+                        className="transition-colors hover:text-heading focus:text-heading focus:outline-hidden"
                         onClick={() => setOpen(false)}
                       >
                         취소
                       </button>
                       <button
-                        className="h-[30px] w-[80px] overflow-hidden transition-colors hover:text-heading focus:text-heading focus:outline-none"
+                        className="h-[30px] w-[80px] overflow-hidden transition-colors hover:text-heading focus:text-heading focus:outline-hidden"
                         onClick={submit}
                         disabled={formState === 'loading'}
                       >

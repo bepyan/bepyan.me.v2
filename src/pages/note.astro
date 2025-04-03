@@ -30,32 +30,24 @@ const description = t('nav.note.desc');
   <BaseHeader {title} {description}>
     <BaseNav class="mt-1.5" />
   </BaseHeader>
-  <div
-    data-animate
-    data-animate-speed="slow"
-    class="group mt-14 space-y-7 border-l pl-4"
-  >
+  <div data-animate data-animate-speed="slow" class="group mt-14 space-y-7 border-l pl-4">
     {
       yearList.map(([year, postList], index) => {
         return (
           <div class="group/year relative">
-            <div class="absolute -left-20 -mx-1 select-none rounded-md px-1 transition group-hover/year:bg-selection group-hover/year:text-heading group-hover/year:!opacity-100 group-hover:opacity-40 sm:relative sm:left-0 sm:mb-2">
+            <div class="group-hover/year:bg-selection group-hover/year:text-heading absolute -left-20 -mx-1 rounded-md px-1 transition select-none group-hover:opacity-40 group-hover/year:opacity-100! max-sm:relative max-sm:left-0 max-sm:mb-2">
               <h3 class="font-serif">{year}</h3>
             </div>
-            <ul
-              data-animate
-              data-animate-speed="fast"
-              class="flex flex-col items-start gap-2"
-            >
+            <ul data-animate data-animate-speed="fast" class="flex flex-col items-start gap-2">
               {postList.map((post) => {
                 return (
                   <li style={`--start: ${index * 75}ms;`}>
                     <a
                       href={p(post.href)}
-                      class="-mx-1 flex items-center rounded-md px-1 transition hover:bg-selection hover:!opacity-100 group-hover:opacity-60"
+                      class="hover:bg-selection -mx-1 flex items-center rounded-md px-1 transition group-hover:opacity-60 hover:opacity-100!"
                     >
                       <span class="text-heading">{post.title}</span>
-                      <span class="flex-shrink-0 px-2 text-sm text-second">
+                      <span class="text-second shrink-0 px-2 text-sm">
                         {format(new Date(post.date), 'MM. dd.')}
                       </span>
                     </a>

@@ -35,9 +35,9 @@ export function BottomDrawer() {
         <DialogOverlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-gray-900 opacity-50 dark:bg-gray-200" />
         <DialogContent
           className={cn(
-            'fixed bottom-0 left-[50%] right-0 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-20',
-            'data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:duration-150',
-            'data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:duration-100',
+            'fixed right-0 bottom-0 left-[50%] z-50 w-full max-w-sm -translate-x-1/2 -translate-y-20',
+            'data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-10 data-[state=open]:duration-150',
+            'data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:duration-100',
           )}
         >
           <Card />
@@ -52,8 +52,8 @@ function Card() {
   const [showDetail, setShowDetail] = useState(false);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gray-75 p-6">
-      <div className="absolute right-5 top-5 z-10">
+    <div className="bg-gray-75 relative overflow-hidden rounded-2xl p-6">
+      <div className="absolute top-5 right-5 z-10">
         <DialogClose>
           <CloseButton />
         </DialogClose>
@@ -73,10 +73,10 @@ function Card() {
                     FE 네트워킹 데이 초대장
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 text-sm text-second">
+                <div className="text-second flex flex-col gap-2 text-sm">
                   <div>
-                    행사에서 다양한 커리어 고민들을 나누고, 네트워킹으로 미래에
-                    좋은 영향을 줄 수 있는 동료가 되어봅시다!
+                    행사에서 다양한 커리어 고민들을 나누고, 네트워킹으로 미래에 좋은 영향을 줄 수
+                    있는 동료가 되어봅시다!
                   </div>
                   <div>
                     <div>장소: 세미나홀</div>
@@ -102,9 +102,7 @@ function Card() {
                 <div className="flex items-center">
                   <div className="text-lg font-bold text-gray-700">초대장</div>
                 </div>
-                <div className="text-second">
-                  FE 네트워킹 데이에 초대합니다.
-                </div>
+                <div className="text-second">FE 네트워킹 데이에 초대합니다.</div>
                 <div className="mt-4 flex flex-col gap-2">
                   <button
                     className="flex items-center gap-2 rounded-2xl bg-gray-200 px-3 py-2 font-bold transition-transform focus:scale-95 active:scale-95"

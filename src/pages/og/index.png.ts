@@ -11,7 +11,7 @@ export async function GET() {
   return new Response(ogImage, {
     status: 200,
     headers: {
-      'Content-Type': 'image/avif',
+      'Content-Type': 'image/png',
     },
   });
 }

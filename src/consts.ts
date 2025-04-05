@@ -4,7 +4,7 @@ export const SITE = {
   site: 'https://bepyan.me',
   title: 'bepyan.me',
   description: 'Develop about something Soft and Simple.',
-  image: '/og.avif',
+  image: '/og.png',
   source: 'https://github.com/bepyan/bepyan.me.v2',
 } as const;
 

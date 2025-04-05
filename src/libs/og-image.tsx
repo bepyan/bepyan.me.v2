@@ -77,6 +77,11 @@ export async function generateOgImage({
     satoriOption,
   );
 
-  const image = sharp(Buffer.from(svg)).toFormat('avif').avif();
+  const image = sharp(Buffer.from(svg)).png({
+    compressionLevel: 9,
+    adaptiveFiltering: true,
+    palette: true,
+    quality: 80,
+  });
   return await image.toBuffer();
 }

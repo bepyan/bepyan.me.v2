@@ -8,7 +8,7 @@ export default function SearchButton() {
   };
 
   return (
-    <Button variant="ghost" size="icon" onClick={onClick}>
+    <Button variant="ghost" size="icon" aria-label="search" onClick={onClick}>
       <SolarMagniferLinear className="h-5 w-5" />
     </Button>
   );

@@ -10,7 +10,7 @@ type Props = SEOProps & {
 
 const { props } = Astro;
 
-const title = props.title;
+const title = props.title ?? SITE.title;
 const description = props.description ?? SITE.description;
 const image = props.image ?? SITE.image;
 const imageURL = image.startsWith('https://') ? image : new URL(image, Astro.url.origin).toString();

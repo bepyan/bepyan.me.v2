@@ -35,8 +35,7 @@
   let selectedItem = $derived(
     items.find(
       (item) =>
-        item.value === selectedValue ||
-        (selectedValue === null && item.value === undefined),
+        item.value === selectedValue || (selectedValue === null && item.value === undefined),
     ) ?? null,
   );
 
@@ -75,38 +74,35 @@
       }),
     )}
     onclick={toggleDropdown}
+    aria-label="trigger dropdown"
   >
-    {#if button}{@render button()}{:else}{selectedItem
-        ? selectedItem.label
-        : 'Select'}{/if}
+    {#if button}
+      {@render button()}
+    {:else if selectedItem}
+      {selectedItem.label}
+    {:else}
+      Select
+    {/if}
   </button>
   {#if isOpen}
     <div
       transition:dropdownTransition
       class={cn(
-        'absolute top-full z-50 mt-1 flex min-w-[8rem] flex-col overflow-hidden rounded-md border bg-page p-1 shadow-md',
+        'bg-page absolute top-full z-50 mt-1 flex min-w-[8rem] flex-col overflow-hidden rounded-md border p-1 shadow-md',
         align === 'end' ? 'right-0' : 'left-0',
         menuClass,
       )}
     >
       {#each items as item}
         <button
-          class="inline-flex w-full items-center justify-between rounded-xs px-2 py-1.5 text-left text-sm capitalize text-heading hover:bg-selection"
+          class="text-heading hover:bg-selection inline-flex w-full items-center justify-between rounded-xs px-2 py-1.5 text-left text-sm capitalize"
           onclick={() => selectItem(item)}
         >
           {item.label}
           {#if selectedItem === item}
             <!-- dot icon -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="1em"
-              height="1em"
-              viewBox="0 0 256 256"
-            >
-              <path
-                fill="currentColor"
-                d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Z"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
+              <path fill="currentColor" d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Z" />
             </svg>
           {/if}
         </button>

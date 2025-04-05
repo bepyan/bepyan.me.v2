@@ -6,7 +6,9 @@ import { getLangFromSlug, type Language } from '~/libs/i18n';
 
 import { isDev } from './utils';
 
-/** utils */
+// ====================================================
+// utils
+// ====================================================
 
 export const isDraft = (post: CollectionEntry<'post'>) => {
   return isDev || !post.data.draft;
@@ -53,10 +55,55 @@ export const resolveSlug = (slug: string) => {
   return slugList.join('/');
 };
 
+/**
+ * 글 Description 자동 파싱
+ */
+export const contentToDescription = (content: string) => {
+  const parsedContent = content
+    .replace(/(?<=\])\((.*?)\)/g, '')
+    .replace(/(?<!\S)((http)(s?):\/\/|www\.).+?(?=\s)/g, '')
+    .replace(/[#*|[\]]|(-{3,})|(`{3})(\S*)(?=\s)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 157);
+
+  return `${parsedContent}...`;
+};
+
+// ====================================================
+// Post
+// ====================================================
+
 /** 전체 글 정보 */
 export const getPostCollection = async () => {
   return (await getCollection('post')).filter(isDraft).sort(sortCollectionDateDesc);
 };
+
+/** 연관 글 추출 */
+export const getRelatedPosts = (
+  post: CollectionEntry<'post'>,
+  postList: CollectionEntry<'post'>[],
+) => {
+  return postList
+    .filter((p) => p.slug !== post.slug)
+    .map((p) => {
+      const tagPoint = post.data.tags
+        ? post.data.tags.filter((tag) => p.data.tags?.includes(tag)).length
+        : 0;
+      const titlePoint = compareTwoStrings(post.data.title, p.data.title);
+      return {
+        post: p,
+        similarity: tagPoint + 3.0 * titlePoint,
+      };
+    })
+    .toSorted((a, b) => b.similarity - a.similarity)
+    .map((p) => p.post)
+    .slice(0, 4);
+};
+
+// ====================================================
+// PostInfo
+// ====================================================
 
 export type PostInfo = {
   title: string;
@@ -102,38 +149,4 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
   ];
 
   return postList.sort(sortDateDesc);
-};
-
-export const getRelatedPosts = (
-  post: CollectionEntry<'post'>,
-  postList: CollectionEntry<'post'>[],
-) => {
-  return postList
-    .filter((p) => p.slug !== post.slug)
-    .map((p) => {
-      const tagPoint = post.data.tags
-        ? post.data.tags.filter((tag) => p.data.tags?.includes(tag)).length
-        : 0;
-      const titlePoint = compareTwoStrings(post.data.title, p.data.title);
-      return {
-        post: p,
-        similarity: tagPoint + 3.0 * titlePoint,
-      };
-    })
-    .toSorted((a, b) => b.similarity - a.similarity)
-    .map((p) => p.post)
-    .slice(0, 4);
-};
-
-/** 글 파싱 */
-export const contentToDescription = (content: string) => {
-  const parsedContent = content
-    .replace(/(?<=\])\((.*?)\)/g, '')
-    .replace(/(?<!\S)((http)(s?):\/\/|www\.).+?(?=\s)/g, '')
-    .replace(/[#*|[\]]|(-{3,})|(`{3})(\S*)(?=\s)/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 157);
-
-  return `${parsedContent}...`;
 };

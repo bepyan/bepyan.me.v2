@@ -16,7 +16,9 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeExternalLinks from 'rehype-external-links';
 import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
+import { createTwoslasher as createTwoslasherESLint } from 'twoslash-eslint';
 
+import myESLintConfig from './eslint.config';
 import { transformerFragment } from './plugins/transformer-fragment';
 import { SITE } from './src/consts';
 
@@ -36,6 +38,12 @@ export default defineConfig({
         transformers: [
           transformerTwoslash({
             explicitTrigger: true,
+          }),
+          transformerTwoslash({
+            explicitTrigger: /\beslint\b/,
+            twoslasher: createTwoslasherESLint({
+              eslintConfig: myESLintConfig as [],
+            }),
           }),
           transformerNotationHighlight(),
           transformerNotationDiff(),

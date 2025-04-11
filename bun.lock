@@ -78,6 +78,7 @@
         "tailwind-merge": "^2.5.4",
         "tailwindcss": "^4.1.1",
         "tw-animate-css": "^1.2.5",
+        "twoslash-eslint": "^0.3.1",
         "typescript": "^5.6.3",
         "typescript-eslint": "^8.14.0",
       },
@@ -1741,6 +1742,8 @@
     "tw-animate-css": ["tw-animate-css@1.2.5", "", {}, "sha512-ABzjfgVo+fDbhRREGL4KQZUqqdPgvc5zVrLyeW9/6mVqvaDepXc7EvedA+pYmMnIOsUAQMwcWzNvom26J2qYvQ=="],
 
     "twoslash": ["twoslash@0.3.1", "", { "dependencies": { "@typescript/vfs": "^1.6.1", "twoslash-protocol": "0.3.1" }, "peerDependencies": { "typescript": "^5.5.0" } }, "sha512-OGqMTGvqXTcb92YQdwGfEdK0nZJA64Aj/ChLOelbl3TfYch2IoBST0Yx4C0LQ7Lzyqm9RpgcpgDxeXQIz4p2Kg=="],
+
+    "twoslash-eslint": ["twoslash-eslint@0.3.1", "", { "dependencies": { "twoslash-protocol": "0.3.1" }, "peerDependencies": { "eslint": ">=8.50.0" } }, "sha512-ae1xG1+lukPkwIHZxztfSWKBjuS53+5SYKrkcm/Txi3qatThvEfaf0MAkLpsRiVT9plBTRlaGYogAR7fD/MDhw=="],
 
     "twoslash-protocol": ["twoslash-protocol@0.3.1", "", {}, "sha512-BMePTL9OkuNISSyyMclBBhV2s9++DiOCyhhCoV5Kaht6eaWLwVjCCUJHY33eZJPsyKeZYS8Wzz0h+XI01VohVw=="],
 

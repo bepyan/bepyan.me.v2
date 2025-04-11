@@ -1,6 +1,19 @@
 @reference './tailwind.css';
 
 :root {
+  --astro-code-foreground: var(--gray-800);
+  --astro-code-background: var(--gray-100);
+
+  --astro-code-token-constant: #171717;
+  --astro-code-token-string: #6f6f6f;
+  --astro-code-token-comment: #8f8f8f;
+  --astro-code-token-keyword: #858585;
+  --astro-code-token-parameter: #171717;
+  --astro-code-token-function: #171717;
+  --astro-code-token-string-expression: #6f6f6f;
+  --astro-code-token-punctuation: #8f8f8f;
+  --astro-code-token-link: #171717;
+
   --vp-c-white: #ffffff;
   --vp-c-black: #000000;
   --vp-c-gray-1: #dddde3;
@@ -30,6 +43,16 @@
 }
 
 .dark {
+  --astro-code-token-constant: #ededed;
+  --astro-code-token-string: #a0a0a0;
+  --astro-code-token-comment: #707070;
+  --astro-code-token-keyword: #858585;
+  --astro-code-token-parameter: #ededed;
+  --astro-code-token-function: #ededed;
+  --astro-code-token-string-expression: #a0a0a0;
+  --astro-code-token-punctuation: #707070;
+  --astro-code-token-link: #ededed;
+
   --vp-c-gray-1: #515c67;
   --vp-c-gray-2: #414853;
   --vp-c-gray-3: #32363f;
@@ -54,6 +77,26 @@
   --vp-c-red-2: #f14158;
   --vp-c-red-3: #b62a3c;
   --vp-c-red-soft: rgba(244, 63, 94, 0.16);
+}
+
+:root {
+  --vp-code-line-highlight-color: var(--selection);
+  --vp-code-line-diff-add-color: var(--vp-c-green-soft);
+  --vp-code-line-diff-add-symbol-color: var(--vp-c-green-1);
+  --vp-code-line-diff-remove-color: var(--vp-c-red-soft);
+  --vp-code-line-warning-color: var(--vp-c-yellow-soft);
+  --vp-code-line-diff-remove-symbol-color: var(--vp-c-red-1);
+  --vp-code-line-error-color: var(--vp-c-red-soft);
+
+  --twoslash-popup-bg: var(--astro-code-background);
+  --twoslash-popup-color: var(--astro-code-foreground);
+  --twoslash-docs-color: var(--astro-code-foreground);
+  --twoslash-code-size: var(--vp-code-font-size);
+  --twoslash-underline-color: var(--border);
+  --twoslash-border-color: var(--border);
+  --twoslash-cursor-color: var(--astro-code-token-comment);
+  --twoslash-matched-color: var(--astro-code-foreground);
+  --twoslash-unmatched-color: var(--astro-code-token-comment);
 }
 
 .mdx {
@@ -240,53 +283,6 @@
 }
 
 /* code block */
-:root {
-  --astro-code-foreground: var(--gray-800);
-  --astro-code-background: var(--gray-100);
-
-  --astro-code-token-constant: #171717;
-  --astro-code-token-string: #6f6f6f;
-  --astro-code-token-comment: #8f8f8f;
-  --astro-code-token-keyword: #858585;
-  --astro-code-token-parameter: #171717;
-  --astro-code-token-function: #171717;
-  --astro-code-token-string-expression: #6f6f6f;
-  --astro-code-token-punctuation: #8f8f8f;
-  --astro-code-token-link: #171717;
-}
-
-.dark {
-  --astro-code-token-constant: #ededed;
-  --astro-code-token-string: #a0a0a0;
-  --astro-code-token-comment: #707070;
-  --astro-code-token-keyword: #858585;
-  --astro-code-token-parameter: #ededed;
-  --astro-code-token-function: #ededed;
-  --astro-code-token-string-expression: #a0a0a0;
-  --astro-code-token-punctuation: #707070;
-  --astro-code-token-link: #ededed;
-}
-
-:root {
-  --vp-code-line-highlight-color: var(--selection);
-  --vp-code-line-diff-add-color: var(--vp-c-green-soft);
-  --vp-code-line-diff-add-symbol-color: var(--vp-c-green-1);
-  --vp-code-line-diff-remove-color: var(--vp-c-red-soft);
-  --vp-code-line-warning-color: var(--vp-c-yellow-soft);
-  --vp-code-line-diff-remove-symbol-color: var(--vp-c-red-1);
-  --vp-code-line-error-color: var(--vp-c-red-soft);
-
-  --twoslash-popup-bg: var(--astro-code-color-background);
-  --twoslash-popup-color: var(--astro-code-color-text);
-  --twoslash-docs-color: var(--astro-code-color-text);
-  --twoslash-code-size: var(--vp-code-font-size);
-  --twoslash-underline-color: var(--border);
-  --twoslash-border-color: var(--border);
-  --twoslash-cursor-color: var(--astro-code-token-comment);
-  --twoslash-matched-color: var(--astro-code-color-text);
-  --twoslash-unmatched-color: var(--astro-code-token-comment);
-}
-
 .mdx code:not(pre code),
 .astro-code .highlighted-word {
   position: relative;
@@ -314,7 +310,7 @@ pre.astro-code {
   -moz-tab-size: 2;
   -o-tab-size: 2;
   tab-size: 2;
-  background-color: var(--astro-code-color-background);
+  background-color: var(--astro-code-background);
   border-radius: 8px;
 }
 
@@ -441,7 +437,7 @@ pre.astro-code code {
   width: 28px;
   height: 28px;
   cursor: pointer;
-  background-color: var(--astro-code-color-background);
+  background-color: var(--astro-code-background);
   background-image: var(--copy-icon);
   background-repeat: no-repeat;
   background-position: 50%;

@@ -1,0 +1,140 @@
+---
+title: '(TS) 전역 변수 타입 선언하기'
+description: 'TypeScript에서 전역 변수의 타입을 선언하는 방법을 알아봅니다. declare global 사용법부터 window, global, globalThis 객체 타입 확장까지 실전에서 자주 마주치는 전역 변수 타입 선언 패턴을 다룹니다.'
+date: 2025-01-06 13:20:21
+draft: false
+tags:
+  - 전역 변수
+  - TypeScript
+  - 타입스크립트
+---
+
+## TL;DR
+
+```ts title="global.d.ts"
+/* eslint-disable no-var */
+
+export {};
+
+declare global {
+  var myGlobalVar: string;
+
+  interface Window {
+    myCustomVar: string;
+  }
+}
+```
+
+타입스크립트로 개발하다 보면 전역 변수의 타입을 선언해야 할 때가 있습니다.
+기본 선언 방법부터 간단한 활용 예시를 살펴봅시다.
+
+## 타입 선언 기본 방법
+
+타입스크립트에서 전역 변수의 타입은 [`declare`](https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html#global-variables)를 통해서 선언할 수 있습니다.
+VSCode 같은 IDE는 이를 통해서 자동 완성을 지원해줍니다.
+
+```ts twoslash
+declare var myGlobalVar: string;
+
+// @noErrors
+myG;
+// ^|
+//
+```
+
+여기서 만약 해당 타입을 여러 파일에 적용시키려면, 두 가지 디테일을 확인하면 좋을 것 같습니다.
+
+```ts title="global.d.ts" twoslash
+// 이 파일을 모듈 스크립트로 만들어 타입 선언이 다른 파일에서 동작하도록 합니다.
+export {};
+
+declare global {
+  var myGlobalVar: string;
+}
+
+// @noErrors
+myG;
+// ^|
+//
+```
+
+첫째는 `.d.ts` 확장자 파일에서 타입을 선언하는 것입니다.
+해당 파일은 오로지 타입 정의만을 위한 것임을 명시하여, 관심사를 분리할 수 있어 코드를 보다 더 쉽게 관리할 수 있게 됩니다.
+
+둘째는 파일 최상단에 `export {};`를 추가하는 것입니다.
+이는 타입스크립트 파일에 `import/export` 구문이 있어야 타입스크립트 컴파일러는 해당 파일을 모듈 스크립트(type="module")로 인식하게 되기 때문입니다. 만약 이 구문이 없다면 컴파일러는 이 파일을 일반 스크립트(type="text/javascript")로 간주하게 되어, 선언된 타입을 다른 파일에서 사용할 수 없게 됩니다.
+
+## ESLint의 no-var 규칙 대응
+
+ESLint의 [no-var](https://eslint.org/docs/latest/rules/no-var) 규칙으로 인해 `Unexpected var` 오류가 표기될 수 있습니다.
+
+```ts eslint
+export {};
+
+declare global {
+  var myGlobalVar: string;
+}
+```
+
+`var` 대신 `const`를 사용하면 ESLint 오류가 해소되지만, IDE에서 전역 객체에서 해당 변수를 알지 못하게 되어 타입 추론에 오류가 발생하게 됩니다.
+
+이는 `var`의 경우 전역 스코프에서 선언하면 자동으로 전역 객체의 속성으로 할당되는 반면에, `let`과 `const`는 [블록 스코프](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/block)를 가지기에 전역 스코프에서 선언해도 전역 객체의 속성으로 추가되지 않습니다.
+
+자바스크립트 언어 특성상 어쩔 수 없이 `var`를 사용해야 하기에, 해당 파일에선 `no-var` 규칙을 무시하는 것을 추천합니다.
+
+```ts eslint {1}
+/* eslint-disable no-var */
+
+export {};
+
+declare global {
+  var myGlobalVar: string;
+}
+```
+
+## window
+
+브라우저에서의 전역 객체인 `window`에 타입을 확장하려면 `declare global` 안에서 `Window` 인터페이스를 명시하면 됩니다.
+
+```ts title="global.d.ts" twoslash {4-8}
+export {};
+
+declare global {
+  interface Window {
+    /**
+     * 커스텀 변수 설명
+     */
+    myCustomVar: string;
+  }
+}
+
+/// ---cut---
+console.log(window.myCustomVar);
+```
+
+## global, globalThis
+
+`global`는 Node.js에서의 전역 객체입니다.
+`globalThis`는 ESM에서의 전역 객체에 대한 참조입니다. ES2020에서 도입된 표준으로, 브라우저와 Node.js 등 모든 자바스크립트 런타임에서 동일하게 동작합니다.
+
+`declare global`로 타입을 선언하면 똑같이 적용이 됩니다.
+
+```ts title="global.d.ts" twoslash
+export {};
+
+declare global {
+  /**
+   * 커스텀 변수 설명
+   */
+  var myGlobalThisVar: string;
+}
+
+/// ---cut---
+console.log(myGlobalThisVar);
+console.log(global.myGlobalThisVar);
+console.log(globalThis.myGlobalThisVar);
+```
+
+## 맺으면서
+
+전역 변수 타입 선언은 프로젝트의 유지보수성과 타입 안정성을 높이는 중요한 요소입니다. 사용법을 잘 확인하셔서 모두 Type-Safe한 코드를 작성했으면 좋겠습니다.

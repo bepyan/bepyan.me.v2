@@ -2,7 +2,7 @@
 title: '조금 다른 타입스크립트 .d.ts'
 description: ''
 date: 2025-02-20 12:55:11
-draft: true
+draft: false
 tags:
   - typescript
   - declaration files
@@ -10,7 +10,7 @@ tags:
   - d.ts
 ---
 
-`TypeScript` 환경에서 작업하다 보면 간혹 `.d.ts` 파일을 마주할 수 있는데요.
+TypeScript 환경에서 작업하다 보면 간혹 `.d.ts` 파일을 마주할 수 있는데요.
 보통 얼렁뚱땅 넘어가게 되는데 이 친구는 뭐가 다른지 재대로 알아가봅시다.
 
 ## 정의
@@ -44,17 +44,17 @@ JavaScript 런타임에 포함되지 않고 오직 컴파일 시점에서 정적
 
 이로서 프레임워크 런타임에서 제공해주는 기능, 변수의 타입을 IDE에서 인식할 수 있게 됩니다.
 
-또한, JavaScript로 작성된 외부 라이브러리에 타입 정보를 보완하기 위해 직접 `.d.ts` 파일을 작성하거나, [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)와 같은 저장소에서 제공하는 타입 정의를 사용할 수 있습니다. 예를 들어, jQuery의 타입 정보를 유용하게 사용할 수 있을 것 같네요.
+또한, JavaScript로 작성된 외부 라이브러리에 타입 정보를 보완하기 위해 직접 `.d.ts` 파일을 작성하거나, [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)와 같은 저장소에서 제공하는 타입 정의를 사용할 수 있습니다. 예를 들어, jQuery의 타입 정보를 유용하게 사용할 수 있습니다.
 
 ## 실제 활용
 
-그럼 저희는 이 `d.ts` 파일을 어떻게 활용해 볼 수 있을까요?
+그럼 저희는 이 `.d.ts` 파일을 어떻게 활용해 볼 수 있을까요?
 바로, **프레임워크 타입을 커스텀**을 할 수 있습니다.
 
 Vite의 경우, Vite가 주입해주는 환경 변수 타입을 커스텀할 수 있습니다.
 https://ko.vite.dev/guide/env-and-mode#intellisense-for-typescript
 
-```ts
+```ts title="vite-env.d.ts"
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
@@ -69,7 +69,7 @@ interface ImportMeta {
 Astro의 경우, router context에 커스텀 변수를 주입할 수 있게 됩니다.
 https://flaviocopes.com/using-astro-locals/
 
-```ts
+```ts title="env.d.ts"
 /// <reference types="astro/client" />
 
 declare global {
@@ -81,7 +81,7 @@ declare global {
 }
 ```
 
-```ts
+```ts {5}
 import { defineMiddleware } from 'astro:middleware';
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -94,10 +94,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 ## 번외: no-namespace
 
-`typescript-eslint`의 recommended rules로 no-namespace가 있습니다.
-`declare module`은 항상 `d.ts` 파일에서 사용하도록 하는 것입니다.
+`typescript-eslint`의 recommended rules로 [no-namespace](https://typescript-eslint.io/rules/no-namespace/)가 있습니다.
+`declare module`은 항상 `.d.ts` 파일에서 사용하도록 하는 것입니다.
 
-일반 .ts 파일에서는 ES 모듈 방식의 import/export를 사용하여 코드를 구성하는 것이 권장됩니다.
-반면 .d.ts 파일에서는 타입 정보만을 제공하기 위해 declare 키워드를 활용한 네임스페이스 또는 모듈 선언이 허용되며, 이는 런타임 코드로 변환되지 않아 안전하게 전역 타입이나 외부 모듈의 타입을 확장하는 용도로 사용됩니다.
+일반 `.ts` 파일에서는 ES 모듈 방식의 import/export를 사용하여 코드를 구성하는 것이 권장됩니다.
+반면 `.d.ts` 파일에서는 타입 정보만을 제공하기 위해 declare 키워드를 활용한 네임스페이스 또는 모듈 선언이 허용되며, 이는 런타임 코드로 변환되지 않아 안전하게 전역 타입이나 외부 모듈의 타입을 확장하는 용도로 사용됩니다.
 
 ## 맺으면서
+
+`.d.ts` 파일을 잘 활용해야 더욱 안전하고 생산적인 개발 환경을 구축할 수 있습니다. 특히 프레임워크나 라이브러리를 사용할 때 커스텀 타입을 추가하거나 기존 타입을 확장하는 데 유용하니, 적극적으로 활용해보면 좋을 것 같습니다.

@@ -4,12 +4,13 @@ description: 'TypeScript에서 전역 변수의 타입을 선언하는 방법을
 date: 2025-01-06 13:20:21
 draft: false
 tags:
+  - typescript
   - 전역 변수
-  - TypeScript
-  - 타입스크립트
 ---
 
 ## TL;DR
+
+순수 타입스크립트, Next.js 환경에서의 사용법:
 
 ```ts title="global.d.ts"
 /* eslint-disable no-var */
@@ -25,13 +26,27 @@ declare global {
 }
 ```
 
+Vite 기반 프레임워크(Nuxt, SvelteKit, Astro)에서의 사용법:
+
+```ts title="vite-env.d.ts"
+/// <reference types="vite/client" />
+
+const myGlobalVar: string;
+
+interface Window {
+  myCustomVar: string;
+}
+```
+
+## 들어가면서
+
 타입스크립트로 개발하다 보면 전역 변수의 타입을 선언해야 할 때가 있습니다.
 기본 선언 방법부터 간단한 활용 예시를 살펴봅시다.
 
-## 타입 선언 기본 방법
+## 타입 선언 방법
 
 타입스크립트에서 전역 변수의 타입은 [`declare`](https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html#global-variables)를 통해서 선언할 수 있습니다.
-VSCode 같은 IDE는 이를 통해서 자동 완성을 지원해줍니다.
+참고로 VSCode 같은 IDE에서 이렇게 선언된 타입을 참고하여 코드 자동 완성을 지원해줍니다.
 
 ```ts twoslash
 declare var myGlobalVar: string;
@@ -42,27 +57,49 @@ myG;
 //
 ```
 
-여기서 만약 해당 타입을 여러 파일에 적용시키려면, 두 가지 디테일을 확인하면 좋을 것 같습니다.
+만약 타입을 여러 파일에 적용시키려면, 네 가지 디테일을 확인하면 좋을 것 같습니다.
 
-```ts title="global.d.ts" twoslash
-// 이 파일을 모듈 스크립트로 만들어 타입 선언이 다른 파일에서 동작하도록 합니다.
+첫째는 `declare global {}`안에 타입을 선언하는 것입니다.
+
+```ts
+declare global {
+  var myGlobalVar: string;
+}
+```
+
+둘째는 `.d.ts` 확장자 파일에서 타입을 선언하는 것입니다.
+해당 파일은 오로지 타입 정의만을 위한 것임을 명시하여, 관심사를 분리할 수 있어 코드를 보다 더 쉽게 관리할 수 있게 됩니다. 자세한 내용은 [조금 다른 타입스크립트 .d.ts](./d-ts) 포스트를 참고바랍니다.
+
+```ts title="global.d.ts"
+declare global {
+  var myGlobalVar: string;
+}
+```
+
+셋째는 파일 최상단에 `export {};`를 추가하는 것입니다.
+이는 타입스크립트 파일에 `import/export` 구문이 있어야 타입스크립트 컴파일러는 해당 파일을 모듈 스크립트(type="module")로 인식하게 되기 때문입니다. 만약 이 구문이 없다면 컴파일러는 이 파일을 일반 스크립트(type="text/javascript")로 간주하게 되어, 선언된 타입을 다른 파일에서 사용할 수 없게 됩니다.
+
+```ts title="global.d.ts" {1}
 export {};
 
 declare global {
   var myGlobalVar: string;
 }
-
-// @noErrors
-myG;
-// ^|
-//
 ```
 
-첫째는 `.d.ts` 확장자 파일에서 타입을 선언하는 것입니다.
-해당 파일은 오로지 타입 정의만을 위한 것임을 명시하여, 관심사를 분리할 수 있어 코드를 보다 더 쉽게 관리할 수 있게 됩니다.
+넷째는 `tsconfig.json`에서 해당 파일이 `include`되어야 동작한다는 것입니다.
+타입스크립트 컴파일러가 해당 파일을 참조해야 의도대로 타입이 추론됩니다. `.d.ts` 파일도 `.ts`로 끝나기에 보통 `**/*.ts` 같은 패턴으로 포함시키면 됩니다. 만약 특정 경로에 타입 정의 파일이 있다면 해당 경로를 명시적으로 추가해주는 것이 좋습니다.
 
-둘째는 파일 최상단에 `export {};`를 추가하는 것입니다.
-이는 타입스크립트 파일에 `import/export` 구문이 있어야 타입스크립트 컴파일러는 해당 파일을 모듈 스크립트(type="module")로 인식하게 되기 때문입니다. 만약 이 구문이 없다면 컴파일러는 이 파일을 일반 스크립트(type="text/javascript")로 간주하게 되어, 선언된 타입을 다른 파일에서 사용할 수 없게 됩니다.
+```jsonc title="tsconfig.json" {6}
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    //...truncated...
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"],
+}
+```
 
 ## ESLint의 no-var 규칙 대응
 
@@ -134,6 +171,24 @@ console.log(myGlobalThisVar);
 console.log(global.myGlobalThisVar);
 console.log(globalThis.myGlobalThisVar);
 ```
+
+## 현대 프레임워크
+
+Vite의 경우 번들러 단에서 전역 객체 타입에 대한 지원을 제공합니다. `declare global {}` 없이 `vite-env.d.ts`에서 바로 타입을 명시하면 됩니다.
+https://ko.vite.dev/guide/env-and-mode#intellisense-for-typescript
+
+```ts title="vite-env.d.ts"
+/// <reference types="vite/client" />
+
+const myGlobalVar: string;
+
+interface Window {
+  myCustomVar: string;
+}
+```
+
+반면 Next.js는 Webpack 기반이고, 프레임워크 단에서 별도 기능을 제공해주지 않기에 기존처럼 `declare global {}` 안에 타입을 명시해야 합니다.
+https://nextjs.org/docs/app/api-reference/config/typescript#custom-type-declarations
 
 ## 맺으면서
 

@@ -1,12 +1,6 @@
 ---
 import BaseHeader from '~/components/base-header.astro';
-import {
-  EmailIcon,
-  GithubIcon,
-  MdiLinkedin,
-  NotionIcon,
-  TwitterXIcon,
-} from '~/components/ui/icons';
+import BaseSns from '~/components/base-sns.astro';
 import { NAV } from '~/consts';
 import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
@@ -24,68 +18,23 @@ const { p, t } = useI18n(url);
       {/* 현재 */}
       <p set:html={t('index.currentWork')} />
       {/* SNS */}
-      <div data-animate class="mt-1 flex gap-0.5">
-        <a
-          style="--lv-wait: 1;"
-          class="rounded-sm p-1 transition-colors hover:bg-selection hover:text-body"
-          href="mailto:bepyan@naver.com"
-          aria-label="email"
-        >
-          <EmailIcon />
-        </a>
-        <a
-          style="--lv-wait: 1;"
-          class="rounded-sm p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://github.com/bepyan"
-          target="_blank"
-          aria-label="github"
-        >
-          <GithubIcon />
-        </a>
-        <a
-          style="--lv-wait: 1;"
-          class="rounded-sm p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://twitter.com/__pyungan"
-          target="_blank"
-          aria-label="twitter"
-        >
-          <TwitterXIcon />
-        </a>
-        <a
-          style="--lv-wait: 1;"
-          class="rounded-sm p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://www.linkedin.com/in/pyungan-kim-4aa869291/"
-          aria-label="linkedin"
-        >
-          <MdiLinkedin />
-        </a>
-        <a
-          style="--lv-wait: 1;"
-          class="flex items-center gap-1 rounded-sm p-1 transition-colors hover:bg-selection hover:text-body"
-          href="https://bepyan.notion.site/Frontend-Developer-69fd245161734c1793e8df78dffe705c?pvs=4"
-          target="_blank"
-          aria-label="resume"
-        >
-          <NotionIcon />
-          <span class="text-xs leading-tight">resume</span>
-        </a>
-      </div>
+      <BaseSns data-animate class="mt-1" />
     </div>
-    {/* 나의 공간 */}
-    <div class="my-14 flex gap-7">
-      <div>{t('nav.title')}</div>
-      <div data-animate class="flex flex-col gap-1">
-        {
-          NAV.map((item) => (
-            <div style="--lv-wait: 2;">
-              <a class="link font-bold" href={p(`/${item}`)}>
-                {t(`nav.${item}`)}
-              </a>
-              <span class="ml-3 text-sm">{t(`nav.${item}.desc`)}</span>
-            </div>
-          ))
-        }
-      </div>
+  </div>
+  {/* 나의 공간 */}
+  <div class="my-14 flex gap-7">
+    <div>{t('nav.title')}</div>
+    <div data-animate class="flex flex-col gap-1">
+      {
+        NAV.map((item) => (
+          <div style="--lv-wait: 2;">
+            <a class="link font-bold" href={p(`/${item}`)}>
+              {t(`nav.${item}`)}
+            </a>
+            <span class="ml-3 text-sm">{t(`nav.${item}.desc`)}</span>
+          </div>
+        ))
+      }
     </div>
   </div>
 </MainLayout>

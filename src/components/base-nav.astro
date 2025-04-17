@@ -25,7 +25,7 @@ const { p, t } = useI18n(url);
       {t('index.name')}
     </a>
   </div>
-  <DotIcon className="h-2 w-2 text-second" />
+  <DotIcon className="text-second h-2 w-2" />
   <div class="flex items-center gap-2">
     {
       NAV.map((navItem) => (
@@ -33,7 +33,7 @@ const { p, t } = useI18n(url);
           class={cn(
             'external-link',
             (navItem === currentNavItem || navItem === props.highlightNavItem) &&
-              'font-bold no-underline before:bg-selection before:ring-border hover:before:ring-1',
+              'before:bg-selection before:ring-border font-bold no-underline hover:before:ring-1',
           )}
           href={p(`/${navItem}`)}
         >

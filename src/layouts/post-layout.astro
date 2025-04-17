@@ -9,6 +9,7 @@ import BaseHeader from '~/components/base-header.astro';
 import BaseLeftAside from '~/components/base-left-aside.astro';
 import BaseNav from '~/components/base-nav.astro';
 import BasePaginator from '~/components/base-paginator.astro';
+import BaseSns from '~/components/base-sns.astro';
 import CopyCodeScript from '~/components/copy-code-script.astro';
 import CopyRight from '~/components/copy-right.astro';
 import { GiscusSection } from '~/components/giscus';
@@ -93,9 +94,12 @@ const i18nJsonLd = noI18n
   </article>
   <footer>
     <CopyRight class="mt-page text-right text-xs" />
-    <hr class="mt-4 mb-7" />
-    <BasePaginator {prevPost} {nextPost} />
-    <PostRelated {relatedPostList} />
+    <div class="my-7 rounded-lg border border-dashed px-4 py-7 md:px-7">
+      <BaseNav highlightNavItem={postType} />
+      <BaseSns class="mt-1.5 -ml-1" />
+    </div>
+    <BasePaginator class="my-7" {prevPost} {nextPost} />
+    <PostRelated class="mt-7 mb-14" {relatedPostList} />
     <GiscusSection className="my-half-page mx-auto" {lang} client:load />
   </footer>
   <MediumZoomScript />

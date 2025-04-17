@@ -1,0 +1,63 @@
+---
+import {
+  EmailIcon,
+  GithubIcon,
+  MdiLinkedin,
+  NotionIcon,
+  TwitterXIcon,
+} from '~/components/ui/icons';
+import { cn } from '~/libs/utils';
+
+type Props = {
+  class?: string;
+};
+
+const { class: className, ...props } = Astro.props;
+---
+
+<div {...props} class={cn('flex gap-0.5', className)}>
+  <a
+    style="--lv-wait: 1;"
+    class="hover:bg-selection hover:text-body rounded-sm p-1 transition-colors"
+    href="mailto:bepyan@naver.com"
+    aria-label="email"
+  >
+    <EmailIcon />
+  </a>
+  <a
+    style="--lv-wait: 1;"
+    class="hover:bg-selection hover:text-body rounded-sm p-1 transition-colors"
+    href="https://github.com/bepyan"
+    target="_blank"
+    aria-label="github"
+  >
+    <GithubIcon />
+  </a>
+  <a
+    style="--lv-wait: 1;"
+    class="hover:bg-selection hover:text-body rounded-sm p-1 transition-colors"
+    href="https://twitter.com/__pyungan"
+    target="_blank"
+    aria-label="twitter"
+  >
+    <TwitterXIcon />
+  </a>
+  <a
+    style="--lv-wait: 1;"
+    class="hover:bg-selection hover:text-body rounded-sm p-1 transition-colors"
+    href="https://www.linkedin.com/in/pyungan-kim-4aa869291/"
+    aria-label="linkedin"
+  >
+    <MdiLinkedin />
+  </a>
+  <a
+    style="--lv-wait: 1;"
+    class="hover:bg-selection hover:text-body flex items-center gap-1 rounded-sm p-1 transition-colors"
+    href="https://bepyan.notion.site/Frontend-Developer-69fd245161734c1793e8df78dffe705c?pvs=4"
+    target="_blank"
+    aria-label="resume"
+  >
+    <NotionIcon />
+    <span class="text-xs leading-tight">resume</span>
+  </a>
+</div>

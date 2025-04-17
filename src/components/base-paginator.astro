@@ -2,8 +2,10 @@
 import type { CollectionEntry } from 'astro:content';
 
 import { resolveSlug } from '~/libs/mdx';
+import { cn } from '~/libs/utils';
 
 interface Props {
+  class?: string;
   prevPost?: CollectionEntry<'post'>;
   nextPost?: CollectionEntry<'post'>;
 }
@@ -11,17 +13,12 @@ interface Props {
 const { prevPost, nextPost } = Astro.props;
 ---
 
-<section class="flex items-stretch justify-between gap-1 text-sm">
+<section class={cn('flex items-stretch justify-between gap-1 text-sm', Astro.props.class)}>
   {
     prevPost && (
-      <a
-        class="group flex flex-col gap-1"
-        href={`/post/${resolveSlug(prevPost.slug)}`}
-      >
-        <div class="text-disabled transition-colors group-hover:text-second">
-          Previous
-        </div>
-        <span class="-mx-1 rounded-sm px-1 text-second transition-colors group-hover:bg-selection group-hover:text-heading">
+      <a class="group flex flex-col gap-1" href={`/post/${resolveSlug(prevPost.slug)}`}>
+        <div class="text-disabled group-hover:text-second transition-colors">Previous</div>
+        <span class="text-second group-hover:bg-selection group-hover:text-heading -mx-1 rounded-sm px-1 transition-colors">
           {prevPost.data.title}
         </span>
       </a>
@@ -30,13 +27,11 @@ const { prevPost, nextPost } = Astro.props;
   {
     nextPost && (
       <a
-        class="group ml-auto flex flex-col gap-1 text-right text-second hover:text-body"
+        class="group text-second hover:text-body ml-auto flex flex-col gap-1 text-right"
         href={`/post/${resolveSlug(nextPost.slug)}`}
       >
-        <div class="text-disabled transition-colors group-hover:text-second">
-          Next
-        </div>
-        <span class="-mx-1 rounded-sm px-1 text-second transition-colors group-hover:bg-selection group-hover:text-heading">
+        <div class="text-disabled group-hover:text-second transition-colors">Next</div>
+        <span class="text-second group-hover:bg-selection group-hover:text-heading -mx-1 rounded-sm px-1 transition-colors">
           {nextPost.data.title}
         </span>
       </a>

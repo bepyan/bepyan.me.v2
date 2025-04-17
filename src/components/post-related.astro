@@ -3,8 +3,10 @@ import type { CollectionEntry } from 'astro:content';
 
 import { useI18n } from '~/libs/i18n';
 import { resolveSlug } from '~/libs/mdx';
+import { cn } from '~/libs/utils';
 
 interface Props {
+  class?: string;
   relatedPostList: CollectionEntry<'post'>[];
 }
 
@@ -14,17 +16,14 @@ const { relatedPostList } = Astro.props;
 
 {
   relatedPostList.length && (
-    <div class="my-14 text-sm text-disabled">
+    <div class={cn('text-disabled text-sm', Astro.props.class)}>
       <p class="text-sm">Related Posts</p>
       <ul class="mt-1 space-y-1">
         {relatedPostList.map((post) => {
           return (
             <li>
               <span class="font-mono">&gt; </span>
-              <a
-                class="link text-second"
-                href={p(`/post/${resolveSlug(post.slug)}`)}
-              >
+              <a class="link text-second" href={p(`/post/${resolveSlug(post.slug)}`)}>
                 {post.data.title}
               </a>
             </li>

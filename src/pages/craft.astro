@@ -1,10 +1,14 @@
 ---
+import type { AstroInstance } from 'astro';
+
 import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
 import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 
-const crafts = await Astro.glob('./craft/**/index.astro');
+const crafts = Object.values<AstroInstance>(
+  await import.meta.glob('./craft/**/index.astro', { eager: true }),
+);
 
 const { t } = useI18n(Astro.url);
 

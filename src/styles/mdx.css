@@ -291,7 +291,7 @@
   margin: -1px -1px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--astro-code-color-text);
+  color: var(--astro-code-foreground);
   background-color: var(--selection);
   border: 1px solid var(--selection);
   border-radius: 4px;
@@ -306,7 +306,7 @@ pre.astro-code {
   overflow-x: auto;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--astro-code-color-text);
+  color: var(--astro-code-foreground);
   -moz-tab-size: 2;
   -o-tab-size: 2;
   tab-size: 2;

@@ -1,17 +1,22 @@
-import pluginJs from '@eslint/js';
-import eslintPluginAstro from 'eslint-plugin-astro';
+// ts-check
+import { fileURLToPath } from 'node:url';
+
+import { includeIgnoreFile } from '@eslint/compat';
+import js from '@eslint/js';
+import astro from 'eslint-plugin-astro';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
-import pluginTs from 'typescript-eslint';
+import ts from 'typescript-eslint';
 
-export default [
-  { files: ['**/*.{js,mjs,cjs,ts,astro}'] },
-  { ignores: ['.astro/**/*', 'dist/**/*', '**/static/'] },
+const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url));
+
+export default ts.config([
+  includeIgnoreFile(gitignorePath),
   { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
-  ...pluginTs.configs.recommended,
-  ...eslintPluginAstro.configs.recommended,
+  js.configs.recommended,
+  ts.configs.recommended,
+  ...astro.configs.recommended,
   {
     rules: {
       'no-undef': 'off',
@@ -49,4 +54,4 @@ export default [
       ],
     },
   },
-];
+]);

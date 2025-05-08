@@ -30,7 +30,10 @@ const lang = props.lang ?? getLangFromUrl(Astro.url);
   <body>
     <div class="blur-layer" aria-hidden="true"></div>
     <div class="container">
-      <main class={Astro.props.class} {...pagefind && { 'data-pagefind-body': '' }}>
+      <main
+        class={Astro.props.class}
+        {...pagefind && { 'data-pagefind-body': '' }}
+      >
         <slot />
       </main>
     </div>

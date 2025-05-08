@@ -54,9 +54,9 @@ export function DynamicMail() {
           setFormState('idle');
         }}
         key="button"
-        className="flex w-[100px] items-center justify-center gap-1 rounded-lg border border-border bg-page px-3 py-2 focus:outline-hidden"
+        className="border-border bg-page flex w-[100px] items-center justify-center gap-1 rounded-lg border px-3 py-2 focus:outline-hidden"
       >
-        <motion.span layoutId="title" className="font-bold text-heading">
+        <motion.span layoutId="title" className="text-heading font-bold">
           초대장
         </motion.span>
       </motion.button>
@@ -69,7 +69,7 @@ export function DynamicMail() {
           >
             <motion.span
               className={cn(
-                'absolute left-5 top-4 z-10 text-lg font-bold text-heading',
+                'text-heading absolute top-4 left-5 z-10 text-lg font-bold',
                 formState === 'success' && 'opacity-0!',
               )}
               layoutId="title"
@@ -85,7 +85,7 @@ export function DynamicMail() {
                   transition={{ type: 'spring', duration: 0.4, bounce: 0 }}
                   className="flex h-full flex-col items-center justify-center"
                 >
-                  <p className="font-bold text-heading">확인 되었습니다.</p>
+                  <p className="text-heading font-bold">확인 되었습니다.</p>
                   <p>초대에 응해주셔서 감사합니다.</p>
                 </motion.div>
               ) : (
@@ -93,21 +93,21 @@ export function DynamicMail() {
                   exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
                   transition={{ type: 'spring', duration: 0.4, bounce: 0 }}
                   key="form"
-                  className="relative h-full overflow-hidden rounded-lg bg-page pt-10"
+                  className="bg-page relative h-full overflow-hidden rounded-lg pt-10"
                 >
-                  <DotLine className="absolute left-0 right-0 top-10 stroke-border" />
+                  <DotLine className="stroke-border absolute top-10 right-0 left-0" />
                   <div className="p-3">
                     <div>FE 네트워킹 데이에 초대합니다.</div>
                     <div>24.06.03 17시 - 세미나홀</div>
                     <div className="mt-3 flex items-center justify-between">
                       <button
-                        className="transition-colors hover:text-heading focus:text-heading focus:outline-hidden"
+                        className="hover:text-heading focus:text-heading transition-colors focus:outline-hidden"
                         onClick={() => setOpen(false)}
                       >
                         취소
                       </button>
                       <button
-                        className="h-[30px] w-[80px] overflow-hidden transition-colors hover:text-heading focus:text-heading focus:outline-hidden"
+                        className="hover:text-heading focus:text-heading h-[30px] w-[80px] overflow-hidden transition-colors focus:outline-hidden"
                         onClick={submit}
                         disabled={formState === 'loading'}
                       >

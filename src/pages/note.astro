@@ -30,7 +30,11 @@ const description = t('nav.note.desc');
   <BaseHeader {title} {description}>
     <BaseNav class="mt-1.5" />
   </BaseHeader>
-  <div data-animate data-animate-speed="slow" class="group mt-14 space-y-7 border-l pl-4">
+  <div
+    data-animate
+    data-animate-speed="slow"
+    class="group mt-14 space-y-7 border-l pl-4"
+  >
     {
       yearList.map(([year, postList], index) => {
         return (
@@ -38,7 +42,11 @@ const description = t('nav.note.desc');
             <div class="group-hover/year:bg-selection group-hover/year:text-heading absolute -left-20 -mx-1 rounded-md px-1 transition select-none group-hover:opacity-40 group-hover/year:opacity-100! max-sm:relative max-sm:left-0 max-sm:mb-2">
               <h3 class="font-serif">{year}</h3>
             </div>
-            <ul data-animate data-animate-speed="fast" class="flex flex-col items-start gap-2">
+            <ul
+              data-animate
+              data-animate-speed="fast"
+              class="flex flex-col items-start gap-2"
+            >
               {postList.map((post) => {
                 return (
                   <li style={`--start: ${index * 75}ms;`}>

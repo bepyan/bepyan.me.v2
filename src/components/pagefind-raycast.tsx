@@ -52,7 +52,9 @@ export function PagefindRaycast() {
       <hr cmdk-raycast-loader="" />
       <Command.List>
         {resultList.length === 0 && (
-          <Command.Empty className="animate-in fade-in">No results found.</Command.Empty>
+          <Command.Empty className="animate-in fade-in">
+            No results found.
+          </Command.Empty>
         )}
         {resultList.map((result) => {
           return (

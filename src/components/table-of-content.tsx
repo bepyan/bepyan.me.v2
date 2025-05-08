@@ -21,7 +21,7 @@ export default function TableOfContent({
           <a
             className={cn(
               'link text-second',
-              currentSectionSlug === section.slug && 'font-medium text-body',
+              currentSectionSlug === section.slug && 'text-body font-medium',
             )}
             href={`#${section.slug}`}
           >
@@ -43,7 +43,9 @@ const useTocScroll = (tableOfContents: TOCSection[]) => {
     let pageTop = 0;
 
     const onResize = () => {
-      headings = Array.from(document.querySelectorAll<HTMLElement>('.mdx h2')).map((element) => ({
+      headings = Array.from(
+        document.querySelectorAll<HTMLElement>('.mdx h2'),
+      ).map((element) => ({
         id: element.id,
         top: element.offsetTop,
       }));

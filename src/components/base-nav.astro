@@ -32,7 +32,8 @@ const { p, t } = useI18n(url);
         <a
           class={cn(
             'external-link',
-            (navItem === currentNavItem || navItem === props.highlightNavItem) &&
+            (navItem === currentNavItem ||
+              navItem === props.highlightNavItem) &&
               'before:bg-selection before:ring-border font-bold no-underline hover:before:ring-1',
           )}
           href={p(`/${navItem}`)}

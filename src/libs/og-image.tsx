@@ -7,8 +7,12 @@ async function getFontData(url: string) {
 }
 
 const [AritaBuri, AritaBuriBold] = await Promise.all([
-  getFontData('https://cdn.jsdelivr.net/gh/taevel02/typeface-arita/Arita-buriM.woff'),
-  getFontData('https://cdn.jsdelivr.net/gh/taevel02/typeface-arita/Arita-buriB.woff'),
+  getFontData(
+    'https://cdn.jsdelivr.net/gh/taevel02/typeface-arita/Arita-buriM.woff',
+  ),
+  getFontData(
+    'https://cdn.jsdelivr.net/gh/taevel02/typeface-arita/Arita-buriB.woff',
+  ),
 ]);
 
 const satoriOption: SatoriOptions = {
@@ -59,7 +63,11 @@ export async function generateOgImage({
       }}
     >
       <div style={{ fontSize: '64px', fontWeight: 700 }}>{title}</div>
-      {desc && <div style={{ marginTop: '20px', fontSize: '32px', color: '#464646' }}>{desc}</div>}
+      {desc && (
+        <div style={{ marginTop: '20px', fontSize: '32px', color: '#464646' }}>
+          {desc}
+        </div>
+      )}
       {!noFooter && (
         <div
           style={{

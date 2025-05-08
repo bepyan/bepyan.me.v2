@@ -43,7 +43,7 @@ const yearList = Object.entries(
       yearList.map(([year, postList], index) => {
         return (
           <div class="group/year relative z-0 border-t last-of-type:border-b">
-            <h3 class="absolute top-[26px] -z-10 -mx-1.5 -my-0.5 rounded-md px-1.5 py-0.5 text-sm text-second transition group-hover/year:bg-selection group-hover/year:text-heading">
+            <h3 class="text-second group-hover/year:bg-selection group-hover/year:text-heading absolute top-[26px] -z-10 -mx-1.5 -my-0.5 rounded-md px-1.5 py-0.5 text-sm transition">
               {year}
             </h3>
             <ul data-animate class="py-4">
@@ -52,16 +52,16 @@ const yearList = Object.entries(
                   <li style={`--lv-wait: ${index}`}>
                     <a
                       href={p(post.href)}
-                      class="group/item flex transition-opacity hover:opacity-100! group-hover:opacity-40"
+                      class="group/item flex transition-opacity group-hover:opacity-40 hover:opacity-100!"
                       target={post.isExternal ? '_blank' : '_self'}
                     >
                       <div class="ml-[15%] flex flex-1 items-start border-t py-2 group-first-of-type/item:border-t-0">
-                        <div class="flex items-center gap-0.5 text-heading">
-                          <span class="mx-1 rounded-md px-1 transition group-hover/item:bg-selection">
+                        <div class="text-heading flex items-center gap-0.5">
+                          <span class="group-hover/item:bg-selection mx-1 rounded-md px-1 transition">
                             {post.title}
                           </span>
                         </div>
-                        <div class="ml-auto mt-1 flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-sm text-second transition group-hover/item:bg-selection group-hover/item:text-heading">
+                        <div class="text-second group-hover/item:bg-selection group-hover/item:text-heading mt-1 ml-auto flex shrink-0 items-center gap-1 rounded-md px-1 py-0.5 text-sm transition">
                           {post.isExternal && (
                             <BxLinkExternal className="text-disabled" />
                           )}

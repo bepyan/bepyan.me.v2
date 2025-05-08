@@ -54,7 +54,9 @@ Object.entries(props).reduce((acc, [key, value]) => {
 객체를 새로운 Object, Map 등 객체로 변환할 때 코드를 간결하게 작성할 수 있습니다. [키, 값] 배열을 그대로 [Object.fromEntries](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries), [new Map](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Map/Map)의 인자로 건네주면 새로운 객체가 생성됩니다.
 
 ```js /Object.fromEntries/ /new Map/
-const filteredEntries = Object.entries(props).filter(([key]) => key.startsWith('data-test-'));
+const filteredEntries = Object.entries(props).filter(([key]) =>
+  key.startsWith('data-test-'),
+);
 
 Object.fromEntries(filteredEntries);
 // { data-test-id: 'test', data-test-name: '테스트' }

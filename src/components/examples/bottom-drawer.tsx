@@ -75,8 +75,8 @@ function Card() {
                 </div>
                 <div className="text-second flex flex-col gap-2 text-sm">
                   <div>
-                    행사에서 다양한 커리어 고민들을 나누고, 네트워킹으로 미래에 좋은 영향을 줄 수
-                    있는 동료가 되어봅시다!
+                    행사에서 다양한 커리어 고민들을 나누고, 네트워킹으로 미래에
+                    좋은 영향을 줄 수 있는 동료가 되어봅시다!
                   </div>
                   <div>
                     <div>장소: 세미나홀</div>
@@ -102,7 +102,9 @@ function Card() {
                 <div className="flex items-center">
                   <div className="text-lg font-bold text-gray-700">초대장</div>
                 </div>
-                <div className="text-second">FE 네트워킹 데이에 초대합니다.</div>
+                <div className="text-second">
+                  FE 네트워킹 데이에 초대합니다.
+                </div>
                 <div className="mt-4 flex flex-col gap-2">
                   <button
                     className="flex items-center gap-2 rounded-2xl bg-gray-200 px-3 py-2 font-bold transition-transform focus:scale-95 active:scale-95"

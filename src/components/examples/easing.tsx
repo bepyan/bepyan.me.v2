@@ -17,7 +17,7 @@ const Wrapper = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'relative h-20 overflow-hidden rounded-lg border bg-page',
+        'bg-page relative h-20 overflow-hidden rounded-lg border',
         className,
       )}
     >

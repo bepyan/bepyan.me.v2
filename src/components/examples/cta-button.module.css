@@ -27,7 +27,8 @@
   background-attachment: fixed;
   border: var(--border-width) solid transparent;
   opacity: var(--active, 0);
-  mask: linear-gradient(#0000, #0000),
+  mask:
+    linear-gradient(#0000, #0000),
     conic-gradient(
       from
         calc(
@@ -52,7 +53,8 @@
   background-attachment: fixed;
   border: var(--border-width) solid transparent;
   opacity: var(--active, 0);
-  mask: linear-gradient(#0000, #0000),
+  mask:
+    linear-gradient(#0000, #0000),
     conic-gradient(
       from
         calc(

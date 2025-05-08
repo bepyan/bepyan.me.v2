@@ -16,13 +16,13 @@ const { title, description, noI18n } = props;
 
 <div class="mb-7 font-serif">
   <div class="flex items-center justify-between">
-    <h1 class="-mb-0.5 font-semibold leading-7 text-heading">{title}</h1>
+    <h1 class="text-heading -mb-0.5 leading-7 font-semibold">{title}</h1>
     <div class="flex gap-1">
       <SearchButton client:load />
       {!noI18n && <LanguageDropdown client:load {url} align="end" />}
       <ThemeDropdown client:load align="end" />
     </div>
   </div>
-  {description && <p class="text-sm text-second">{description}</p>}
+  {description && <p class="text-second text-sm">{description}</p>}
   <slot />
 </div>

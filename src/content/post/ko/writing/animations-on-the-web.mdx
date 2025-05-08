@@ -142,7 +142,11 @@ export function Component({ isVisible }: { isVisible: boolean }) {
   return (
     <AnimatePresence>
       {isVisible ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
       ) : null}
     </AnimatePresence>
   );

@@ -30,7 +30,10 @@ export const getPostType = (post: { slug: string }) => {
 };
 
 // 최신순
-export const sortCollectionDateDesc = (a: CollectionEntry<'post'>, b: CollectionEntry<'post'>) => {
+export const sortCollectionDateDesc = (
+  a: CollectionEntry<'post'>,
+  b: CollectionEntry<'post'>,
+) => {
   return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
 };
 
@@ -41,7 +44,10 @@ export const sortDateDesc = (
   return new Date(b.date).valueOf() - new Date(a.date).valueOf();
 };
 
-export const sortCollectionDateAsc = (a: CollectionEntry<'post'>, b: CollectionEntry<'post'>) => {
+export const sortCollectionDateAsc = (
+  a: CollectionEntry<'post'>,
+  b: CollectionEntry<'post'>,
+) => {
   return new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf();
 };
 
@@ -76,7 +82,9 @@ export const contentToDescription = (content: string) => {
 
 /** 전체 글 정보 */
 export const getPostCollection = async () => {
-  return (await getCollection('post')).filter(isDraft).sort(sortCollectionDateDesc);
+  return (await getCollection('post'))
+    .filter(isDraft)
+    .sort(sortCollectionDateDesc);
 };
 
 /** 연관 글 추출 */
@@ -116,7 +124,9 @@ export type PostInfo = {
   isExternal?: boolean;
 };
 
-export const getPostInfoList = async (type: 'all' | 'writing' | 'note' = 'all') => {
+export const getPostInfoList = async (
+  type: 'all' | 'writing' | 'note' = 'all',
+) => {
   const posts = await getPostCollection();
 
   return posts

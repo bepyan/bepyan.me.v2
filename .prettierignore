@@ -3,3 +3,5 @@ dist
 coverage
 
 monitoring-script.astro
+.astro
+.cursor

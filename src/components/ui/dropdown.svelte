@@ -35,7 +35,8 @@
   let selectedItem = $derived(
     items.find(
       (item) =>
-        item.value === selectedValue || (selectedValue === null && item.value === undefined),
+        item.value === selectedValue ||
+        (selectedValue === null && item.value === undefined),
     ) ?? null,
   );
 
@@ -101,8 +102,16 @@
           {item.label}
           {#if selectedItem === item}
             <!-- dot icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
-              <path fill="currentColor" d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 256 256"
+            >
+              <path
+                fill="currentColor"
+                d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Z"
+              />
             </svg>
           {/if}
         </button>

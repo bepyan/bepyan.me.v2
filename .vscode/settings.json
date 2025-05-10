@@ -10,6 +10,7 @@
     "javascript",
     "javascriptreact",
     "astro",
+    "svelte",
     "typescript",
     "typescriptreact"
   ],

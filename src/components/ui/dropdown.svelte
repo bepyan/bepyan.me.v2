@@ -7,9 +7,10 @@
 
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import { cn } from '~/libs/utils';
+
   import { buttonVariants } from '~/components/ui/button';
   import clickOutside from '~/libs/svelte/use-click-outside';
+  import { cn } from '~/libs/utils';
 
   interface Props {
     items?: DropdownItem[];
@@ -50,7 +51,7 @@
     dispatch('select', { item });
   }
 
-  function dropdownTransition(node: HTMLElement) {
+  function dropdownTransition(_node: HTMLElement) {
     return {
       delay: 0,
       duration: 100,
@@ -74,8 +75,8 @@
         className: buttonClass,
       }),
     )}
-    onclick={toggleDropdown}
     aria-label="trigger dropdown"
+    onclick={toggleDropdown}
   >
     {#if button}
       {@render button()}
@@ -87,14 +88,14 @@
   </button>
   {#if isOpen}
     <div
-      transition:dropdownTransition
       class={cn(
         'bg-page absolute top-full z-50 mt-1 flex min-w-[8rem] flex-col overflow-hidden rounded-md border p-1 shadow-md',
         align === 'end' ? 'right-0' : 'left-0',
         menuClass,
       )}
+      transition:dropdownTransition
     >
-      {#each items as item}
+      {#each items as item (item.value)}
         <button
           class="text-heading hover:bg-selection inline-flex w-full items-center justify-between rounded-xs px-2 py-1.5 text-left text-sm capitalize"
           onclick={() => selectItem(item)}
@@ -103,14 +104,14 @@
           {#if selectedItem === item}
             <!-- dot icon -->
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="1em"
               height="1em"
               viewBox="0 0 256 256"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill="currentColor"
                 d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Z"
+                fill="currentColor"
               />
             </svg>
           {/if}

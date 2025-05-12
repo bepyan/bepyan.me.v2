@@ -156,9 +156,7 @@
 
 .mdx > ul,
 .mdx > ul ul {
-  padding-left: 16px;
-  list-style-position: outside;
-  list-style-type: disc;
+  @apply list-outside list-disc pl-4;
 }
 
 .mdx > ul li > ul {
@@ -170,7 +168,7 @@
 }
 
 .mdx > ul li::marker {
-  color: var(--gray-300);
+  @apply text-gray-300;
 }
 
 .mdx > ul li + li,
@@ -304,7 +302,7 @@ pre.astro-code {
   display: grid;
   padding: var(--astro-code-py) var(--astro-code-px);
   overflow-x: auto;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   color: var(--astro-code-foreground);
   -moz-tab-size: 2;
@@ -434,8 +432,8 @@ pre.astro-code code {
   top: 16px;
   right: 16px;
   z-index: 3;
-  width: 28px;
-  height: 28px;
+  width: 1.75rem;
+  height: 1.75rem;
   cursor: pointer;
   background-color: var(--astro-code-background);
   background-image: var(--copy-icon);

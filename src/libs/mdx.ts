@@ -26,7 +26,7 @@ export const getPostType = (post: { slug: string }) => {
   if (isWriting(post)) return 'writing';
   if (isNote(post)) return 'note';
 
-  Error('post slug is invalid...');
+  throw new Error('post slug is invalid...');
 };
 
 // 최신순
@@ -122,6 +122,7 @@ export type PostInfo = {
   updatedDate?: Date;
   lang: Language;
   isExternal?: boolean;
+  type: 'writing' | 'note';
 };
 
 export const getPostInfoList = async (
@@ -142,10 +143,13 @@ export const getPostInfoList = async (
       date: post.data.date,
       updatedDate: post.data.updatedDate,
       lang: getLangFromSlug(post.slug),
+      type: getPostType(post),
     }));
 };
 
-export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
+export const getWritingPostInfoList = async (
+  lang: Language = 'ko',
+): Promise<PostInfo[]> => {
   const postList: PostInfo[] = [
     ...(await getPostInfoList('writing')),
     ...externalWritings.map<PostInfo>((post) => ({
@@ -155,8 +159,17 @@ export const getWritingPostInfoList = async (): Promise<PostInfo[]> => {
       date: new Date(post.date),
       isExternal: true,
       lang: getLangFromSlug(post.link),
+      type: 'writing',
     })),
   ];
 
-  return postList.sort(sortDateDesc);
+  return postList.filter((post) => post.lang === lang).sort(sortDateDesc);
+};
+
+export const getNotePostInfoList = async (
+  lang: Language = 'ko',
+): Promise<PostInfo[]> => {
+  const postList: PostInfo[] = [...(await getPostInfoList('note'))];
+
+  return postList.filter((post) => post.lang === lang).sort(sortDateDesc);
 };

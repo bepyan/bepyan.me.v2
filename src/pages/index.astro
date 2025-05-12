@@ -4,14 +4,20 @@ import BaseSns from '~/components/base-sns.astro';
 import { NAV } from '~/consts';
 import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
+import { getNotePostInfoList, getWritingPostInfoList } from '~/libs/mdx';
 
 const { url } = Astro;
-const { p, t } = useI18n(url);
+const { lang, p, t } = useI18n(url);
+
+const [writingList, noteList] = await Promise.all([
+  getWritingPostInfoList(lang),
+  getNotePostInfoList(lang),
+]);
 ---
 
 <MainLayout class="font-serif">
   <BaseHeader title={`${t('index.name')} ﹒ bepyan`} />
-  <div data-animate data-animate-speed="slow">
+  <div>
     {/* 소개 */}
     <div class="my-7" set:html={t('index.desc')} />
     <div class="my-7">
@@ -22,16 +28,40 @@ const { p, t } = useI18n(url);
     </div>
   </div>
   {/* 나의 공간 */}
-  <div class="my-14 flex gap-7">
-    <div>{t('nav.title')}</div>
-    <div data-animate class="flex flex-col gap-1">
+  <div class="my-9">
+    <div
+      data-animate
+      data-animate-speed="slow"
+      class="mt-1 flex flex-col gap-9"
+    >
       {
         NAV.map((item) => (
           <div style="--lv-wait: 2;">
-            <a class="link font-bold" href={p(`/${item}`)}>
-              {t(`nav.${item}`)}
-            </a>
-            <span class="ml-3 text-sm">{t(`nav.${item}.desc`)}</span>
+            <div>
+              <a class="link font-bold" href={p(`/${item}`)}>
+                {t(`nav.${item}`)}
+              </a>
+              <span>, {t(`nav.${item}.desc`)}</span>
+            </div>
+            <ul class="relative ml-3 rounded-bl-lg border-b border-l py-3 pr-1 pl-4 md:w-3/4">
+              {item === 'writing' &&
+                writingList.slice(0, 2).map((post) => (
+                  <li>
+                    <a class="link" href={post.href}>
+                      {post.title}
+                    </a>
+                  </li>
+                ))}
+              {item === 'note' &&
+                noteList.slice(0, 2).map((post) => (
+                  <li>
+                    <a class="link" href={post.href}>
+                      {post.title}
+                    </a>
+                  </li>
+                ))}
+              {item === 'craft' && <li>제작 중입니다...</li>}
+            </ul>
           </div>
         ))
       }

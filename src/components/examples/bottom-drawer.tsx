@@ -8,8 +8,8 @@ import {
   DialogPortal,
   DialogTrigger,
 } from '@radix-ui/react-dialog';
-import { AnimatePresence, motion } from 'framer-motion';
 import { SearchIcon } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import useMeasure from 'react-use-measure';
 
@@ -17,7 +17,7 @@ import { cn } from '~/libs/utils';
 
 export function BottomDrawerDemo() {
   return (
-    <div className="flex h-[200px] w-full items-center justify-center">
+    <div className="flex h-50 w-full items-center justify-center">
       <BottomDrawer />
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -46,7 +46,7 @@ export function DynamicMail() {
   }, [open, formState]);
 
   return (
-    <div className="flex h-[200px] items-center justify-center font-serif">
+    <div className="flex h-50 items-center justify-center font-serif">
       <motion.button
         layoutId="wrapper"
         onClick={() => {
@@ -54,7 +54,7 @@ export function DynamicMail() {
           setFormState('idle');
         }}
         key="button"
-        className="border-border bg-page flex w-[100px] items-center justify-center gap-1 rounded-lg border px-3 py-2 focus:outline-hidden"
+        className="border-border bg-page flex w-25 items-center justify-center gap-1 rounded-lg border px-3 py-2 focus:outline-hidden"
       >
         <motion.span layoutId="title" className="text-heading font-bold">
           초대장
@@ -65,7 +65,7 @@ export function DynamicMail() {
           <motion.div
             ref={ref}
             layoutId="wrapper"
-            className="absolute h-[180px] w-[300px] overflow-hidden rounded-xl border bg-gray-100 p-2"
+            className="absolute h-45 w-75 overflow-hidden rounded-xl border bg-gray-100 p-2"
           >
             <motion.span
               className={cn(
@@ -107,7 +107,7 @@ export function DynamicMail() {
                         취소
                       </button>
                       <button
-                        className="hover:text-heading focus:text-heading h-[30px] w-[80px] overflow-hidden transition-colors focus:outline-hidden"
+                        className="hover:text-heading focus:text-heading h-7.5 w-20 overflow-hidden transition-colors focus:outline-hidden"
                         onClick={submit}
                         disabled={formState === 'loading'}
                       >

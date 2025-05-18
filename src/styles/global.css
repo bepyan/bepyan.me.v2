@@ -21,7 +21,7 @@ body {
 
 /* ---- common ---- */
 * {
-  @apply border-border box-border;
+  @apply border-border outline-border box-border;
 }
 
 ::selection {
@@ -71,7 +71,7 @@ button {
 .link,
 .external-link,
 .mdx a {
-  @apply text-body relative inline-block break-all;
+  @apply text-body ring-border relative inline-block break-all outline-none focus-visible:ring-3;
   @apply decoration-border underline decoration-1 underline-offset-4;
   @apply duration-200 ease-in-out hover:duration-100;
 }

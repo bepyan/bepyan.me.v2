@@ -23,10 +23,7 @@ const { relatedPostList } = Astro.props;
           return (
             <li>
               <span class="font-mono">&gt; </span>
-              <a
-                class="link text-second"
-                href={p(`/post/${resolveSlug(post.slug)}`)}
-              >
+              <a class="link" href={p(`/post/${resolveSlug(post.slug)}`)}>
                 {post.data.title}
               </a>
             </li>

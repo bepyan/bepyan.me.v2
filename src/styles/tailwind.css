@@ -122,4 +122,6 @@
 
   --spacing-page: var(--page-top);
   --spacing-half-page: var(--page-half-top);
+
+  --text-2xs: 0.7rem;
 }

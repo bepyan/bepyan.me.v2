@@ -1,0 +1,143 @@
+---
+title: 'Easily Log Your Directory Structure'
+description: ''
+date: 2025-06-24 15:28:48
+draft: false
+tags:
+  - log
+---
+
+As a developer, you sometimes need to explain or document your project's structure for others. This is especially true when writing a **README** or during a code review, where a visual representation of the directory structure makes things much easier to understand.
+
+This post is based on a <mark>Mac</mark> environment.
+
+```python title="This blog repo's structure"
+.
+├── plugins            # Astro plugins
+├── public             # Static files (images, fonts, etc.)
+├── scripts            # Scripts for CI/CD
+├── src
+│   ├── components     # Reusable components
+│   ├── content        # Markdown content
+│   ├── layouts        # Page layout templates
+│   ├── libs           # Utility functions and libraries
+│   ├── pages          # Website pages (URL mapping)
+│   ├── styles         # CSS files
+│   ├── types          # Type definitions
+│   ├── consts.ts      # Global constants
+│   └── env.d.ts       # Environment variable type definitions
+├── astro.config.ts    # Astro configuration file
+├── bun.lock           # Bun dependency lock file
+├── eslint.config.js   # ESLint code linting configuration
+├── package.json       # Project dependencies and scripts
+├── README.md
+└── tsconfig.json      # TypeScript configuration
+```
+
+## Outputting It Manually
+
+The simplest way is to combine `find` and `sed` to create a tree structure.
+
+```bash
+find . | sed -e 's/[^\/]*\//|   /g' -e 's/| *\([^| ]\)/|-- \1/'
+```
+
+However, this command outputs every file under the directory, which can be limiting.
+
+## Using Open Source, `tree`
+ 
+The easiest and cleanest method is to use the [`tree`](https://oldmanprogrammer.net/source.php?dir=projects/tree) open source.
+
+```bash
+# You can install it using `brew`.
+brew install tree
+```
+
+### Basic Usage
+
+To use it, just enter the following command in your terminal:
+
+```bash
+tree /path/to/your/dir
+```
+
+Here are some useful options:
+
+```bash
+## Display only the files under the 'src/pages' directory
+tree src/pages
+
+## Display only directories
+tree -d
+
+## Display up to a maximum depth
+tree -L 1
+
+## Display directories first (sorted like in an IDE)
+tree --dirsfirst
+
+## Exclude specific patterns (separated by `|`)
+tree -I 'node_modules|dist'
+
+## Include specific patterns (separated by `|`)
+tree -P '*.tsx' --prune
+
+## Save the output to a file (overwrites existing file)
+tree -o output.txt
+
+## Include hidden files (dotfiles)
+tree -a
+```
+
+For more detailed options, you can check `tree --help`.니다.
+
+## A Practical Example
+
+Here is a useful command for documenting your project's structure in your `README.md` file.
+
+```bash
+tree -L 2 -I 'node_modules|dist' --dirsfirst
+```
+
+This command outputs the structure from the project root with a depth of 2, excludes generated directories, and lists directories before files.
+
+Afterward, you can manually remove any unnecessary parts.
+
+```js
+.
+├── plugins
+│   └── transformer-fragment.ts // [!code --]
+├── public
+│   ├── img // [!code --]
+│   ├── pagefind // [!code --]
+│   ├── favicon.svg // [!code --]
+│   ├── google05ba1146179e07f9.html // [!code --]
+│   └── robots.txt // [!code --]
+├── scripts
+│   ├── action-process-images.ts // [!code --]
+│   ├── cleanup-unused-images.ts // [!code --]
+│   ├── github-api.ts // [!code --]
+│   ├── sharp-api.ts // [!code --]
+│   ├── sharp-avif.ts // [!code --]
+│   └── sharp.ts // [!code --]
+├── src
+│   ├── components
+│   ├── content
+│   ├── layouts
+│   ├── libs
+│   ├── pages
+│   ├── styles
+│   ├── types
+│   ├── consts.ts
+│   └── env.d.ts
+├── astro.config.ts
+├── bun.lock
+├── eslint.config.js
+├── package.json
+├── README.md
+└── tsconfig.json
+```
+
+## In Conclusion
+
+`tree` is a great tool for outputting directory structures. It's especially useful when you need to share your project's structure with others.

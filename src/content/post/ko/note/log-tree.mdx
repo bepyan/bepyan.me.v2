@@ -1,0 +1,147 @@
+---
+title: '디랙토리 구조를 쉽게 로깅하기'
+description: ''
+date: 2025-06-24 15:28:48
+draft: false
+tags:
+  - log
+---
+
+개발하다 보면 프로젝트 구조를 다른 사람에게 설명하거나 문서화해야 할 때가 있습니다.
+특히 **README 작성**이나 코드 리뷰 시 디렉토리 구조를 시각적으로 보여주면 훨씬 이해하기 쉽습니다.
+
+본 글은 <mark>MAC 환경 기준</mark>으로 작성되었습니다.
+
+```python title="이 블로그 레포지토리의 기존 구조"
+.
+├── plugins            # Astro 플러그인
+├── public             # 정적 파일 (이미지, 폰트 등)
+├── scripts            # CI-CD를 위한 스크립트
+├── src
+│   ├── components     # 재사용 가능한 컴포넌트
+│   ├── content        # 마크다운 콘텐츠
+│   ├── layouts        # 페이지 레이아웃 템플릿
+│   ├── libs           # 유틸리티 함수 및 라이브러리
+│   ├── pages          # 웹사이트 페이지 (URL 매핑)
+│   ├── styles         # CSS 파일
+│   ├── types          # 타입 정의
+│   ├── consts.ts      # 전역 상수
+│   └── env.d.ts       # 환경 변수 타입 정의
+├── astro.config.ts    # Astro 설정 파일
+├── bun.lock           # bun 의존성 잠금 파일
+├── eslint.config.js   # ESLint 코드 린팅 설정
+├── package.json       # 프로젝트 의존성 및 스크립트
+├── README.md
+└── tsconfig.json      # TypeScript 설정
+```
+
+## 직접 출력하기
+
+가장 간단한 방법은 `find`와 `sed`를 조합해서 트리 구조로 출력할 수 있습니다.
+
+```bash
+find . | sed -e 's/[^\/]*\//|   /g' -e 's/| *\([^| ]\)/|-- \1/'
+```
+
+다만 디랙토리 하위 모든 파일이 출력이 되기 때문에 활용이 제한될 수 있습니다.
+
+## tree 라이브러리
+
+가장 간단하고 깔끔한 방법은 [`tree`](https://oldmanprogrammer.net/source.php?dir=projects/tree) 라이브러리를 사용하는 것입니다.
+
+```bash
+# `brew`를 통해서 설치하면 됩니다.
+brew install tree
+```
+
+### 기본 사용법
+
+사용법은 터미널에서 아래 같이 명령어를 입력하면 됩니다.
+
+```bash
+tree /path/to/your/dir
+```
+
+유용한 옵션은 아래와 같습니다.
+
+```bash
+## 'src/pages' 디랙토리 하위로 표시
+tree src/pages
+
+## 디렉토리만 표시
+tree -d
+
+## 최대 깊이까지만 표시
+tree -L 1
+
+## 디랙토리 먼저 표시 (IDE와 같은 정렬 순서)
+tree --dirsfirst
+
+## 특정 패턴 제외(`|`로 구분)
+tree -I 'node_modules|dist'
+
+## 특정 패턴 포함(`|`로 구분)
+tree -P '*.tsx' --prune
+
+## 결과를 파일로 저장 (덮어쓰기)
+tree -o output.txt
+
+## 숨김 파일(dotfile) 포함
+tree -a
+```
+
+더 자세한 옵션은 `tree --help`를 통해서 조회할 수 있습니다.
+
+## 실제 활용 예시
+
+`README.md`에 프로젝트 구조를 문서화할 때 유용한 명령어입니다.
+
+```bash
+tree -L 2 -I 'node_modules|dist' --dirsfirst
+```
+
+프로젝트 루트에서 깊이 2를 기준으로 출력하고,
+생성되는 디랙토리를 제외하고,
+파일보다 디랙토리를 먼저 출력하도록 합니다.
+
+이후 불필요한 부분은 직접 제거합니다.
+
+```js
+.
+├── plugins
+│   └── transformer-fragment.ts // [!code --]
+├── public
+│   ├── img // [!code --]
+│   ├── pagefind // [!code --]
+│   ├── favicon.svg // [!code --]
+│   ├── google05ba1146179e07f9.html // [!code --]
+│   └── robots.txt // [!code --]
+├── scripts
+│   ├── action-process-images.ts // [!code --]
+│   ├── cleanup-unused-images.ts // [!code --]
+│   ├── github-api.ts // [!code --]
+│   ├── sharp-api.ts // [!code --]
+│   ├── sharp-avif.ts // [!code --]
+│   └── sharp.ts // [!code --]
+├── src
+│   ├── components
+│   ├── content
+│   ├── layouts
+│   ├── libs
+│   ├── pages
+│   ├── styles
+│   ├── types
+│   ├── consts.ts
+│   └── env.d.ts
+├── astro.config.ts
+├── bun.lock
+├── eslint.config.js
+├── package.json
+├── README.md
+└── tsconfig.json
+```
+
+## 맺으면서
+
+`tree`는 디랙토리 출력에 유용한 도구입니다. 
+프로젝트 구조를 공유할 때 활용해보면 좋을 것 같습니다.

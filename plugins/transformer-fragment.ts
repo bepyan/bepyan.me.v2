@@ -1,4 +1,4 @@
-import type { Element } from 'node_modules/@astrojs/markdown-remark/node_modules/remark-rehype/node_modules/@types/hast/index';
+import type { Element } from 'hast';
 import { addClassToHast, type ShikiTransformer } from 'shiki';
 
 const ignoreLangList = ['', 'plaintext'];

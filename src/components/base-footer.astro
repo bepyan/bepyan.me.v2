@@ -1,4 +1,5 @@
 ---
+import UserMeta from '~/components/user-meta';
 import { SITE } from '~/consts';
 import { useI18n } from '~/libs/i18n';
 
@@ -6,7 +7,7 @@ const { t } = useI18n(Astro.url);
 ---
 
 <footer class="my-half-page container">
-  <div class="max-w-content text-second mx-auto font-serif text-sm">
+  <div class="max-w-content text-second mx-auto space-y-1 font-serif text-sm">
     <div class="flex items-center">
       <div>
         Copyright © <a class="link" href="/">{t('index.name')}</a>
@@ -17,5 +18,6 @@ const { t } = useI18n(Astro.url);
         </a>
       </div>
     </div>
+    <UserMeta client:load />
   </div>
 </footer>

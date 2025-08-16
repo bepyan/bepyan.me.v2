@@ -26,6 +26,9 @@
   [data-animate-speed='fast'] > * {
     --delay: 25ms;
   }
+  [data-animate-speed='super-fast'] > * {
+    --delay: 7ms;
+  }
 }
 
 [data-animate] > *:nth-child(1) {

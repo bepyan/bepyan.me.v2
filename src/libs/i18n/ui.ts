@@ -32,8 +32,8 @@ export const ui = {
       </b>
       developing
       <b>
-        <a class="external-link" href="https://brunch.co.kr/" target="_blank"
-          >Brunch</a
+        <a class="external-link" href="https://business.kakao.com/" target="_blank"
+          >Kakao Business Partner</a
         >
       </b>.
     </p>`,
@@ -61,8 +61,8 @@ export const ui = {
         >
       </b>에서
       <b>
-        <a class="external-link" href="https://brunch.co.kr/" target="_blank"
-          >브런치</a
+        <a class="external-link" href="https://business.kakao.com/" target="_blank"
+          >카카오 비즈니스 파트너</a
         >
       </b>를 개발하고 있습니다.
     </p>`,

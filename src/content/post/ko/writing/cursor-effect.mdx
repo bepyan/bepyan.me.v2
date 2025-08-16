@@ -1,0 +1,179 @@
+---
+title: 'Cursor Effect를 개발하면서'
+description: ''
+date: 2025-08-10 23:27:42
+draft: true
+tags:
+  - guide
+---
+
+## 개발을 하게 된 이유
+
+웹서핑하다가 발견한 웹 디자인 스튜디오가 있었다.
+https://tv-sy.com/
+
+3개의 점을 활용한 브랜딩이 심플하지만 인상적이었다.
+
+이전에 내게 충격을 줬었던 [Lusion](https://lusion.co/) 사이트도 생각이 나면서, **내 블로그에도 뭔가 재밌는 마우스 인터랙션을 심어두고 싶었다.**
+
+## tv-sy 스타일 구현하기
+
+마우스가 움직일 때 점이 따라와주도록 하면된다.
+
+구현은 어렵지 않았다. 현재 마우스 위치를 트래킹해서 3개의 점을 그려주면 된다.
+[소스코드](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/examples/cursor-effect-3dot)
+
+import CursorEffect3Dot from '~/components/examples/cursor-effect-3dot';
+
+<CursorEffect3Dot client:load />
+
+<br />
+
+몇 가지 핵심 트릭을 기록해본다.
+
+먼저, 마우스의 위치가 변경될 때마다 리렌더링시키는 것이 아닌 [**requestAnimationFrame**](https://developer.mozilla.org/ko/docs/Web/API/Window/requestAnimationFrame)을 통해서 브라우저 주사율에 맞춰 계속 그려주는 것이다. 자바스크립트 런타임 오버헤드를 줄일 수 있으며 보다 부드러운 화면 변화를 만들어낼 수 있다.
+
+```ts
+const loop = () => {
+  updateDots();
+  animationRef.current = requestAnimationFrame(loop);
+};
+```
+
+애니메이션의 핵심 트릭은 CSS의 **transition duration**를 통해서 각 점이 조금의 시차를 두고 부드럽게 따라오도록 하는 것이다. 자연스러운 움직임을 위해서 그저 이 숫자를 조율하는 것 뿐이다.
+
+```css
+.d1 {
+  transition: all 0.12s ease-out;
+  transform: translateX(21.6px) translateY(18.8px);
+}
+
+.d2 {
+  transition: all 0.8s ease-out;
+  transform: translateX(47.2px) translateY(26px);
+}
+
+.d3 {
+  transition: all 0.52s ease-out;
+  transform: translateX(28.8px) translateY(41.2px);
+}
+```
+
+## Lusion 스타일 구현하기
+
+마우스 주변에 빛 굴절 같은 유체 흐름을 만들어야 했다.
+
+WebGL 기반 그래픽을 풀스크린 캔버스에 올리고 마우스의 클릭과 움직임에 따라 효과를 그려내면 된다. 아직 관련 이해도가 높지 않기 때문에 [React Bits](https://reactbits.dev/)의 [splash-cursor](https://reactbits.dev/animations/splash-cursor)를 거의 그대로 가져왔다.
+
+기본 뼈대는 아래와 같다.
+
+```tsx
+export default function SplashCursor(config) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // 1. WebGL 세팅
+    // WebGL 컨텍스트 → 셰이더 컴파일 → 프레임버퍼 생성
+
+    // 2. 물리 시뮬레이션 세팅
+    // 와류 → 압력 해결 → 이류 계산 순서로 실행
+
+    // 3. 메인 루프 수행
+    function updateFrame() {
+      // 입력 처리 → 물리 시뮬레이션 연산 → 렌더링 → 반복
+      requestAnimationFrame(updateFrame);
+    }
+
+    // 4. 이벤트 등록
+    window.addEventListener('mousemove', (e) => {
+      // 4-1. 마우스 움직임을 유체에 전달
+      // updatePointerDownData
+    });
+  }, []);
+
+  return (
+    <div className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full">
+      <canvas ref={canvasRef} id="fluid" className="block h-screen w-screen" />
+    </div>
+  );
+}
+```
+
+핵심 로직은 **WebGL 셰이더**를 통해 유체 시뮬레이션을 처리하는 것이다.
+과정을 간소화 해보면 Shader 생성 > Program 생성 > FBO 바인딩 > 렌더링 단계로 구성된다.
+
+| 구성요소 | 역할           | 연결점                 |
+| -------- | -------------- | ---------------------- |
+| Shader   | GPU 실행 코드  | Program의 구성 요소    |
+| Program  | GPU 파이프라인 | Shader들을 연결        |
+| FBO      | 렌더링 대상    | Program 실행 결과 저장 |
+
+추가로 알면 좋을 것이 **FBO**(Frame Buffer Object)를 활용한 더블 버퍼링이다. 이전 프레임의 결과를 텍스처로 사용해서 다음 프레임을 계산하는 방식으로 연속적인 유체 흐름을 만들어낸다. 이 패턴을 통해 CPU 대신 GPU에서 병렬 계산을 수행하여 실시간 유체 시뮬레이션이 가능해진다.
+
+코드로 간단히 살펴보면 아래와 같다.
+
+```tsx
+// 1. 여러 셰이더 생성
+const curlShader = createShader(gl.FRAGMENT_SHADER, curlShaderSource);
+const pressureShader = createShader(gl.FRAGMENT_SHADER, pressureShaderSource);
+const advectionShader = createShader(gl.FRAGMENT_SHADER, advectionShaderSource);
+
+// 2. 각각의 프로그램 생성
+const curlProgram = createProgram(baseVertexShader, curlShader);
+const pressureProgram = createProgram(baseVertexShader, pressureShader);
+const advectionProgram = createProgram(baseVertexShader, advectionShader);
+
+// 3. 더블 버퍼링을 위한 FBO 객체
+const pressureFBO = createDoubleFBO(simWidth, simHeight); // 압력
+const velocityFBO = createDoubleFBO(simWidth, simHeight); // 속도장
+
+// 4. 시뮬레이션 단계별 실행
+function step() {
+  // 4-1. Curl 계산 (와류)
+  gl.useProgram(curlProgram);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, curlFBO.framebuffer);
+  gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+
+  // 4-2. Pressure 계산 (압력)
+  gl.useProgram(pressureProgram);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, pressureFBO.write.framebuffer);
+  gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+  pressureFBO.swap(); // 버퍼 교체
+
+  // 4-3. Advection 계산 (이류)
+  gl.useProgram(advectionProgram);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, velocityFBO.write.framebuffer);
+  gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+  velocityFBO.swap(); // 버퍼 교체
+}
+```
+
+실제 로직은 훨씬 복잡하다. 이해하기 어려운 최적화 코드도 많이 탑재되어 있어 더 자세히 알고 싶다면 [소스코드](https://github.com/bepyan/bepyan.me.v2/tree/main/src/components/cursor-splash)를 참고하길 바란다.
+
+최종적으로 [렌딩페이지](/)에 적용된 커서 이펙트:
+
+<img
+  src="https://github-production-user-asset-6210df.s3.amazonaws.com/65283190/478630769-64a68892-971a-491a-93be-c340e6c63269.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250816%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250816T050930Z&X-Amz-Expires=300&X-Amz-Signature=aba8c1883cbe75ed9693e7de311b44cc6259587e326eeaeb53606a6f851b641c&X-Amz-SignedHeaders=host"
+  alt="랜딩 페이지 예시"
+/>
+
+## 맺으면서
+
+디자인 엔지니어링의 영역은 정말 어려운 것 같다. 간단한 CSS 트릭으로 감각적인 인터랙션을 만들기도 하고, 복잡한 WebGL 기능으로 화려한 그래픽을 그려내기도 한다.
+
+처음부터 엄청난 것을 만들 순 없다.
+그저 하나하나 따라해보고 원리를 이해해보면 나만의 인터랙션을 만들어 낼 수 있을 것이다.
+
+## 참고한 자료
+
+https://tholman.com/cursor-effects/
+https://reactbits.dev/animations/splash-cursor
+
+더 참고해보면 좋을 자료:
+
+https://motion-primitives.com/docs/cursor
+https://magicui.design/docs/components/smooth-cursor
+https://reactbits.dev/animations/blob-cursor

@@ -1,0 +1,43 @@
+.box {
+  position: relative;
+  width: 100%;
+  height: 12rem;
+  padding: 0.5rem;
+  overflow: hidden;
+  font-size: var(--text-xs);
+  color: var(--text-disabled);
+  user-select: none;
+  background-color: var(--bg-body);
+  border: 1px solid var(--border);
+}
+
+.dot {
+  position: absolute;
+  z-index: 999;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: transparent;
+  border: 1.5px solid var(--text-body);
+  border-radius: 50%;
+  transform-style: preserve-3d;
+}
+.dark .dot {
+  mix-blend-mode: difference;
+}
+
+.d1 {
+  transition: all 0.12s ease-out;
+  transform: translateX(21.6px) translateY(18.8px);
+}
+
+.d2 {
+  transition: all 0.8s ease-out;
+  transform: translateX(47.2px) translateY(26px);
+}
+
+.d3 {
+  transition: all 0.52s ease-out;
+  transform: translateX(28.8px) translateY(41.2px);
+}

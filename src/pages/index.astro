@@ -17,6 +17,12 @@ const [writingList, noteList] = await Promise.all([
   getWritingPostInfoList(lang),
   getNotePostInfoList(lang),
 ]);
+
+const LIST_SIZE = 4;
+const START_OPACITY = 0.2;
+const renderListItemOpacity = (i: number) => {
+  return START_OPACITY + ((LIST_SIZE - i) / LIST_SIZE) * (1 - START_OPACITY);
+};
 ---
 
 <MainLayout class="font-serif">
@@ -45,8 +51,8 @@ const [writingList, noteList] = await Promise.all([
             </div>
             <ul class="relative ml-3 flex flex-col-reverse gap-1.5 rounded-bl-lg border-b border-l py-3 pr-1 pl-4 md:w-3/4">
               {item === 'writing' &&
-                writingList.slice(0, 4).map((post, i) => (
-                  <li>
+                writingList.slice(0, LIST_SIZE).map((post, i) => (
+                  <li style={{ opacity: renderListItemOpacity(i) }}>
                     <a class="link peer" href={post.href}>
                       {post.title}
                     </a>
@@ -62,8 +68,8 @@ const [writingList, noteList] = await Promise.all([
                   </li>
                 ))}
               {item === 'note' &&
-                noteList.slice(0, 4).map((post, i) => (
-                  <li>
+                noteList.slice(0, LIST_SIZE).map((post, i) => (
+                  <li style={{ opacity: renderListItemOpacity(i) }}>
                     <a class="link peer mr-1" href={post.href}>
                       {post.title}
                     </a>

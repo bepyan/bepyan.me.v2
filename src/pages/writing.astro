@@ -5,7 +5,7 @@ import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
 import { BxLinkExternal } from '~/components/ui/icons';
 import MainLayout from '~/layouts/main-layout.astro';
-import { useI18n, useTranslatedPath } from '~/libs/i18n';
+import { useI18n } from '~/libs/i18n';
 import {
   getWritingPostInfoList,
   type PostInfo,
@@ -14,22 +14,18 @@ import {
 
 const { lang, t } = useI18n(Astro.url);
 
-const posts = await getWritingPostInfoList();
+const posts = await getWritingPostInfoList(lang);
 
 const title = t('nav.writing');
 const description = t('nav.writing.desc');
 
-const p = useTranslatedPath(lang);
-
 const yearList = Object.entries(
-  posts
-    .filter((post) => post.lang === lang)
-    .reduce<{ [year: string]: PostInfo[] }>((ac, post) => {
-      const year = new Date(post.date).getFullYear();
-      if (!ac[year]) ac[year] = [];
-      ac[year].push(post);
-      return ac;
-    }, {}),
+  posts.reduce<{ [year: string]: PostInfo[] }>((ac, post) => {
+    const year = new Date(post.date).getFullYear();
+    if (!ac[year]) ac[year] = [];
+    ac[year].push(post);
+    return ac;
+  }, {}),
 ).sort((a, b) => +b[0] - +a[0]);
 ---
 
@@ -51,7 +47,7 @@ const yearList = Object.entries(
                 return (
                   <li style={`--lv-wait: ${index}`}>
                     <a
-                      href={p(post.href)}
+                      href={post.href}
                       class="group/item flex transition-opacity group-hover:opacity-40 hover:opacity-100!"
                       target={post.isExternal ? '_blank' : '_self'}
                     >

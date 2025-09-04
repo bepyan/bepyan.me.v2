@@ -2,7 +2,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 
 import { externalWritings } from '~/content/_constants';
 import { compareTwoStrings } from '~/libs/dice-coefficient-kr';
-import { getLangFromSlug, type Language } from '~/libs/i18n';
+import { getLangFromSlug, type Language, translatePath } from '~/libs/i18n';
 
 import { isDev } from './utils';
 
@@ -136,15 +136,18 @@ export const getPostInfoList = async (
       if (type === 'note') return isNote(post);
       return true;
     })
-    .map<PostInfo>((post) => ({
-      title: post.data.title,
-      description: post.data.description,
-      href: `/post/${resolveSlug(post.slug)}`,
-      date: post.data.date,
-      updatedDate: post.data.updatedDate,
-      lang: getLangFromSlug(post.slug),
-      type: getPostType(post),
-    }));
+    .map<PostInfo>((post) => {
+      const lang = getLangFromSlug(post.slug);
+      return {
+        title: post.data.title,
+        description: post.data.description,
+        href: translatePath(`/post/${resolveSlug(post.slug)}`, lang),
+        date: post.data.date,
+        updatedDate: post.data.updatedDate,
+        lang,
+        type: getPostType(post),
+      };
+    });
 };
 
 export const getWritingPostInfoList = async (

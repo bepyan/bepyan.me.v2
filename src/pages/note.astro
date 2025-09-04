@@ -7,7 +7,7 @@ import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 import { getPostInfoList, type PostInfo } from '~/libs/mdx';
 
-const { lang, p, t } = useI18n(Astro.url);
+const { lang, t } = useI18n(Astro.url);
 
 const allNotes = await getPostInfoList('note');
 
@@ -51,7 +51,7 @@ const description = t('nav.note.desc');
                 return (
                   <li style={`--start: ${index * 75}ms;`}>
                     <a
-                      href={p(post.href)}
+                      href={post.href}
                       class="hover:bg-selection -mx-1 flex items-center rounded-md px-1 transition group-hover:opacity-60 hover:opacity-100!"
                     >
                       <span class="text-heading">{post.title}</span>

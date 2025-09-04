@@ -37,6 +37,7 @@ export const ui = {
         >
       </b>.
     </p>`,
+    wip: 'Working in progress...',
   },
   ko: {
     '404.desc': '관련된 문서를 찾을 수 없습니다.',
@@ -66,5 +67,6 @@ export const ui = {
         >
       </b>를 개발하고 있습니다.
     </p>`,
+    wip: '제작 중입니다...',
   },
 } satisfies Record<Language, { [key: string]: string }>;

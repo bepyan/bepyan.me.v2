@@ -84,7 +84,7 @@ const renderListItemOpacity = (i: number) => {
                     </span>
                   </li>
                 ))}
-              {item === 'craft' && <li>제작 중입니다...</li>}
+              {item === 'craft' && <li>{t('wip')}</li>}
             </ul>
           </div>
         ))

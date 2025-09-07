@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 import Clock from '~/components/ui/clock';
@@ -13,23 +14,53 @@ function CurrentTime() {
   }, []);
 
   return (
-    <div className="flex items-center gap-1.5">
-      {isOpen && (
-        <div
-          className="text-disabled text-2xs"
-          data-animate
-          data-animate-speed="super-fast"
-        >
-          {format(time, 'yyyy.MM.dd HH:mm:ss')
-            .split('')
-            .map((char, index) => (
-              <span key={index}>{char}</span>
-            ))}
-        </div>
-      )}
+    <div className="flex items-center">
       <button onClick={() => setIsOpen(!isOpen)}>
         <Clock />
       </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="text-disabled text-2xs flex items-center overflow-hidden whitespace-pre"
+            initial={{
+              width: 0,
+            }}
+            animate={{
+              width: 'auto',
+              transition: { type: 'spring', bounce: 0 },
+            }}
+            exit={{
+              width: 0,
+              transition: { type: 'spring', bounce: 0, delay: 0.1 },
+            }}
+          >
+            <span className="inline-block w-1 shrink-0"></span>
+            {format(time, 'yyyy.MM.dd HH:mm:ss')
+              .split('')
+              .map((char, index) => (
+                <motion.span
+                  key={index}
+                  initial={{
+                    opacity: 0,
+                    filter: 'blur(2px)',
+                  }}
+                  animate={{
+                    opacity: 1,
+                    filter: 'blur(0px)',
+                    transition: { delay: 0.1 + index * 0.01 },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    filter: 'blur(2px)',
+                    transition: { delay: 0.15 + (char.length - index) * 0.01 },
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

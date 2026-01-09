@@ -1,0 +1,63 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+import PostImage from '~/components/post/post-image.astro';
+import { cn } from '~/libs/utils';
+
+type Props = HTMLAttributes<'div'> & {
+  list: string[];
+};
+
+const { list, ...props } = Astro.props;
+---
+
+<div {...props} class={cn('embla', props.class)}>
+  <div class="embla__container">
+    {
+      list.map((item) => (
+        <div class="embla__slide">
+          <PostImage src={item} />
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style is:global>
+  .embla {
+    overflow: hidden;
+  }
+  .embla__container {
+    display: flex;
+    margin-left: -0.75rem;
+  }
+  .embla__slide {
+    padding-left: 0.75rem;
+    flex: 0 0 70%;
+    min-width: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+  .embla__slide:not(.is-snapped) {
+    opacity: 0.16;
+  }
+</style>
+
+<script>
+  import EmblaCarousel from 'embla-carousel';
+  import ClassNames from 'embla-carousel-class-names';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const emblaNode = document.querySelector<HTMLElement>('.embla');
+    if (!emblaNode) {
+      return;
+    }
+
+    const _emblaApi = EmblaCarousel(
+      emblaNode,
+      {
+        loop: false,
+      },
+      [ClassNames()],
+    );
+  });
+</script>

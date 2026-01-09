@@ -51,6 +51,8 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
+    "embla-carousel": "^8.6.0",
+    "embla-carousel-class-names": "^8.6.0",
     "es-toolkit": "^1.27.0",
     "leva": "^0.9.35",
     "lucide-react": "^0.456.0",

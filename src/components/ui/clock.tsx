@@ -3,16 +3,19 @@ import { useEffect, useState } from 'react';
 import { cn } from '~/libs/utils';
 
 export default function Clock({ className }: { className?: string }) {
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    setTime(new Date());
+
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const hours = time.getHours() % 12;
-  const minutes = time.getMinutes();
-  const seconds = time.getSeconds();
+  // 초기 렌더링 시 (서버 또는 첫 클라이언트 렌더링)에는 0도로 설정
+  const hours = time ? time.getHours() % 12 : 0;
+  const minutes = time ? time.getMinutes() : 0;
+  const seconds = time ? time.getSeconds() : 0;
 
   // 각도 계산 (12시 방향을 0도로 하여 시계방향으로 회전)
   const hourAngle = hours * 30 + minutes * 0.5; // 시침: 30도/시간 + 0.5도/분

@@ -24,7 +24,6 @@
     "lint:eslint": "eslint . --fix",
     "lint:stylelint": "stylelint \"src/**/*.{css,scss}\" --fix",
     "-------- SCRIPT --------": "",
-    "sharp": "bun scripts/sharp.ts",
     "img:avif": "bun scripts/sharp-avif.ts",
     "img:cleanup": "bun scripts/cleanup-unused-images.ts"
   },
@@ -73,8 +72,6 @@
     "@astrojs/check": "^0.9.4",
     "@eslint/compat": "^1.2.8",
     "@eslint/js": "^9.14.0",
-    "@octokit/rest": "^21.0.2",
-    "@octokit/types": "^13.6.1",
     "@shikijs/transformers": "^3.2.1",
     "@shikijs/twoslash": "^3.2.1",
     "@tailwindcss/vite": "^4.1.1",

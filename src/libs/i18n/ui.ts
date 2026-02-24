@@ -63,7 +63,7 @@ export const ui = {
       </b>에서
       <b>
         <a class="external-link" href="https://business.kakao.com/" target="_blank"
-          >카카오 비즈니스 파트너</a
+          >카카오비즈니스 파트너센터</a
         >
       </b>를 개발하고 있습니다.
     </p>`,

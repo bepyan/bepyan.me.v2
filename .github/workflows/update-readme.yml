@@ -1,0 +1,20 @@
+name: Update Profile README
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/content/post/**'
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun run scripts/update-readme.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -171,8 +171,8 @@ async function updateReadme(
 // ----------------------------------------------------------------------------
 
 async function main() {
-  const token = process.env.GITHUB_TOKEN;
-  if (!token) throw new Error('GITHUB_TOKEN is not set');
+  const token = process.env.REPO_ACCESS_TOKEN;
+  if (!token) throw new Error('REPO_ACCESS_TOKEN is not set');
 
   const [writingPosts, notePosts] = await Promise.all([
     scanPosts('src/content/post/ko/writing/*.mdx'),
@@ -194,6 +194,7 @@ async function main() {
   }
 
   await updateReadme(token, updatedReadme, sha);
+  console.log('\n✦ Profile README updated successfully');
 }
 
 main().catch((err) => {

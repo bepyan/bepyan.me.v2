@@ -36,21 +36,27 @@
   }
 
   [cmdk-root] {
+    position: relative;
     width: 640px;
-    background: var(--gray1);
-    border-radius: 12px;
     padding: 8px 0;
     font-family: var(--font-sans);
-    box-shadow: var(--cmdk-shadow);
+    background: var(--gray1);
     border: 1px solid var(--gray6);
-    position: relative;
+    border-radius: 12px;
     outline: none;
+    box-shadow: var(--cmdk-shadow);
 
     .dark & {
       background: var(--gray2);
       border: 0;
 
       &:after {
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        z-index: -1;
+        width: calc(100% + 2px);
+        height: calc(100% + 2px);
         content: '';
         background: linear-gradient(
           to right,
@@ -61,42 +67,36 @@
           var(--gray6) 70%,
           var(--gray6) 100%
         );
-        z-index: -1;
-        position: absolute;
-        border-radius: 12px;
-        top: -1px;
-        left: -1px;
-        width: calc(100% + 2px);
-        height: calc(100% + 2px);
-        animation: shine 3s ease forwards 0.1s;
         background-size: 200% auto;
+        border-radius: 12px;
+        animation: shine 3s ease forwards 0.1s;
       }
 
       &:before {
-        content: '';
-        z-index: -1;
         position: absolute;
-        border-radius: 12px;
         top: -1px;
         left: -1px;
+        z-index: -1;
         width: calc(100% + 2px);
         height: calc(100% + 2px);
+        content: '';
+        border-radius: 12px;
         box-shadow: 0 0 0 1px transparent;
         animation: border 1s linear forwards 0.5s;
       }
     }
 
     kbd {
-      font-family: var(--font-sans);
-      background: var(--gray3);
-      color: var(--gray11);
-      height: 20px;
-      width: 20px;
-      border-radius: 4px;
-      padding: 0 4px;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 20px;
+      height: 20px;
+      padding: 0 4px;
+      font-family: var(--font-sans);
+      color: var(--gray11);
+      background: var(--gray3);
+      border-radius: 4px;
 
       &:first-of-type {
         margin-left: 8px;
@@ -105,14 +105,14 @@
   }
 
   [cmdk-input] {
-    font-family: var(--font-sans);
-    border: none;
     width: 100%;
-    font-size: 15px;
     padding: 8px 16px;
-    outline: none;
-    background: var(--bg);
+    font-family: var(--font-sans);
+    font-size: 15px;
     color: var(--gray12);
+    background: var(--bg);
+    border: none;
+    outline: none;
 
     &::placeholder {
       color: var(--gray9);
@@ -121,6 +121,11 @@
 
   [cmdk-raycast-top-shine] {
     .dark & {
+      position: absolute;
+      top: -1px;
+      z-index: -1;
+      width: 100%;
+      height: 1px;
       background: linear-gradient(
         90deg,
         rgba(56, 189, 248, 0),
@@ -128,11 +133,6 @@
         var(--gray9) 67.19%,
         rgba(236, 72, 153, 0)
       );
-      height: 1px;
-      position: absolute;
-      top: -1px;
-      width: 100%;
-      z-index: -1;
       opacity: 0;
       animation: showTopShine 0.1s ease forwards 0.2s;
     }
@@ -140,58 +140,58 @@
 
   [cmdk-raycast-loader] {
     --loader-color: var(--gray9);
-    border: 0;
-    width: 100%;
-    width: 100%;
-    left: 0;
-    height: 1px;
-    background: var(--gray6);
     position: relative;
-    overflow: visible;
+    left: 0;
     display: block;
+    width: 100%;
+    width: 100%;
+    height: 1px;
     margin-top: 12px;
     margin-bottom: 12px;
+    overflow: visible;
+    background: var(--gray6);
+    border: 0;
 
     &:after {
-      content: '';
+      position: absolute;
+      top: -1px;
       width: 50%;
       height: 1px;
-      position: absolute;
+      content: '';
       background: linear-gradient(
         90deg,
         transparent 0%,
         var(--loader-color) 50%,
         transparent 100%
       );
-      top: -1px;
       opacity: 0;
-      animation-duration: 1.5s;
-      animation-delay: 1s;
-      animation-timing-function: ease;
       animation-name: loading;
+      animation-duration: 1.5s;
+      animation-timing-function: ease;
+      animation-delay: 1s;
     }
   }
 
   [cmdk-item] {
-    content-visibility: auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    height: 40px;
+    padding: 0 8px;
+    font-size: 14px;
+    color: var(--gray12);
 
     cursor: pointer;
-    height: 40px;
-    border-radius: 8px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 8px;
-    color: var(--gray12);
     user-select: none;
-    will-change: background, color;
+    border-radius: 8px;
     transition: all 150ms ease;
     transition-property: none;
+    will-change: background, color;
+    content-visibility: auto;
 
     &[data-selected='true'] {
-      background: var(--gray4);
       color: var(--gray12);
+      background: var(--gray4);
     }
 
     &[data-disabled='true'] {
@@ -200,8 +200,8 @@
     }
 
     &:active {
-      transition-property: background;
       background: var(--gray4);
+      transition-property: background;
     }
 
     &:first-child {
@@ -220,30 +220,30 @@
 
   [cmdk-raycast-meta] {
     margin-left: auto;
-    color: var(--gray11);
     font-size: 13px;
+    color: var(--gray11);
   }
 
   [cmdk-list] {
-    padding: 0 8px;
     height: 393px;
+    padding: 0 8px;
+    padding-bottom: 40px;
     overflow: auto;
     overscroll-behavior: contain;
     scroll-padding-block-end: 40px;
     transition: 100ms ease;
     transition-property: height;
-    padding-bottom: 40px;
   }
 
   [cmdk-raycast-open-trigger],
   [cmdk-raycast-subcommand-trigger] {
-    color: var(--gray11);
-    padding: 0px 4px 0px 8px;
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 12px;
     height: 28px;
+    padding: 0px 4px 0px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray11);
     letter-spacing: -0.25px;
+    border-radius: 6px;
   }
 
   [cmdk-raycast-open-trigger] {
@@ -253,11 +253,11 @@
   }
 
   [cmdk-raycast-subcommand-trigger] {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     right: 8px;
     bottom: 8px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
 
     svg {
       width: 14px;
@@ -265,10 +265,10 @@
     }
 
     hr {
+      width: 1px;
       height: 100%;
       background: var(--gray6);
       border: 0;
-      width: 1px;
     }
 
     &[aria-expanded='true'],
@@ -282,10 +282,10 @@
   }
 
   [cmdk-separator] {
-    height: 1px;
     width: 100%;
-    background: var(--gray5);
+    height: 1px;
     margin: 4px 0;
+    background: var(--gray5);
   }
 
   *:not([hidden]) + [cmdk-group] {
@@ -293,39 +293,39 @@
   }
 
   [cmdk-group-heading] {
-    user-select: none;
-    font-size: 12px;
-    color: var(--gray11);
-    padding: 0 8px;
     display: flex;
     align-items: center;
+    padding: 0 8px;
+    font-size: 12px;
+    color: var(--gray11);
+    user-select: none;
   }
 
   [cmdk-raycast-footer] {
+    position: absolute;
+    bottom: 0;
     display: flex;
-    height: 40px;
     align-items: center;
     width: 100%;
-    position: absolute;
-    background: var(--gray1);
-    bottom: 0;
+    height: 40px;
     padding: 8px;
+    background: var(--gray1);
     border-top: 1px solid var(--gray6);
     border-radius: 0 0 12px 12px;
 
     svg {
       width: 20px;
       height: 20px;
-      filter: grayscale(1);
       margin-right: auto;
+      filter: grayscale(1);
     }
 
     hr {
-      height: 12px;
       width: 1px;
-      border: 0;
-      background: var(--gray6);
+      height: 12px;
       margin: 0 4px 0px 12px;
+      background: var(--gray6);
+      border: 0;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -334,13 +334,13 @@
   }
 
   [cmdk-empty] {
-    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 64px;
-    white-space: pre-wrap;
+    font-size: 14px;
     color: var(--gray11);
+    white-space: pre-wrap;
   }
 }
 
@@ -383,8 +383,8 @@
 @media (max-width: 640px) {
   .raycast {
     [cmdk-root] {
-      max-width: 640px;
       width: calc(100vw - var(--body-margin-left, 10px));
+      max-width: 640px;
     }
     [cmdk-input] {
       font-size: 16px;

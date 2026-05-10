@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import { type ReactNode, type Ref, useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import useMeasure from 'react-use-measure';
 
 import { cn } from '~/libs/utils';
 
-const Wrapper = React.forwardRef<
-  HTMLDivElement,
-  {
-    className?: string;
-    children: React.ReactNode;
-  }
->(function Wrapper({ className, children }, ref) {
+function Wrapper({
+  className,
+  children,
+  ref,
+}: {
+  className?: string;
+  children: ReactNode;
+  ref?: Ref<HTMLDivElement>;
+}) {
   return (
     <div
       ref={ref}
@@ -24,7 +26,7 @@ const Wrapper = React.forwardRef<
       {children}
     </div>
   );
-});
+}
 
 export function Easing() {
   const [ref, bounds] = useMeasure();

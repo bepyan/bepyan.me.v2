@@ -23,7 +23,7 @@ const { prevPost, nextPost } = Astro.props;
     prevPost && (
       <a
         class="group flex flex-col gap-1"
-        href={`/post/${resolveSlug(prevPost.slug)}`}
+        href={`/post/${resolveSlug(prevPost.id)}`}
       >
         <div class="text-disabled group-hover:text-second transition-colors">
           Previous
@@ -38,7 +38,7 @@ const { prevPost, nextPost } = Astro.props;
     nextPost && (
       <a
         class="group text-second hover:text-body ml-auto flex flex-col gap-1 text-right"
-        href={`/post/${resolveSlug(nextPost.slug)}`}
+        href={`/post/${resolveSlug(nextPost.id)}`}
       >
         <div class="text-disabled group-hover:text-second transition-colors">
           Next

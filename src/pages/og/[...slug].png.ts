@@ -8,12 +8,12 @@ const posts = await getPostCollection();
 
 export function getStaticPaths() {
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
   }));
 }
 
 export async function GET(ctx: APIContext) {
-  const post = posts.find((post) => post.slug === ctx.params.slug);
+  const post = posts.find((post) => post.id === ctx.params.slug);
   if (!post) return ctx.rewrite('/404');
 
   const ogImage = await generateOgImage({

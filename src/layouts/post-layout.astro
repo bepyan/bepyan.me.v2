@@ -2,7 +2,7 @@
 import '@shikijs/twoslash/style-rich.css';
 import '~/styles/mdx.css';
 
-import { type CollectionEntry } from 'astro:content';
+import { type CollectionEntry, render } from 'astro:content';
 import { format } from 'date-fns';
 
 import BaseHeader from '~/components/base-header.astro';
@@ -40,9 +40,10 @@ const { lang, post, prevPost, nextPost, relatedPostList, noI18n } = Astro.props;
 
 const postType = getPostType(post);
 const { title, date, updatedDate, tags } = post.data;
-const description = post.data.description || contentToDescription(post.body);
+const description =
+  post.data.description || contentToDescription(post.body ?? '');
 
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 const i18nJsonLd = noI18n
   ? null
@@ -76,7 +77,7 @@ const i18nJsonLd = noI18n
   seo={{
     title,
     description,
-    image: `/og/${post.slug}.png`,
+    image: `/og/${post.id}.png`,
     jsonLd: {
       '@type': 'BlogPosting',
       datePublished: date.toISOString(),

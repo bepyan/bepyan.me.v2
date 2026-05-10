@@ -11,10 +11,10 @@ import {
 
 export async function getStaticPaths() {
   const posts = await getPostCollection();
-  const enPosts = posts.filter((post) => getLangFromSlug(post.slug) === 'en');
+  const enPosts = posts.filter((post) => getLangFromSlug(post.id) === 'en');
 
   return posts
-    .filter((post) => getLangFromSlug(post.slug) === 'ko')
+    .filter((post) => getLangFromSlug(post.id) === 'ko')
     .map((post, _, list) => {
       const postList = list.filter((item) => {
         if (isWriting(post)) return isWriting(item);
@@ -25,7 +25,7 @@ export async function getStaticPaths() {
       const relatedPostList = getRelatedPosts(post, list);
 
       return {
-        params: { slug: resolveSlug(post.slug) },
+        params: { slug: resolveSlug(post.id) },
         props: {
           lang: 'ko' as const,
           post,
@@ -33,7 +33,7 @@ export async function getStaticPaths() {
           nextPost: postList[postIndex - 1],
           relatedPostList,
           noI18n: enPosts.every(
-            (enPost) => resolveSlug(enPost.slug) !== resolveSlug(post.slug),
+            (enPost) => resolveSlug(enPost.id) !== resolveSlug(post.id),
           ),
         },
       };

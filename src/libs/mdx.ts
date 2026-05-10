@@ -14,19 +14,19 @@ export const isDraft = (post: CollectionEntry<'post'>) => {
   return isDev || !post.data.draft;
 };
 
-export const isWriting = (post: { slug: string }) => {
-  return post.slug.includes('/writing/');
+export const isWriting = (post: { id: string }) => {
+  return post.id.includes('/writing/');
 };
 
-export const isNote = (post: { slug: string }) => {
-  return post.slug.includes('/note/');
+export const isNote = (post: { id: string }) => {
+  return post.id.includes('/note/');
 };
 
-export const getPostType = (post: { slug: string }) => {
+export const getPostType = (post: { id: string }) => {
   if (isWriting(post)) return 'writing';
   if (isNote(post)) return 'note';
 
-  throw new Error('post slug is invalid...');
+  throw new Error('post id is invalid...');
 };
 
 // 최신순
@@ -93,7 +93,7 @@ export const getRelatedPosts = (
   postList: CollectionEntry<'post'>[],
 ) => {
   return postList
-    .filter((p) => p.slug !== post.slug)
+    .filter((p) => p.id !== post.id)
     .map((p) => {
       const tagPoint = post.data.tags
         ? post.data.tags.filter((tag) => p.data.tags?.includes(tag)).length
@@ -137,11 +137,11 @@ export const getPostInfoList = async (
       return true;
     })
     .map<PostInfo>((post) => {
-      const lang = getLangFromSlug(post.slug);
+      const lang = getLangFromSlug(post.id);
       return {
         title: post.data.title,
         description: post.data.description,
-        href: translatePath(`/post/${resolveSlug(post.slug)}`, lang),
+        href: translatePath(`/post/${resolveSlug(post.id)}`, lang),
         date: post.data.date,
         updatedDate: post.data.updatedDate,
         lang,

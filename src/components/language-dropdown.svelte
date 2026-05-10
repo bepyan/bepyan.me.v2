@@ -14,23 +14,25 @@
 
   let { url, align = 'start' }: Props = $props();
 
-  const { lang, p } = useI18n(url);
-  const pathname = getDefaultPathname(url);
+  const i18n = $derived(useI18n(url));
+  const pathname = $derived(getDefaultPathname(url));
 
-  const languageItems = Object.entries(languages).map(([value, label]) => ({
-    label,
-    value,
-    href: p(pathname, value as Language),
-  }));
+  const languageItems = $derived(
+    Object.entries(languages).map(([value, label]) => ({
+      label,
+      value,
+      href: i18n.p(pathname, value as Language),
+    })),
+  );
 
-  let selectedValue = $derived(lang);
+  let selectedValue = $derived(i18n.lang);
 
   function handleLanguageSelect(
     event: CustomEvent<{ item: DropdownItem }>,
   ): void {
     const { item } = event.detail;
 
-    window.location.href = p(pathname, item.value as Language);
+    window.location.href = i18n.p(pathname, item.value as Language);
   }
 </script>
 

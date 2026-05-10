@@ -11,7 +11,7 @@ export default function CursorEffect() {
 
   const dotsRef = useRef<(HTMLDivElement | null)[]>([]);
   const cursorRef = useRef({ x: 0, y: 0 });
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
 
   const updateDots = () => {
     dotsRef.current.forEach((dot) => {
@@ -55,15 +55,21 @@ export default function CursorEffect() {
     <div ref={boxRef} className={cn(styles.box)}>
       <p>마우스를 박스 안에서 움직여 보세요.</p>
       <div
-        ref={(el) => (dotsRef.current[0] = el)}
+        ref={(el) => {
+          dotsRef.current[0] = el;
+        }}
         className={cn(styles.dot, styles.d1)}
       />
       <div
-        ref={(el) => (dotsRef.current[1] = el)}
+        ref={(el) => {
+          dotsRef.current[1] = el;
+        }}
         className={cn(styles.dot, styles.d2)}
       />
       <div
-        ref={(el) => (dotsRef.current[2] = el)}
+        ref={(el) => {
+          dotsRef.current[2] = el;
+        }}
         className={cn(styles.dot, styles.d3)}
       />
     </div>

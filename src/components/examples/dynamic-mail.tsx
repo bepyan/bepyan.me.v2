@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useRef, useState } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
 
 import Spinner from '~/components/ui/spinner';
@@ -14,7 +14,7 @@ export function DynamicMail() {
   const [formState, setFormState] = useState<FormState>('idle');
 
   const ref = useRef<HTMLDivElement>(null);
-  useOnClickOutside(ref, () => {
+  useOnClickOutside(ref as RefObject<HTMLElement>, () => {
     if (formState === 'loading') return;
     setOpen(false);
   });

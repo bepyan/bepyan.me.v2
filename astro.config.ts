@@ -1,3 +1,4 @@
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
@@ -28,6 +29,33 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  markdown: {
+    processor: unified({
+      remarkPlugins: [remarkBreaks],
+      rehypePlugins: [
+        rehypeSlug,
+        [
+          rehypeAutolinkHeadings,
+          {
+            behavior: 'wrap',
+            properties: {
+              className: ['anchor'],
+            },
+          },
+        ],
+        [
+          rehypeExternalLinks,
+          {
+            properties: {
+              class: 'external-link',
+            },
+            target: '_blank',
+            rel: ['noopener noreferrer'],
+          },
+        ],
+      ],
+    }),
+  },
   integrations: [
     react(),
     svelte(),
@@ -54,29 +82,6 @@ export default defineConfig({
           transformerFragment(),
         ],
       },
-      remarkPlugins: [remarkBreaks],
-      rehypePlugins: [
-        rehypeSlug,
-        [
-          rehypeAutolinkHeadings,
-          {
-            behavior: 'wrap',
-            properties: {
-              className: ['anchor'],
-            },
-          },
-        ],
-        [
-          rehypeExternalLinks,
-          {
-            properties: {
-              class: 'external-link',
-            },
-            target: '_blank',
-            rel: ['noopener noreferrer'],
-          },
-        ],
-      ],
     }),
   ],
 });

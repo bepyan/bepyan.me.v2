@@ -8,10 +8,10 @@ async function getFontData(url: string) {
 
 const [AritaBuri, AritaBuriBold] = await Promise.all([
   getFontData(
-    'https://cdn.jsdelivr.net/gh/taevel02/typeface-arita/Arita-buriM.woff',
+    'https://cdn.jsdelivr.net/gh/bepyan/arita@main/fonts/AritaBuriKR-Medium.ttf',
   ),
   getFontData(
-    'https://cdn.jsdelivr.net/gh/taevel02/typeface-arita/Arita-buriB.woff',
+    'https://cdn.jsdelivr.net/gh/bepyan/arita@main/fonts/AritaBuriKR-Bold.ttf',
   ),
 ]);
 

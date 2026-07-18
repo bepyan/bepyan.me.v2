@@ -303,6 +303,7 @@ pre.astro-code {
   padding: var(--astro-code-py) var(--astro-code-px);
   overflow-x: auto;
   font-size: 0.875rem;
+  font-weight: 400;
   line-height: 1.5;
   color: var(--astro-code-foreground);
   -moz-tab-size: 2;

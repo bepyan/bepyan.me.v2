@@ -91,5 +91,6 @@ export async function generateOgImage({
     palette: true,
     quality: 80,
   });
-  return await image.toBuffer();
+
+  return new Uint8Array(await image.toBuffer());
 }

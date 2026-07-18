@@ -99,6 +99,12 @@ export default {
 };
 ```
 
+```ts caption="Long code scrolls horizontally. The copy button and language label stay pinned to the top right while scrolling."
+const url = `https://api.example.com/v1/posts?category=engineering&sort=created_at&order=desc&page=1&limit=50&fields=title,description,tags,author,publishedAt`;
+
+const posts = await fetch(url).then((res) => res.json());
+```
+
 ```tsx line-numbers title="layout.tsx" caption="Like a poor star, that's why, the bug, left behind." /fontMono/ /fontSans/ /fontSerif/
 import '~/styles/globals.css';
 

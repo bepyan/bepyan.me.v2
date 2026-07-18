@@ -376,6 +376,10 @@ pre.astro-code code {
   white-space: normal;
 }
 
+[data-code-block] {
+  position: relative;
+}
+
 [data-code-fragment] [data-code-title] {
   margin-bottom: 0.25rem;
   font-size: 0.9rem;
@@ -389,12 +393,15 @@ pre.astro-code code {
 }
 
 [data-code-fragment] span.lang {
+  @apply font-mono;
+
   position: absolute;
   top: 2px;
   right: 8px;
   z-index: 2;
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.5;
   color: var(--astro-code-token-comment);
   transition:
     color 0.4s,
@@ -404,17 +411,25 @@ pre.astro-code code {
 .astro-code.has-line-numbers {
   padding-left: calc(var(--astro-code-px) + 2rem);
 }
-.astro-code .line-numbers {
+[data-code-fragment] .line-numbers {
+  @apply font-mono;
+
   position: absolute;
   top: 0;
+  bottom: 0;
   left: 0;
   z-index: 3;
   display: grid;
+  align-content: start;
   width: 2rem;
   padding: var(--astro-code-py) 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
   color: #888;
   text-align: center;
+  background-color: var(--astro-code-background);
   border-right: 1px solid var(--border);
+  border-radius: 8px 0 0 8px;
 }
 
 /* copy-code */

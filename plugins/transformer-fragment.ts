@@ -14,27 +14,29 @@ export function transformerFragment(): ShikiTransformer {
       const preElement = root.children[0] as Element;
       const codeElement = preElement.children[0] as Element;
 
+      const codeBlockChildren: (Element | undefined)[] = [preElement];
+
       const isShowLineNumbers = metaString.includes('line-numbers');
       if (isShowLineNumbers) {
         addClassToHast(preElement, 'has-line-numbers');
-        preElement.children.push(createLineNumbersElement(codeElement));
+        codeBlockChildren.push(createLineNumbersElement(codeElement));
       }
 
       const lang = this.options.lang;
       const isShowLang = !ignoreLangList.includes(lang);
       if (isShowLang) {
-        preElement.children.push(createLanguageElement(lang));
+        codeBlockChildren.push(createLanguageElement(lang));
       }
 
       const isShowCopy = !metaString.includes('noCopy');
       if (isShowCopy) {
-        preElement.children.push(createCopyElement());
+        codeBlockChildren.push(createCopyElement());
       }
 
       root.children = [
         createFragmentElement(
           title && createTitleElement(title),
-          preElement,
+          createCodeBlockElement(...codeBlockChildren),
           caption && createCaptionElement(caption),
         ),
       ];
@@ -49,6 +51,17 @@ function createFragmentElement(...children: unknown[]): Element {
     tagName: 'div',
     properties: {
       'data-code-fragment': '',
+    },
+    children: (children as Element[]).filter(Boolean),
+  };
+}
+
+function createCodeBlockElement(...children: unknown[]): Element {
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: {
+      'data-code-block': '',
     },
     children: (children as Element[]).filter(Boolean),
   };

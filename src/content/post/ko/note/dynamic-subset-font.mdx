@@ -1,0 +1,236 @@
+---
+title: '다이나믹 서브셋 만들기'
+description: 'TTF 폰트를 다이나믹 서브셋으로 만들고 jsDelivr CDN에 배포해 보자.'
+date: 2026-07-30 23:12:06
+draft: false
+tags:
+  - font
+---
+
+## 들어가면서
+
+이 블로그의 감성을 담당하는 폰트, [_아리따부리_](https://www.apgroup.com/int/ko/about-us/visual-identity/arita-typeface.html)는 공식적으로 TTF 파일만 제공합니다.
+웹에서 바로 가져다 쓸 만한 CDN 서버도 찾기 어려워서 직접 세팅하기로 했습니다.
+
+TTF를 웹에 최적화된 WOFF2 및 폰트 서브셋으로 변환하고, 무료로 편하게 쓸 수 있는 [jsDelivr](https://www.jsdelivr.com/) CDN에 배포해 봅시다.
+
+## 서브셋 폰트란?
+
+서브셋(subset) 폰트는 폰트 파일에서 **필요한 글자만 추출해서 만든 폰트**입니다.
+
+한글은 자모 조합으로 만들 수 있는 완성형 글자가 11,172자나 됩니다.
+알파벳 몇십 자로 끝나는 라틴 폰트와 달리, 한글 폰트는 TTF 파일 하나가 수 MB에 달하죠.
+
+이렇게 글리프가 많은 폰트일수록 서브셋이 유용합니다.
+실제 웹사이트에서 필요한 글자가 담긴 조각만 다운로드하게 됩니다.
+
+자세한 내용은 제가 작성한 [한글 웹폰트 용량 줄이기](https://arita.bepyan.me/guide/dynamic-subset) 글을 참고해 주세요.
+
+서브셋 방식은 크게 두 가지로 나눌 수 있습니다.
+
+- **static subset**: 자주 쓰는 글자만 남기고 나머지를 잘라낸 파일 하나를 만듭니다. KS X 1001 완성형 2,350자만 남기는 것이 대표적입니다. 용량은 크게 줄지만, 빠진 글자(예: "뷁")는 폴백 폰트로 깨져 보입니다.
+- **dynamic subset**: 폰트를 unicode-range 단위의 작은 조각 여러 개로 쪼갭니다. 브라우저는 `@font-face`의 [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/unicode-range) 선언을 보고, 화면에 실제로 그려지는 글자가 포함된 조각만 다운로드합니다. 모든 글자를 지원하면서도 전송량은 사용한 만큼만 발생합니다.
+
+[Google Fonts](https://fonts.google.com/noto/specimen/Noto+Sans+KR)에서 한글 폰트 CSS를 열어보면 `@font-face`가 100개 넘게 선언되어 있는 것을 볼 수 있는데, 바로 이 dynamic subset 방식입니다.
+
+{/* prettier-ignore */}
+```css
+@font-face {
+  font-family: 'Noto Sans KR';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.65.woff2) format('woff2');
+  unicode-range: U+99df, U+99ed, U+99f1, U+99ff, U+9a01, U+9a08, U+9a0e-9a0f, U+9a19, U+9a2b, U+9a30, U+9a36-9a37, U+9a40, U+9a43, U+9a45, U+9a4d, U+9a55, U+9a57, U+9a5a-9a5b, U+9a5f, U+9a62, U+9a65, U+9a69-9a6a, U+9aa8, U+9ab8, U+9ad3, U+9ae5, U+9aee, U+9b1a, U+9b27, U+9b2a, U+9b31, U+9b3c, U+9b41-9b45, U+9b4f, U+9b54, U+9b5a, U+9b6f, U+9b8e, U+9b91, U+9b9f, U+9bab, U+9bae, U+9bc9, U+9bd6, U+9be4, U+9be8, U+9c0d, U+9c10, U+9c12, U+9c15, U+9c25, U+9c32, U+9c3b, U+9c47, U+9c49, U+9c57, U+9ce5, U+9ce7, U+9ce9, U+9cf3-9cf4, U+9cf6, U+9d09, U+9d1b, U+9d26, U+9d28, U+9d3b, U+9d51, U+9d5d, U+9d60-9d61, U+9d6c, U+9d72, U+9da9, U+9daf, U+9db4, U+9dc4, U+9dd7, U+9df2, U+9df8-9dfa, U+9e1a, U+9e1e, U+9e75, U+9e79, U+9e7d, U+9e7f, U+9e92-9e93, U+9e97, U+9e9d, U+9e9f, U+9ea5, U+9eb4-9eb5, U+9ebb, U+9ebe, U+9ec3, U+9ecd-9ece, U+9ed4, U+9ed8, U+9edb-9edc, U+9ede, U+9ee8, U+9ef4, U+9f07-9f08, U+9f0e, U+9f13, U+9f20, U+9f3b, U+9f4a-9f4b, U+9f4e, U+9f52, U+9f5f, U+9f61, U+9f67, U+9f6a, U+9f6c, U+9f77, U+9f8d, U+9f90, U+9f95, U+9f9c, U+ac02-ac03, U+ac05-ac06, U+ac09-ac0f, U+ac17-ac18, U+ac1b, U+ac1e-ac1f, U+ac21-ac23;
+}
+@font-face {
+  font-family: 'Noto Sans KR';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.66.woff2) format('woff2');
+  unicode-range: U+96a7-96a8, U+96aa, U+96b1, U+96b7, U+96bb, U+96c0-96c1, U+96c4-96c5, U+96c7, U+96c9, U+96cb-96ce, U+96d5-96d6, U+96d9, U+96db-96dc, U+96e2-96e3, U+96e8-96ea, U+96ef-96f0, U+96f2, U+96f6-96f7, U+96f9, U+96fb, U+9700, U+9706-9707, U+9711, U+9713, U+9716, U+9719, U+971c, U+971e, U+9727, U+9730, U+9732, U+9739, U+973d, U+9742, U+9744, U+9748, U+9756, U+975c, U+9761, U+9769, U+976d, U+9774, U+9777, U+977a, U+978b, U+978d, U+978f, U+97a0, U+97a8, U+97ab, U+97ad, U+97c6, U+97cb, U+97dc, U+97f6, U+97fb, U+97ff-9803, U+9805-9806, U+9808, U+980a, U+980c, U+9810-9813, U+9817-9818, U+982d, U+9830, U+9838-9839, U+983b, U+9846, U+984c-984e, U+9854, U+9858, U+985a, U+985e, U+9865, U+9867, U+986b, U+986f, U+98af, U+98b1, U+98c4, U+98c7, U+98db-98dc, U+98e1-98e2, U+98ed-98ef, U+98f4, U+98fc-98fe, U+9903, U+9909-990a, U+990c, U+9910, U+9913, U+9918, U+991e, U+9920, U+9928, U+9945, U+9949, U+994b-994d, U+9951-9952, U+9954, U+9957, U+9996, U+999d, U+99a5, U+99a8, U+99ac-99ae, U+99b1, U+99b3-99b4, U+99b9, U+99c1, U+99d0-99d2, U+99d5, U+99d9, U+99dd;
+}
+/* ... */
+```
+
+## 서브셋 폰트 만들기
+
+서브셋을 만드는 도구는 여러 가지가 있습니다.
+
+static subset은 fonttools의 [pyftsubset](https://fonttools.readthedocs.io/en/latest/subset/)으로 글자 목록을 직접 지정해 만들 수 있고, [Transfonter](https://transfonter.org/) 같은 웹 도구도 있습니다.
+
+하지만 dynamic subset은 폰트 분할, 조각별 WOFF2 압축, unicode-range CSS 생성까지 한 번에 자동화해 주는 도구가 필요한데요.
+
+제가 선택한 것은 **cn-font-split**입니다.
+
+[**cn-font-split**](https://github.com/KonghaYao/cn-font-split)은 중국어 웹폰트 생태계에서 나온 dynamic subset 빌더입니다.
+글리프가 수만 자에 이르는 CJK 폰트를 위해 만들어졌고, TTF 파일 하나를 넣으면 아래 결과물을 만들어 줍니다.
+
+- unicode-range 단위로 분할된 WOFF2 조각들
+- 조각별 `@font-face`가 선언된 CSS 파일
+
+즉 Google Fonts가 한글 폰트를 서빙하는 구조를 내 폰트로 그대로 재현하는 셈입니다.
+
+### 튜토리얼
+
+제가 작성한 [빌드 스크립트](https://github.com/bepyan/arita/blob/main/scripts/build.mjs)를 바탕으로, 아리따부리 한 패밀리만 분할하는 튜토리얼로 정리했습니다.
+아래 단계를 그대로 따라 하면 dynamic subset CSS를 얻을 수 있습니다.
+
+#### 1. 프로젝트 준비
+
+새로운 디렉터리에 cn-font-split을 설치하고, `fonts/` 폴더에 분할할 TTF 파일을 넣습니다.
+
+```shell
+mkdir arita-buri-font
+cd arita-buri-font
+```
+
+```shell
+npm init -y
+npm install cn-font-split
+```
+
+```
+.
+├── package.json
+├── build.mjs   # 2단계에서 작성할 스크립트
+└── fonts
+    ├── AritaBuriKR-Light.ttf
+    ├── AritaBuriKR-Medium.ttf
+    └── AritaBuriKR-Bold.ttf
+```
+
+#### 2. 분할 스크립트 작성
+
+핵심은 `cn-font-split`의 `fontSplit()` 함수입니다.
+
+weight별 TTF를 순회하며 unicode-range 조각으로 분할하고, weight별 `@font-face`를 CSS 파일 하나로 합칩니다.
+
+```js title="build.mjs" /fontSplit/
+import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fontSplit } from 'cn-font-split';
+
+// 0. 설정 정의
+const FAMILY = 'Arita Buri KR';
+const FONTS = [
+  { stem: 'AritaBuriKR-Light', weight: 300 },
+  { stem: 'AritaBuriKR-Medium', weight: 500 },
+  { stem: 'AritaBuriKR-Bold', weight: 700 },
+];
+const OUT_DIR = 'dist';
+
+// 1. 폰트별 분할
+const famFaces = [];
+for (const { stem, weight } of FONTS) {
+  const outDir = join(OUT_DIR, stem);
+  await fontSplit({
+    input: readFileSync(join('fonts', `${stem}.ttf`)),
+    outDir,
+    css: {
+      fontFamily: FAMILY,
+      fontWeight: String(weight),
+      fontStyle: 'normal',
+      fontDisplay: 'swap',
+      fileName: 'result.css',
+    },
+    reporter: false,
+    testHTML: false,
+    silent: true,
+  });
+
+  // 1-1. 부산물 제거
+  for (const junk of ['index.proto', 'preview.svg', 'index.html']) {
+    rmSync(join(outDir, junk), { force: true });
+  }
+
+  // 1-2. @font-face 블록만 추출하고 url("./ → url("./<stem>/ 재작성
+  const raw = readFileSync(join(outDir, 'result.css'), 'utf8');
+  const faces = raw
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .trim()
+    .replace(/url\("\.\//g, `url("./${stem}/`);
+  famFaces.push(`/* ${FAMILY} ${weight} */\n${faces}`);
+  rmSync(join(outDir, 'result.css'), { force: true });
+}
+
+// 2. CSS 병합
+writeFileSync(
+  join(OUT_DIR, 'arita-buri-dynamic-subset.css'),
+  `${famFaces.join('\n')}\n`,
+);
+
+// wasm FFI가 종료 시 SIGABRT를 내는 경우가 있어 명시적으로 정상 종료
+process.exit(0);
+```
+
+몇 가지 짚어볼 부분이 있습니다.
+
+**CLI 대신 Node API**를 씁니다.
+weight마다 CLI(`npx cn-font-split`)를 반복 실행하면 wasm FFI 초기화가 불안정해서 SIGABRT로 죽는 문제가 있었습니다. Node API는 한 프로세스 안에서 wasm을 재사용하기 때문에 여러 폰트를 연달아 처리해도 안정적입니다. 같은 이유로 마지막에 `process.exit(0)`으로 명시적으로 종료해 줍니다.
+
+**CSS 후처리**가 필요합니다.
+생성된 `result.css`는 조각 파일과 같은 폴더를 기준으로 상대 경로를 갖습니다. 통합 CSS는 `dist/` 최상위에 두기 때문에, weight별 폴더 구조에 맞게 URL을 재작성했습니다.
+
+#### 3. 실행
+
+이제 스크립트를 실행하면 됩니다.
+
+```shell
+node build.mjs
+```
+
+`dist/` 폴더에 weight별 WOFF2 조각과 통합 CSS가 생성됩니다.
+
+```
+dist
+├── AritaBuriKR-Light
+│   ├── 0a1b2c3d....woff2   # unicode-range 조각들
+│   └── ...
+├── AritaBuriKR-Medium
+├── AritaBuriKR-Bold
+└── arita-buri-dynamic-subset.css
+```
+
+#### 4. 배포
+
+배포 전에 `package.json`에 패키지 이름, 버전, 배포할 파일을 명시합니다.
+`files`에 `dist`만 넣으면 TTF와 스크립트는 제외되고 결과물만 올라갑니다.
+
+```json title="package.json"
+{
+  "name": "@your-name/arita-buri",
+  "version": "1.0.0",
+  "files": ["dist"]
+}
+```
+
+npm에 로그인합니다.
+현재 정책상 npm에 배포하기 위해서 회원가입을 하고 2FA(2단계 인증)까지 해야 합니다.
+
+```shell
+npm login
+```
+
+아래 명령어로 배포하면 별도 서버 없이 jsDelivr CDN이 바로 패키지 파일을 서빙해 줍니다.
+
+```shell
+npm publish --access public
+```
+
+이제 HTML에서 CSS 한 줄로 폰트를 불러올 수 있습니다.
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@your-name/arita-buri@latest/dist/dynamic-subset/arita-buri-dynamic-subset.css"
+/>
+```
+
+## 맺으면서
+
+이렇게 만든 아리따 웹폰트는 [arita.bepyan.me](https://arita.bepyan.me/)에서 구경할 수 있습니다 🎉
+
+폰트 CDN을 못 찾아 시작한 삽질이었지만, 덕분에 폰트 서빙을 남에게 의존하지 않게 되었습니다.
+쓰고 싶은 폰트가 공식 배포처에 TTF 파일로만 있다면, 한번 직접 만들어 보세요.

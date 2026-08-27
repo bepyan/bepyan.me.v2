@@ -1,0 +1,157 @@
+---
+title: 'Killing Leftover Dev Servers'
+description: 'Look through leftover dev servers and clean them up by port range.'
+date: 2026-08-14 17:11:47
+draft: false
+tags:
+  - dev
+  - shell
+---
+
+Once you start using AI agents, a lot of work happens in parallel.
+You spin up a dev server in each `git worktree`. Claude Code starts its own while a session is running. Then you try to start another one and the port is already taken.
+
+This is how I clean up the ones that got left running.
+
+This post is based on a <mark>Mac</mark> environment.
+
+## Killing a Single Port
+
+If you know the port number, [`lsof`](https://man7.org/linux/man-pages/man8/lsof.8.html) shows which process is holding it.
+
+```shell
+lsof -i :3000
+```
+
+```shell
+COMMAND   PID      USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    96142 bepyan    27u  IPv6 0x2db279d161bb8a26      0t0  TCP *:3000 (LISTEN)
+```
+
+The second column is the `PID`. Send that process a termination signal.
+
+```shell
+kill 96142
+```
+
+`-9` (`SIGKILL`) skips shutdown handlers. If the dev server cleans up children or temp files itself, that cleanup never runs.
+Use a plain `kill` (`SIGTERM`) first. Add `-9` only if it stays alive.
+
+## Splitting Ports Into Ranges
+
+You usually don't know the port. That's how the process gets orphaned in the first place.
+You also shouldn't kill every open port, so split them into ranges and pick a rule for each.
+
+The table below is a heuristic for my local setup. Change the automatic cleanup band to match yours.
+
+| Port range        | Policy             | Basis                                                    |
+| ----------------- | ------------------ | -------------------------------------------------------- |
+| `0 ~ 2999`        | Protect            | System services, databases, local infrastructure         |
+| `3000 ~ 9999`     | Cleanup candidates | Where I run framework dev servers                        |
+| `10000 ~ 65535`   | Inspect, then kill | Workers, tools, and dynamically assigned ports can mix   |
+
+I use `3000 ~ 9999` for automatic cleanup because that's where the framework defaults sit.
+Next.js and Nuxt use `3000`, Vite `5173`, Astro `4321`, Storybook `6006`, Metro `8081`.
+
+I leave `10000` and above for inspection. That cutoff is a conservative local rule, not the OS ephemeral port range. Child workers often bind dynamic ports there, so I don't kill the whole band at once.
+
+## Clearing a Range in One Go
+
+`lsof` accepts a port range with `-iTCP:3000-9999`. [`awk`](https://man7.org/linux/man-pages/man1/awk.1p.html) then keeps Node.js, Bun, and Deno processes and formats the output.
+
+```shell
+lsof -nP -iTCP:3000-9999 -sTCP:LISTEN | awk 'NR>1 && $1 ~ /^(node|bun|deno)$/ {
+  split($9, a, ":")
+  port = a[length(a)]
+  printf "%-10s %-8s %s\n", $1, $2, port
+}'
+```
+
+`-nP` turns off hostname and service-name lookups. `-sTCP:LISTEN` keeps only listening sockets.
+`awk` splits the `NAME` column (`*:3000`, `[::1]:9710`) on `:`, reads the last piece as the port, and keeps matching runtimes.
+Drop the runtime filter and you also catch ports `5000` and `7000`, which ControlCenter holds on macOS.
+
+```shell
+node       26925    8081
+node       50735    8082
+node       55455    8083
+node       56130    9711
+node       56130    9710
+node       96142    3000
+```
+
+If the list looks right, swap `printf` for `print $2` to get bare PIDs and pipe them into `xargs kill`.
+
+```shell
+lsof -nP -iTCP:3000-9999 -sTCP:LISTEN |
+  awk 'NR>1 && $1 ~ /^(node|bun|deno)$/ {
+    split($9, a, ":"); print $2
+  }' |
+  sort -u |
+  xargs kill
+```
+
+`sort -u` drops duplicate PIDs. In the output above, `56130` shows up twice because it listens on two ports.
+
+## Checking the High Range by Hand
+
+For `10000` and above, look at the process before killing it. Pull the PIDs and hand them to [`ps`](https://man7.org/linux/man-pages/man1/ps.1.html).
+
+```shell
+lsof -nP -iTCP:10000-65535 -sTCP:LISTEN |
+  awk 'NR>1 && $1 ~ /^(node|bun|deno)$/ { print $2 }' |
+  sort -u |
+  xargs ps -fp
+```
+
+```shell
+  UID   PID  PPID   C STIME   TTY           TIME CMD
+  501 96377 96142   0  5:34PM ??         0:00.34 .../bin/node .../esbuild
+  501 96387 96377   0  5:34PM ??         0:00.08 .../bin/node .../worker
+  501 98073 97993   0  5:34PM ??         0:00.33 .../bin/node .../vite-node
+```
+
+The `PPID` column shows why this range is hard to kill in bulk.
+The parent of `96377` is `96142`, the dev server on port `3000` from earlier. The parent of `96387` is `96377`.
+These are **worker processes the dev server spawned**, each listening on a dynamically assigned port.
+Kill the parent with `SIGTERM` and they go down with it.
+
+A `PPID` of `1` can mean the original parent is gone and the process was reparented. That still isn't a reason to kill it. Read `CMD` before you decide.
+
+## Making It a Shell Function
+
+Those one-liners get old to retype, so they live in `.zshrc`.
+
+```shell
+# List dev servers: lsdev [from-port] [to-port]
+lsdev() {
+  local from="${1:-3000}" to="${2:-9999}"
+  lsof -nP -iTCP:"${from}-${to}" -sTCP:LISTEN | awk '
+    NR>1 && $1 ~ /^(node|bun|deno)$/ {
+      split($9, a, ":"); port = a[length(a)]
+      printf "%-10s %-8s %s\n", $1, $2, port
+    }'
+}
+
+# Kill dev servers: killdev [from-port] [to-port]
+killdev() {
+  local targets=$(lsdev "$@")
+
+  if [ -z "$targets" ]; then
+    echo "No dev servers to clean up."
+    return
+  fi
+
+  echo "$targets"
+  echo "$targets" | awk '{print $2}' | sort -u | xargs kill
+}
+```
+
+The port range goes to `lsof -iTCP:from-to`. `awk` only filters runtimes and formats the line. Both default to the `3000 ~ 9999` cleanup range.
+`killdev` reuses the output of `lsdev`, so it **prints what it is about to kill** before killing it. The list you see is the list that dies.
+
+```shell
+killdev           # clean up 3000~9999
+killdev 4000 4999 # clean up one range
+lsdev 10000 65535 # just look at the high range
+```

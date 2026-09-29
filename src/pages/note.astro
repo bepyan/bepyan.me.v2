@@ -5,22 +5,14 @@ import BaseHeader from '~/components/base-header.astro';
 import BaseNav from '~/components/base-nav.astro';
 import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
-import { getPostInfoList, type PostInfo } from '~/libs/mdx';
+import { getPostInfoList } from '~/libs/mdx';
+import { groupByYear } from '~/libs/utils';
 
 const { lang, t } = useI18n(Astro.url);
 
 const allNotes = await getPostInfoList('note');
 
-const yearList = Object.entries(
-  allNotes
-    .filter((note) => note.lang === lang)
-    .reduce<{ [year: string]: PostInfo[] }>((ac, v) => {
-      const year = new Date(v.date).getFullYear();
-      if (!ac[year]) ac[year] = [];
-      ac[year].push(v);
-      return ac;
-    }, {}),
-).sort(([yearA], [yearB]) => +yearB - +yearA);
+const yearList = groupByYear(allNotes.filter((note) => note.lang === lang));
 
 const title = t('nav.note');
 const description = t('nav.note.desc');

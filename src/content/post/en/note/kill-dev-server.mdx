@@ -44,11 +44,11 @@ You also shouldn't kill every open port, so split them into ranges and pick a ru
 
 The table below is a heuristic for my local setup. Change the automatic cleanup band to match yours.
 
-| Port range        | Policy             | Basis                                                    |
-| ----------------- | ------------------ | -------------------------------------------------------- |
-| `0 ~ 2999`        | Protect            | System services, databases, local infrastructure         |
-| `3000 ~ 9999`     | Cleanup candidates | Where I run framework dev servers                        |
-| `10000 ~ 65535`   | Inspect, then kill | Workers, tools, and dynamically assigned ports can mix   |
+| Port range      | Policy             | Basis                                                  |
+| --------------- | ------------------ | ------------------------------------------------------ |
+| `0 ~ 2999`      | Protect            | System services, databases, local infrastructure       |
+| `3000 ~ 9999`   | Cleanup candidates | Where I run framework dev servers                      |
+| `10000 ~ 65535` | Inspect, then kill | Workers, tools, and dynamically assigned ports can mix |
 
 I use `3000 ~ 9999` for automatic cleanup because that's where the framework defaults sit.
 Next.js and Nuxt use `3000`, Vite `5173`, Astro `4321`, Storybook `6006`, Metro `8081`.

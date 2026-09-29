@@ -14,6 +14,8 @@ type Props = {
 };
 
 const { meta, class: className } = Astro.props;
+
+const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <html lang="ko">
@@ -27,24 +29,85 @@ const { meta, class: className } = Astro.props;
       class={cn('deck', className)}
       tabindex="-1"
       data-theme-key={STORAGE_THEME_KEY}
+      data-share-url={shareUrl}
     >
       <slot />
       <div class="deck-progress" aria-hidden="true"></div>
       <div class="deck-counter" aria-live="polite"></div>
       <div class="deck-menu" role="menu" tabindex="-1" popover="manual">
         <div class="deck-menu-status" aria-hidden="true"></div>
+        <button type="button" role="menuitem" data-action="prev">
+          <span>이전 슬라이드</span><kbd>←</kbd>
+        </button>
+        <button type="button" role="menuitem" data-action="next">
+          <span>다음 슬라이드</span><kbd>→</kbd>
+        </button>
+        <button type="button" role="menuitem" data-action="first">
+          <span>첫 슬라이드</span><kbd>Home</kbd>
+        </button>
+        <button type="button" role="menuitem" data-action="last">
+          <span>마지막 슬라이드</span><kbd>End</kbd>
+        </button>
+        <form class="deck-menu-goto">
+          <input
+            type="number"
+            name="page"
+            min="1"
+            inputmode="numeric"
+            aria-label="이동할 슬라이드 번호"
+            required
+          />
+          <button type="submit">이동</button>
+        </form>
+        <hr />
+        <button type="button" role="menuitem" data-action="copy-link">
+          <span>현재 슬라이드 링크 복사</span>
+        </button>
+        <button type="button" role="menuitem" data-action="qr">
+          <span>QR 코드 표시</span><kbd>Q</kbd>
+        </button>
+        <button type="button" role="menuitem" data-action="pdf">
+          <span>PDF로 다운로드</span>
+        </button>
+        <hr />
         <button type="button" role="menuitem" data-action="fullscreen">
           <span data-label>전체화면</span><kbd>F</kbd>
         </button>
         <button type="button" role="menuitem" data-action="theme">
           <span>테마 전환</span><kbd>T</kbd>
         </button>
+        <hr />
+        <a href="/slides" role="menuitem">홈으로</a>
       </div>
+      <dialog class="deck-qr" aria-label="QR 코드">
+        <button type="button" class="deck-qr-close" aria-label="닫기">
+          <!-- lucide x -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+        <div class="deck-qr-code"></div>
+        <button type="button" class="deck-qr-url"></button>
+        <small class="deck-qr-hint">클릭하여 URL 복사 · ESC 또는 Q로 닫기</small
+        >
+      </dialog>
     </main>
   </body>
 </html>
 
 <script>
+  import { renderSVG } from 'uqr';
+
   // themeStore는 giscus(React)를 import해 React island가 없는 이 페이지에서 dev 오류를 낸다.
   // 같은 localStorage 키를 직접 다뤄 블로그와 테마를 공유한다.
   const deck = document.querySelector<HTMLElement>('.deck')!;
@@ -52,6 +115,12 @@ const { meta, class: className } = Astro.props;
   const progress = deck.querySelector<HTMLElement>('.deck-progress')!;
   const counter = deck.querySelector<HTMLElement>('.deck-counter')!;
   const menuStatus = deck.querySelector<HTMLElement>('.deck-menu-status')!;
+  const prevItem = deck.querySelector<HTMLButtonElement>(
+    '[data-action="prev"]',
+  )!;
+  const nextItem = deck.querySelector<HTMLButtonElement>(
+    '[data-action="next"]',
+  )!;
 
   let current = 0;
 
@@ -62,13 +131,23 @@ const { meta, class: className } = Astro.props;
     counter.textContent = `${current + 1}`;
     menuStatus.textContent = status;
     menuStatus.parentElement!.ariaLabel = status;
+    prevItem.disabled = current === 0;
+    nextItem.disabled = current === total - 1;
     history.replaceState(null, '', `#${current + 1}`);
   };
 
+  const clamp = (value: number, min: number, max: number) =>
+    Math.max(min, Math.min(max, value));
+
   const goTo = (index: number, behavior: ScrollBehavior = 'smooth') => {
-    const next = Math.max(0, Math.min(slides.length - 1, index));
-    slides[next]?.scrollIntoView({ behavior });
+    slides[clamp(index, 0, slides.length - 1)]?.scrollIntoView({ behavior });
   };
+
+  // 한 장씩은 방향이 보이게 스크롤하고, 먼 이동은 중간 장을 훑지 않도록 즉시 이동한다.
+  const goPrev = () => goTo(current - 1);
+  const goNext = () => goTo(current + 1);
+  const goFirst = () => goTo(0, 'instant');
+  const goLast = () => goTo(slides.length - 1, 'instant');
 
   // 휠/터치 이동은 scroll-snap이 처리하고, 현재 위치만 추적한다.
   const observer = new IntersectionObserver(
@@ -117,10 +196,72 @@ const { meta, class: className } = Astro.props;
     '[data-action="fullscreen"]',
   )!;
 
+  const qr = deck.querySelector<HTMLDialogElement>('.deck-qr')!;
+  const qrCode = qr.querySelector<HTMLElement>('.deck-qr-code')!;
+  const qrUrl = qr.querySelector<HTMLButtonElement>('.deck-qr-url')!;
+  const COPY_FEEDBACK_MS = 1500;
+
+  const getSlideUrl = () => `${deck.dataset.shareUrl}#${current + 1}`;
+
+  // 성공 여부만 돌려주고 피드백 표시는 호출한 쪽이 정한다.
+  const copyText = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (error) {
+      console.error('[slides] URL 복사 실패', error);
+      return false;
+    }
+  };
+
+  const openQr = () => {
+    const url = getSlideUrl();
+    // 다크 테마에서도 인식률을 위해 흰 바탕에 검은 모듈로 그린다.
+    qrCode.innerHTML = renderSVG(url, { border: 2 });
+    qrUrl.textContent = url;
+    qrUrl.dataset.url = url;
+    qr.showModal();
+  };
+
+  const toggleQr = () => (qr.open ? qr.close() : openQr());
+
+  qr.querySelector('.deck-qr-close')!.addEventListener('click', () =>
+    qr.close(),
+  );
+  qr.addEventListener('close', () => deck.focus());
+
+  qrUrl.addEventListener('click', async () => {
+    const url = qrUrl.dataset.url!;
+    const isCopied = await copyText(url);
+    qrUrl.textContent = isCopied ? '복사됨' : '복사 실패';
+    setTimeout(() => (qrUrl.textContent = url), COPY_FEEDBACK_MS);
+  });
+
   const MENU_ACTIONS: Record<string, () => void> = {
+    prev: goPrev,
+    next: goNext,
+    first: goFirst,
+    last: goLast,
+    'copy-link': () => copyText(getSlideUrl()),
+    qr: openQr,
+    pdf: () => window.print(),
     fullscreen: toggleFullscreen,
     theme: toggleTheme,
   };
+
+  const gotoForm = menu.querySelector<HTMLFormElement>('.deck-menu-goto')!;
+  const gotoInput = gotoForm.querySelector<HTMLInputElement>('input')!;
+  gotoInput.max = `${slides.length}`;
+  gotoInput.placeholder = `1-${slides.length}`;
+
+  // submit 하나로 Enter와 이동 버튼을 함께 처리한다. 범위 검사는 min/max 속성이 맡는다.
+  gotoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const page = gotoInput.valueAsNumber;
+    gotoForm.reset();
+    menu.hidePopover();
+    goTo(page - 1, 'instant');
+  });
 
   fullscreenItem.hidden = !document.fullscreenEnabled;
 
@@ -136,16 +277,48 @@ const { meta, class: className } = Astro.props;
     if (isMenuOpen()) menu.hidePopover();
   };
 
+  const MENU_EDGE_GAP = 8;
+
+  // 화면 밖으로 넘치지 않도록 가장자리 여백 안에 둔다.
+  const openMenuAt = (clientX: number, clientY: number) => {
+    if (!isMenuOpen()) menu.showPopover();
+    const maxX = innerWidth - menu.offsetWidth - MENU_EDGE_GAP;
+    const maxY = innerHeight - menu.offsetHeight - MENU_EDGE_GAP;
+    const x = clamp(clientX, MENU_EDGE_GAP, maxX);
+    const y = clamp(clientY, MENU_EDGE_GAP, maxY);
+    menu.style.translate = `${x}px ${y}px`;
+    // 항목 대신 메뉴에 포커스를 둬서 다음 Tab에 첫 항목으로 가게 한다.
+    menu.focus({ preventScroll: true });
+  };
+
   // macOS는 mousedown에 contextmenu가 발생해 auto popover가 뒤따르는 mouseup에 닫힌다.
   // manual popover로 열고 닫기 조건을 직접 관리한다.
   deck.addEventListener('contextmenu', (e) => {
     e.preventDefault();
-    if (!isMenuOpen()) menu.showPopover();
-    const x = Math.min(e.clientX, innerWidth - menu.offsetWidth - 8);
-    const y = Math.min(e.clientY, innerHeight - menu.offsetHeight - 8);
-    menu.style.translate = `${x}px ${y}px`;
-    // 항목 대신 메뉴에 포커스를 둬서 다음 Tab에 첫 항목으로 가게 한다.
-    menu.focus({ preventScroll: true });
+    openMenuAt(e.clientX, e.clientY);
+  });
+
+  // 모바일엔 우클릭이 없어 빠른 두 번 탭(클릭)으로도 메뉴를 연다.
+  // 모바일 브라우저는 dblclick을 안정적으로 보내지 않아 click 간격으로 직접 판정한다.
+  // pointerup에서 열면 뒤따르는 터치의 click이 방금 뜬 메뉴 항목을 눌러 버린다.
+  const DOUBLE_TAP_MS = 300;
+  const TAP_SLOP_PX = 24;
+  let lastTap: { x: number; y: number; time: number } | undefined;
+
+  deck.addEventListener('click', (e) => {
+    const isOverlay =
+      menu.contains(e.target as Node) || qr.contains(e.target as Node);
+    const tap = { x: e.clientX, y: e.clientY, time: e.timeStamp };
+    const isDoubleTap =
+      !isOverlay &&
+      lastTap &&
+      tap.time - lastTap.time < DOUBLE_TAP_MS &&
+      Math.hypot(tap.x - lastTap.x, tap.y - lastTap.y) < TAP_SLOP_PX;
+    lastTap = isDoubleTap || isOverlay ? undefined : tap;
+    if (!isDoubleTap) return;
+    // 더블 클릭의 단어 선택을 지운다.
+    getSelection()?.removeAllRanges();
+    openMenuAt(tap.x, tap.y);
   });
 
   document.addEventListener('pointerdown', (e) => {
@@ -154,7 +327,10 @@ const { meta, class: className } = Astro.props;
     closeMenu();
   });
   deck.addEventListener('scroll', closeMenu, { passive: true });
-  window.addEventListener('resize', closeMenu);
+  // 모바일에서 이동 입력칸에 포커스하면 키보드가 뷰포트를 줄여 resize가 발생한다.
+  window.addEventListener('resize', () => {
+    if (!menu.contains(document.activeElement)) closeMenu();
+  });
   window.addEventListener('blur', closeMenu);
 
   menu.addEventListener('click', (e) => {
@@ -167,31 +343,40 @@ const { meta, class: className } = Astro.props;
   });
 
   menu.addEventListener('toggle', (e) => {
-    if ((e as ToggleEvent).newState === 'closed') deck.focus();
+    // 메뉴 항목이 시작한 smooth 스크롤을 focus가 끊지 않도록 막는다.
+    if ((e as ToggleEvent).newState === 'closed') {
+      deck.focus({ preventScroll: true });
+    }
   });
 
   const KEY_ACTIONS: Record<string, () => void> = {
-    ArrowRight: () => goTo(current + 1),
-    ArrowDown: () => goTo(current + 1),
-    PageDown: () => goTo(current + 1),
-    ' ': () => goTo(current + 1),
-    ArrowLeft: () => goTo(current - 1),
-    ArrowUp: () => goTo(current - 1),
-    PageUp: () => goTo(current - 1),
-    Home: () => goTo(0),
-    End: () => goTo(slides.length - 1),
+    ArrowRight: goNext,
+    ArrowDown: goNext,
+    PageDown: goNext,
+    ' ': goNext,
+    ArrowLeft: goPrev,
+    ArrowUp: goPrev,
+    PageUp: goPrev,
+    Home: goFirst,
+    End: goLast,
   };
 
   // 문자 단축키는 물리 키로 판정한다. 한글 자판에서는 e.key가 'ㄹ', 'ㅅ'이나 'Process'로 들어온다.
   const CODE_ACTIONS: Record<string, () => void> = {
     KeyF: toggleFullscreen,
     KeyT: toggleTheme,
+    KeyQ: toggleQr,
   };
 
   document.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (isMenuOpen()) {
       if (e.key === 'Escape') closeMenu();
+      return;
+    }
+    // Escape는 dialog 기본 동작이 닫는다.
+    if (qr.open) {
+      if (e.code === 'KeyQ') qr.close();
       return;
     }
     const action = KEY_ACTIONS[e.key] ?? CODE_ACTIONS[e.code];

@@ -1,0 +1,206 @@
+---
+import '~/styles/slides.css';
+
+import BaseHead from '~/components/base-head.astro';
+import MonitoringScript from '~/components/monitoring-script.astro';
+import ThemeHeadScript from '~/components/theme-head-script.astro';
+import type { SlideMeta } from '~/libs/slides';
+import { STORAGE_THEME_KEY } from '~/libs/stores/theme';
+import { cn } from '~/libs/utils';
+
+type Props = {
+  meta: SlideMeta;
+  class?: string;
+};
+
+const { meta, class: className } = Astro.props;
+---
+
+<html lang="ko">
+  <head>
+    <BaseHead lang="ko" title={meta.title} description={meta.description} />
+    <ThemeHeadScript />
+    <MonitoringScript />
+  </head>
+  <body>
+    <main
+      class={cn('deck', className)}
+      tabindex="-1"
+      data-theme-key={STORAGE_THEME_KEY}
+    >
+      <slot />
+      <div class="deck-progress" aria-hidden="true"></div>
+      <div class="deck-counter" aria-live="polite"></div>
+      <div class="deck-menu" role="menu" tabindex="-1" popover="manual">
+        <div class="deck-menu-status" aria-hidden="true"></div>
+        <button type="button" role="menuitem" data-action="fullscreen">
+          <span data-label>전체화면</span><kbd>F</kbd>
+        </button>
+        <button type="button" role="menuitem" data-action="theme">
+          <span>테마 전환</span><kbd>T</kbd>
+        </button>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script>
+  // themeStore는 giscus(React)를 import해 React island가 없는 이 페이지에서 dev 오류를 낸다.
+  // 같은 localStorage 키를 직접 다뤄 블로그와 테마를 공유한다.
+  const deck = document.querySelector<HTMLElement>('.deck')!;
+  const slides = [...deck.querySelectorAll<HTMLElement>('.slide')];
+  const progress = deck.querySelector<HTMLElement>('.deck-progress')!;
+  const counter = deck.querySelector<HTMLElement>('.deck-counter')!;
+  const menuStatus = deck.querySelector<HTMLElement>('.deck-menu-status')!;
+
+  let current = 0;
+
+  const render = () => {
+    const total = slides.length;
+    progress.style.setProperty('--progress', `${(current + 1) / total}`);
+    const status = `슬라이드 ${current + 1} / ${total}`;
+    counter.textContent = `${current + 1}`;
+    menuStatus.textContent = status;
+    menuStatus.parentElement!.ariaLabel = status;
+    history.replaceState(null, '', `#${current + 1}`);
+  };
+
+  const goTo = (index: number, behavior: ScrollBehavior = 'smooth') => {
+    const next = Math.max(0, Math.min(slides.length - 1, index));
+    slides[next]?.scrollIntoView({ behavior });
+  };
+
+  // 휠/터치 이동은 scroll-snap이 처리하고, 현재 위치만 추적한다.
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries.find((entry) => entry.isIntersecting);
+      if (!visible) return;
+      current = slides.indexOf(visible.target as HTMLElement);
+      render();
+    },
+    { root: deck, threshold: 0.6 },
+  );
+  slides.forEach((slide) => observer.observe(slide));
+
+  const themeKey = deck.dataset.themeKey!;
+
+  const applyTheme = (theme: string | null) => {
+    const isDark = theme
+      ? theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', isDark);
+  };
+
+  const toggleTheme = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    const next = isDark ? 'light' : 'dark';
+    localStorage.setItem(themeKey, next);
+    applyTheme(next);
+  };
+
+  // 다른 탭(블로그)에서 테마를 바꾸면 따라간다.
+  window.addEventListener('storage', (e) => {
+    if (e.key === themeKey) applyTheme(e.newValue);
+  });
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenEnabled) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  };
+
+  const menu = deck.querySelector<HTMLElement>('.deck-menu')!;
+  const fullscreenItem = menu.querySelector<HTMLButtonElement>(
+    '[data-action="fullscreen"]',
+  )!;
+
+  const MENU_ACTIONS: Record<string, () => void> = {
+    fullscreen: toggleFullscreen,
+    theme: toggleTheme,
+  };
+
+  fullscreenItem.hidden = !document.fullscreenEnabled;
+
+  document.addEventListener('fullscreenchange', () => {
+    fullscreenItem.querySelector('[data-label]')!.textContent =
+      document.fullscreenElement ? '전체화면 종료' : '전체화면';
+    deck.focus();
+  });
+
+  const isMenuOpen = () => menu.matches(':popover-open');
+
+  const closeMenu = () => {
+    if (isMenuOpen()) menu.hidePopover();
+  };
+
+  // macOS는 mousedown에 contextmenu가 발생해 auto popover가 뒤따르는 mouseup에 닫힌다.
+  // manual popover로 열고 닫기 조건을 직접 관리한다.
+  deck.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    if (!isMenuOpen()) menu.showPopover();
+    const x = Math.min(e.clientX, innerWidth - menu.offsetWidth - 8);
+    const y = Math.min(e.clientY, innerHeight - menu.offsetHeight - 8);
+    menu.style.translate = `${x}px ${y}px`;
+    // 항목 대신 메뉴에 포커스를 둬서 다음 Tab에 첫 항목으로 가게 한다.
+    menu.focus({ preventScroll: true });
+  });
+
+  document.addEventListener('pointerdown', (e) => {
+    const isRightButton = e.button === 2;
+    if (isRightButton || menu.contains(e.target as Node)) return;
+    closeMenu();
+  });
+  deck.addEventListener('scroll', closeMenu, { passive: true });
+  window.addEventListener('resize', closeMenu);
+  window.addEventListener('blur', closeMenu);
+
+  menu.addEventListener('click', (e) => {
+    const item = (e.target as HTMLElement).closest<HTMLElement>(
+      '[data-action]',
+    );
+    if (!item) return;
+    menu.hidePopover();
+    MENU_ACTIONS[item.dataset.action!]?.();
+  });
+
+  menu.addEventListener('toggle', (e) => {
+    if ((e as ToggleEvent).newState === 'closed') deck.focus();
+  });
+
+  const KEY_ACTIONS: Record<string, () => void> = {
+    ArrowRight: () => goTo(current + 1),
+    ArrowDown: () => goTo(current + 1),
+    PageDown: () => goTo(current + 1),
+    ' ': () => goTo(current + 1),
+    ArrowLeft: () => goTo(current - 1),
+    ArrowUp: () => goTo(current - 1),
+    PageUp: () => goTo(current - 1),
+    Home: () => goTo(0),
+    End: () => goTo(slides.length - 1),
+  };
+
+  // 문자 단축키는 물리 키로 판정한다. 한글 자판에서는 e.key가 'ㄹ', 'ㅅ'이나 'Process'로 들어온다.
+  const CODE_ACTIONS: Record<string, () => void> = {
+    KeyF: toggleFullscreen,
+    KeyT: toggleTheme,
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (isMenuOpen()) {
+      if (e.key === 'Escape') closeMenu();
+      return;
+    }
+    const action = KEY_ACTIONS[e.key] ?? CODE_ACTIONS[e.code];
+    if (!action) return;
+    e.preventDefault();
+    action();
+  });
+
+  const initialIndex = Number(location.hash.slice(1)) - 1;
+  if (initialIndex > 0) goTo(initialIndex, 'instant');
+  deck.focus();
+</script>

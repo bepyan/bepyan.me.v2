@@ -1,0 +1,73 @@
+---
+import SlideLayout from '~/layouts/slide-layout.astro';
+
+import meta from './_meta';
+---
+
+<SlideLayout {meta}>
+  <section class="slide">
+    <h1>{meta.title}</h1>
+    <small class="hint">
+      <kbd>← →</kbd> 키, 스크롤, 스와이프로 넘깁니다.
+    </small>
+  </section>
+
+  <section class="slide">
+    <h2>전체화면</h2>
+    <p><kbd>F</kbd> 키를 누르거나 우클릭 메뉴에서 켭니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>테마</h2>
+    <p>블로그 테마를 따르고, <kbd>T</kbd> 키로 전환합니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>공유</h2>
+    <p>주소 끝의 <code>#4</code>로 지금 보는 장을 공유합니다.</p>
+  </section>
+
+  <section class="slide">
+    <h2>커스텀</h2>
+    <p>
+      <code>&lt;style is:global&gt;</code>에서 <code class="accent"
+        >--slide-accent</code
+      > 같은 토큰을 덮어씁니다.
+    </p>
+  </section>
+
+  <section class="slide">
+    <h2>파일 구조</h2>
+    <p>
+      <code>src/pages/slides/&lt;slug&gt;/</code>에 <code>index.astro</code>와
+      <code>_meta.ts</code>를 둡니다.
+    </p>
+  </section>
+
+  <section class="slide end">
+    <h1>E.O.D</h1>
+  </section>
+</SlideLayout>
+
+<style is:global>
+  .deck {
+    --slide-accent: #2f6fed;
+  }
+
+  .dark .deck {
+    --slide-accent: #7aa7ff;
+  }
+
+  .deck .hint {
+    position: absolute;
+    bottom: var(--slide-padding);
+  }
+
+  .deck .end {
+    align-items: center;
+  }
+
+  .deck .accent {
+    color: var(--slide-accent);
+  }
+</style>

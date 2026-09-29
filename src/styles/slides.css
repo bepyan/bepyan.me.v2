@@ -1,0 +1,187 @@
+@import './tailwind.css';
+
+/*
+ * 슬라이드 토큰
+ * 블로그 테마 변수를 참조하므로 .dark 전환이 자동 반영된다.
+ * 덱별 커스텀은 덱 파일의 <style>에서 덮어쓴다.
+ *   .deck { --slide-accent: tomato; }
+ *   .dark .deck { --slide-accent: salmon; }
+ */
+.deck {
+  --slide-bg: var(--page-background);
+  --slide-fg: var(--text-body);
+  --slide-heading: var(--heading);
+  --slide-muted: var(--text-second);
+  --slide-accent: var(--heading);
+  --slide-border: var(--border);
+  --slide-font-display: var(--font-serif);
+  --slide-font-body: var(--font-sans);
+  --slide-padding: clamp(1.5rem, 5vw, 5rem);
+
+  --slide-title-size: clamp(2rem, 6vw, 4.5rem);
+  --slide-h2-size: clamp(1.5rem, 4vw, 3rem);
+  --slide-body-size: clamp(1rem, 1.8vw, 1.5rem);
+  --slide-small-size: clamp(0.75rem, 1.2vw, 1rem);
+}
+
+/* ---- viewport ---- */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  @apply antialiased;
+}
+
+.deck {
+  height: 100dvh;
+  overflow-y: auto;
+  font-family: var(--slide-font-body);
+  font-size: var(--slide-body-size);
+  line-height: 1.6;
+  color: var(--slide-fg);
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  background: var(--slide-bg);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* 키 입력을 받기 위해 스크립트로 포커스하는 컨테이너라 외곽선을 숨긴다. */
+.deck:focus {
+  outline: none;
+}
+
+.deck::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100dvh;
+  padding: var(--slide-padding);
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.slide h1,
+.slide h2 {
+  margin: 0;
+  font-family: var(--slide-font-display);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--slide-heading);
+}
+
+.slide h1 {
+  font-size: var(--slide-title-size);
+}
+
+.slide h2 {
+  font-size: var(--slide-h2-size);
+}
+
+.slide small {
+  font-size: var(--slide-small-size);
+  color: var(--slide-muted);
+}
+
+/* ---- chrome ---- */
+.deck-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: 3px;
+  background: var(--slide-accent);
+  transition: transform 0.3s ease;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+}
+
+.deck-counter {
+  position: fixed;
+  right: var(--slide-padding);
+  bottom: 1.25rem;
+  z-index: 10;
+  font-size: var(--slide-small-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--slide-muted);
+  user-select: none;
+}
+
+/* ---- context menu ---- */
+.deck-menu {
+  inset: 0 auto auto 0;
+  min-width: 11rem;
+  padding: 0.25rem;
+  margin: 0;
+  font-family: var(--slide-font-body);
+  font-size: 0.875rem;
+  color: var(--slide-fg);
+  background: var(--slide-bg);
+  border: 1px solid var(--slide-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.12);
+}
+
+.deck-menu-status {
+  padding: 0.25rem 0.625rem 0.375rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--slide-muted);
+  border-bottom: 1px solid var(--slide-border);
+}
+
+.deck-menu:focus {
+  outline: none;
+}
+
+.deck-menu button {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.375rem 0.625rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 0.375rem;
+}
+
+.deck-menu button[hidden] {
+  display: none;
+}
+
+.deck-menu button:hover,
+.deck-menu button:focus-visible {
+  background: var(--selection);
+  outline: none;
+}
+
+.deck-menu kbd {
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: var(--slide-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck,
+  .deck-progress {
+    transition: none;
+  }
+}

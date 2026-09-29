@@ -1,0 +1,68 @@
+---
+import { format } from 'date-fns';
+
+import BaseHeader from '~/components/base-header.astro';
+import BaseNav from '~/components/base-nav.astro';
+import MainLayout from '~/layouts/main-layout.astro';
+import { useI18n } from '~/libs/i18n';
+import { getSlideList } from '~/libs/slides';
+import { groupByYear } from '~/libs/utils';
+
+const { t } = useI18n(Astro.url);
+
+const yearList = groupByYear(getSlideList());
+
+const title = t('nav.slides');
+const description = t('nav.slides.desc');
+---
+
+<MainLayout seo={{ title, description }} class="font-serif">
+  <BaseHeader {title} {description}>
+    <BaseNav class="mt-1.5" />
+  </BaseHeader>
+  <div
+    data-animate
+    data-animate-speed="slow"
+    class="group mt-14 space-y-7 border-l pl-4"
+  >
+    {
+      yearList.map(([year, slideList], index) => {
+        return (
+          <div class="group/year relative">
+            <div class="group-hover/year:bg-selection group-hover/year:text-heading absolute -left-20 -mx-1 rounded-md px-1 transition select-none group-hover:opacity-40 group-hover/year:opacity-100! max-sm:relative max-sm:left-0 max-sm:mb-2">
+              <h3 class="font-serif">{year}</h3>
+            </div>
+            <ul
+              data-animate
+              data-animate-speed="fast"
+              class="flex flex-col items-start gap-2"
+            >
+              {slideList.map((slide) => {
+                return (
+                  <li style={`--start: ${index * 75}ms;`}>
+                    <a
+                      href={slide.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="hover:bg-selection -mx-1 flex items-center rounded-md px-1 transition group-hover:opacity-60 hover:opacity-100!"
+                    >
+                      <span class="text-heading">{slide.title}</span>
+                      {slide.event && (
+                        <span class="text-second shrink-0 pl-2 text-sm">
+                          {slide.event}
+                        </span>
+                      )}
+                      <span class="text-second shrink-0 px-2 text-sm">
+                        {format(slide.date, 'MM. dd.')}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })
+    }
+  </div>
+</MainLayout>

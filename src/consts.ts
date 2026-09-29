@@ -8,4 +8,4 @@ export const SITE = {
   source: 'https://github.com/bepyan/bepyan.me.v2',
 } as const;
 
-export const NAV = ['writing', 'note', 'craft'] as const;
+export const NAV = ['writing', 'note', 'slides', 'craft'] as const;

@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 
 import { getPostInfoList, type PostInfo } from '~/libs/mdx';
+import { getSlideList } from '~/libs/slides';
 
 export async function GET() {
   const siteUrl = import.meta.env.SITE;
@@ -63,6 +64,7 @@ export async function GET() {
     ${renderUrl('/')}
     ${renderUrl('/writing')}
     ${renderUrl('/note')} 
+    ${renderUrl('/slides')}
     ${renderUrl('/craft')}
     ${koPosts
       .map((post) => {
@@ -71,6 +73,14 @@ export async function GET() {
 
         return renderUrl(post.href, { hasEn, lastMod });
       })
+      .join('\n')}
+    ${getSlideList()
+      .map((slide) =>
+        renderUrl(slide.href, {
+          hasEn: false,
+          lastMod: format(slide.date, 'yyyy-MM-dd'),
+        }),
+      )
       .join('\n')}
   </urlset>
   `.trim();

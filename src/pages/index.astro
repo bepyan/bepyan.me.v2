@@ -8,6 +8,7 @@ import { NAV } from '~/consts';
 import MainLayout from '~/layouts/main-layout.astro';
 import { useI18n } from '~/libs/i18n';
 import { getNotePostInfoList, getWritingPostInfoList } from '~/libs/mdx';
+import { getSlideList } from '~/libs/slides';
 import { cn } from '~/libs/utils';
 
 const { url } = Astro;
@@ -17,6 +18,7 @@ const [writingList, noteList] = await Promise.all([
   getWritingPostInfoList(lang),
   getNotePostInfoList(lang),
 ]);
+const slideList = getSlideList();
 
 const LIST_SIZE = 4;
 const START_OPACITY = 0.2;
@@ -83,6 +85,33 @@ const renderListItemOpacity = (i: number) => {
                       {format(post.date, 'yy.MM.dd')}
                     </span>
                   </li>
+                ))}
+              {item === 'slides' &&
+                (slideList.length === 0 ? (
+                  <li>{t('wip')}</li>
+                ) : (
+                  slideList.slice(0, LIST_SIZE).map((slide, i) => (
+                    <li style={{ opacity: renderListItemOpacity(i) }}>
+                      <a
+                        class="link peer mr-1"
+                        href={slide.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {slide.title}
+                      </a>
+                      <span
+                        class={cn(
+                          'text-2xs ml-1 max-sm:hidden',
+                          i > 0 &&
+                            'opacity-0 transition-all ease-out peer-hover:opacity-100',
+                        )}
+                      >
+                        {slide.event && `${slide.event} · `}
+                        {format(slide.date, 'yy.MM.dd')}
+                      </span>
+                    </li>
+                  ))
                 ))}
               {item === 'craft' && <li>{t('wip')}</li>}
             </ul>

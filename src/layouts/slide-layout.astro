@@ -305,6 +305,21 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   const TAP_SLOP_PX = 24;
   let lastTap: { x: number; y: number; time: number } | undefined;
 
+  // 글자 위 더블 클릭은 단어 선택으로 남긴다.
+  // caret 위치만으론 여백 클릭도 가장 가까운 글자로 잡혀 글자 박스 안인지 다시 확인한다.
+  const isOverText = (x: number, y: number) => {
+    const caret = document.caretPositionFromPoint?.(x, y);
+    const node =
+      caret?.offsetNode ?? document.caretRangeFromPoint?.(x, y)?.startContainer;
+    if (node?.nodeType !== Node.TEXT_NODE || !node.textContent?.trim())
+      return false;
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    return Array.from(range.getClientRects()).some(
+      (r) => x >= r.left && x <= r.right && y >= r.top && y <= r.bottom,
+    );
+  };
+
   deck.addEventListener('click', (e) => {
     const isOverlay =
       menu.contains(e.target as Node) || qr.contains(e.target as Node);
@@ -315,8 +330,8 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
       tap.time - lastTap.time < DOUBLE_TAP_MS &&
       Math.hypot(tap.x - lastTap.x, tap.y - lastTap.y) < TAP_SLOP_PX;
     lastTap = isDoubleTap || isOverlay ? undefined : tap;
-    if (!isDoubleTap) return;
-    // 더블 클릭의 단어 선택을 지운다.
+    if (!isDoubleTap || isOverText(tap.x, tap.y)) return;
+    // 여백 더블 클릭이 근처 단어를 선택했으면 지운다.
     getSelection()?.removeAllRanges();
     openMenuAt(tap.x, tap.y);
   });

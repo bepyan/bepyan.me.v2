@@ -1,0 +1,20 @@
+---
+import '~/styles/mdx.css';
+
+import CopyCodeScript from '~/components/copy-code-script.astro';
+import MainLayout from '~/layouts/main-layout.astro';
+
+import { Content } from './_practice.md';
+
+// 강의 중 링크로만 공유하는 페이지라 사이트맵과 목록에는 넣지 않는다.
+const title = '실습: AI로 웹 발표 자료 만들고 배포하기';
+const description =
+  'ChatGPT 데스크톱 앱의 Codex로 웹 발표 자료를 만들고 Vercel로 배포하는 실습';
+---
+
+<MainLayout seo={{ title, description }}>
+  <article class="mdx">
+    <Content />
+  </article>
+  <CopyCodeScript />
+</MainLayout>

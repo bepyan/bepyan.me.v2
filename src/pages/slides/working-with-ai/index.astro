@@ -1,0 +1,1215 @@
+---
+import { renderSVG } from 'uqr';
+
+import { SITE } from '~/consts';
+import SlideLayout from '~/layouts/slide-layout.astro';
+
+import meta from './_meta';
+
+const practiceUrl = `${SITE.site}/slides/working-with-ai/practice`;
+const practiceQr = renderSVG(practiceUrl, { border: 2 });
+
+const colorDist = [
+  { token: 'Red', p: 30 },
+  { token: 'Green', p: 30 },
+  { token: '…', p: 12 },
+  { token: 'Trevor', p: 0.2 },
+];
+---
+
+<SlideLayout {meta}>
+  <!-- 들어가면서 -->
+  <section class="slide">
+    <h1>현업자가 말하는<br />AI로 일하는 법</h1>
+    <small>김평안 · 카카오 프론트엔드 개발자</small>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">들어가면서</small>
+    <h2>김평안</h2>
+    <ul>
+      <li>21년도 카카오 신입 공채로 입사</li>
+      <li>현재 카카오비즈니스 도메인에서 프론트엔드 개발자로 근무 중</li>
+    </ul>
+    <img
+      class="figure"
+      style="--ratio: 2000 / 1343"
+      src="/img/working-with-ai/kakao-business-partner-center.avif"
+      alt="카카오비즈니스 파트너센터 홈 화면"
+      width="2000"
+      height="1343"
+      loading="lazy"
+    />
+  </section>
+
+  <!-- SNS에서 바라보는 AI -->
+  <section class="slide chapter">
+    <h1>SNS에서 바라보는 AI</h1>
+  </section>
+
+  <section class="slide">
+    <h2>프롬프트 하나로 웹사이트 뚝딱</h2>
+    <img
+      class="figure portrait"
+      style="--ratio: 334 / 598"
+      src="/img/working-with-ai/sns-prompt-website.avif"
+      alt="코딩 없이 프롬프트 한 번에 웹사이트를 완성했다는 SNS 게시물 화면"
+      width="334"
+      height="598"
+      loading="lazy"
+    />
+  </section>
+
+  <section class="slide">
+    <h2>그러나 실무 입장에서 이는 빙산의 일각</h2>
+    <div class="iceberg">
+      <div class="iceberg-top">
+        <span>프롬프트</span>
+        <span>결과물</span>
+      </div>
+      <div class="iceberg-bottom">
+        <span>기획</span>
+        <span>디자인</span>
+        <span>코드 리뷰</span>
+        <span>QA</span>
+        <span>배포</span>
+        <span>운영·장애 대응</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 현업에서 바라보는 AI -->
+  <section class="slide chapter">
+    <h1>현업에서 바라보는 AI</h1>
+    <ol class="chips">
+      <li>일을 잘하기</li>
+      <li>워크플로우 자동화</li>
+      <li>직군 간의 경계 허물기</li>
+    </ol>
+  </section>
+
+  <!-- 0. LLM은 비결정적 도구 -->
+  <section class="slide">
+    <h2>LLM은 비결정적 도구</h2>
+    <p>'비결정성'은 같은 입력에도 출력이 달라질 수 있음을 말함</p>
+    <dl class="defs">
+      <dt>계산기</dt>
+      <dd>2 + 3 → 항상 5</dd>
+      <dt>LLM</dt>
+      <dd>같은 질문 → 매번 조금씩 다른 답</dd>
+    </dl>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">LLM의 비결정성은 추론 방식에서 옴</small>
+    <h2>My favorite color is ___</h2>
+    <ul class="dist">
+      {
+        colorDist.map(({ token, p }) => (
+          <li>
+            <span>{token}</span>
+            <span class="dist-bar" style={`--p: ${p}%`} />
+            <span class="dist-pct">{token === '…' ? '' : `${p}%`}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- 1. 확률 높이기 -->
+  <section class="slide chapter">
+    <h1>확률 높이기</h1>
+    <ol class="chips">
+      <li>1. 작업 지침</li>
+      <li>2. 맥락 관리</li>
+      <li>3. 결정적 도구</li>
+    </ol>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">확률 높이기</small>
+    <h2>1. 작업 지침</h2>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">1. 작업 지침</small>
+    <h2>일을 잘하는 개발자</h2>
+    <ul>
+      <li>지침은 일 잘하는 선배의 습관을 문서로 적어 둔 것</li>
+      <li>CLAUDE.md 같은 파일에 적어 두면 AI가 매번 읽고 따름</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">1. 작업 지침</small>
+    <h2>andrej-karpathy의 CLAUDE.md</h2>
+    <ul>
+      <li>먼저 생각하기: 추측하지 말고, 헷갈리면 묻기</li>
+      <li>단순하게: 최소한의 코드로, 필요한 곳만 고치기</li>
+      <li>목표 기준 실행: 검증 기준을 먼저 정하고 통과할 때까지 반복</li>
+    </ul>
+    <small class="source"
+      ><a
+        href="https://github.com/multica-ai/andrej-karpathy-skills"
+        target="_blank"
+        rel="noopener noreferrer"
+        >github.com/multica-ai/andrej-karpathy-skills</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">1. 작업 지침</small>
+    <h2>ponytail</h2>
+    <ul>
+      <li>가장 좋은 코드는 쓰지 않은 코드</li>
+      <li>YAGNI: 정말 필요한가?</li>
+      <li>새로 만들기 전에 기존 코드 → 표준 기능 → 설치된 도구 순으로 찾기</li>
+    </ul>
+    <small class="source"
+      ><a
+        href="https://github.com/DietrichGebert/ponytail"
+        target="_blank"
+        rel="noopener noreferrer">github.com/DietrichGebert/ponytail</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">1. 작업 지침</small>
+    <h2>caveman</h2>
+    <ul>
+      <li>적은 토큰으로 같은 내용 전달하기</li>
+      <li>인사말, 군더더기, 얼버무림 빼기</li>
+      <li>기술 용어, 코드, 에러 메시지는 그대로</li>
+    </ul>
+    <small class="source"
+      ><a
+        href="https://github.com/JuliusBrussee/caveman"
+        target="_blank"
+        rel="noopener noreferrer">github.com/JuliusBrussee/caveman</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">1. 작업 지침</small>
+    <h2>워크플로우 쪼개기</h2>
+    <ul>
+      <li>
+        superpowers: 브레인스토밍 → 계획 → 테스트 먼저 → 하위 에이전트 실행·리뷰
+      </li>
+      <li>
+        mattpocock grill-me: 추천 답을 붙여 질문을 하나씩 던지며 계획 다듬기
+      </li>
+      <li>ecc: 메인은 PM 역할, 실제 작업은 역할별 하위 에이전트</li>
+    </ul>
+    <small class="source"
+      ><a
+        href="https://github.com/obra/superpowers"
+        target="_blank"
+        rel="noopener noreferrer">github.com/obra/superpowers</a
+      > · <a
+        href="https://github.com/mattpocock/skills"
+        target="_blank"
+        rel="noopener noreferrer">github.com/mattpocock/skills</a
+      > · <a
+        href="https://github.com/affaan-m/ECC"
+        target="_blank"
+        rel="noopener noreferrer">github.com/affaan-m/ECC</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">1. 작업 지침</small>
+    <h2>skills.sh</h2>
+    <div class="split">
+      <div class="split-text">
+        <p>남이 만든 지침을 찾아보고 명령어 한 줄로 설치하는 곳</p>
+        <ul>
+          <li>i-have-adhd: 답을 파묻지 않고 다음 행동부터 말하기</li>
+          <li>eli5: 듣는 사람 수준에 맞춰 설명하기</li>
+          <li>
+            modern-web-guidance, react-best-practices: 최신 웹과 React 모범
+            사례를 필요할 때 꺼내 쓰기
+          </li>
+        </ul>
+      </div>
+      <img
+        class="figure"
+        style="--ratio: 1740 / 1522; --figure-max-height: 56dvh"
+        src="/img/working-with-ai/skills-sh.avif"
+        alt="에이전트 스킬 설치 순위를 보여 주는 skills.sh 첫 화면"
+        width="1740"
+        height="1522"
+        loading="lazy"
+      />
+    </div>
+    <small class="source"
+      ><a href="https://skills.sh" target="_blank" rel="noopener noreferrer"
+        >skills.sh</a
+      > · <a
+        href="https://github.com/ayghri/i-have-adhd"
+        target="_blank"
+        rel="noopener noreferrer">ayghri/i-have-adhd</a
+      > · <a
+        href="https://github.com/DreambigOu/ELI5"
+        target="_blank"
+        rel="noopener noreferrer">DreambigOu/ELI5</a
+      > · <a
+        href="https://github.com/GoogleChrome/modern-web-guidance"
+        target="_blank"
+        rel="noopener noreferrer">GoogleChrome/modern-web-guidance</a
+      > · <a
+        href="https://github.com/vercel-labs/agent-skills"
+        target="_blank"
+        rel="noopener noreferrer">vercel-labs/agent-skills</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">확률 높이기</small>
+    <h2>2. 맥락 관리</h2>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">2. 맥락 관리</small>
+    <h2>context가 가득 차면<br />할루시네이션 발생 확률이 급증</h2>
+    <img
+      class="figure"
+      style="--ratio: 2000 / 1296"
+      src="/img/working-with-ai/context-rot.avif"
+      alt="입력 토큰이 늘어날수록 모델 정확도가 떨어지는 Chroma Context Rot 실험 그래프"
+      width="2000"
+      height="1296"
+      loading="lazy"
+    />
+    <small class="source"
+      ><a
+        href="https://www.trychroma.com/research/context-rot"
+        target="_blank"
+        rel="noopener noreferrer">trychroma.com/research/context-rot</a
+      > · <a
+        href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+        target="_blank"
+        rel="noopener noreferrer"
+        >anthropic.com/engineering/effective-context-engineering-for-ai-agents</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">2. 맥락 관리</small>
+    <h2>점진적 공개</h2>
+    <ul>
+      <li>목차만 먼저: 처음엔 제목과 한 줄 설명만 읽어 둠</li>
+      <li>필요할 때 본문: 관련된 일이 들어오면 그때 해당 문서를 펼침</li>
+      <li>더 필요하면 부록: 세부 자료와 예시는 정말 필요할 때만 꺼냄</li>
+    </ul>
+    <small class="source"
+      ><a
+        href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills"
+        target="_blank"
+        rel="noopener noreferrer"
+        >anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">2. 맥락 관리</small>
+    <h2>예시: Agent Skill 폴더</h2>
+    <pre
+      class="code tree"><code>{`frontend-slides/
+├── SKILL.md
+│   ├── name, description   # 목차: 항상 읽음
+│   └── body                # 본문: 슬라이드를 만들 때 읽음
+├── STYLE_PRESETS.md        # 부록: 스타일을 고를 때 읽음
+└── viewport-base.css       # 부록: 코드를 쓸 때 읽음`}</code></pre>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">2. 맥락 관리</small>
+    <h2>맥락은 어디서 오나</h2>
+    <p>예시: setup-matt-pocock-skills가 잡아 주는 문서 구조</p>
+    <pre
+      class="code tree dense"><code>{`my-app/
+├── CLAUDE.md                         # 이정표
+├── GLOSSARY.md                       # 용어집
+├── docs/
+│   ├── agents/                       # 스킬 설정
+│   │   ├── issue-tracker.md          # 이슈는 어디서 관리하나
+│   │   └── domain.md                 # 도메인 문서는 어떻게 읽나
+│   └── adr/                          # 결정 기록
+│       ├── 0001-use-oauth.md         # 로그인은 OAuth로
+│       ├── 0002-session-in-redis.md  # 세션은 DB 대신 Redis에
+│       └── 0003-keep-monolith.md     # 서비스 분리는 아직 안 함
+└── .mcp.json                         # 외부 연결 (MCP)`}</code></pre>
+    <small class="source"
+      ><a
+        href="https://github.com/mattpocock/skills"
+        target="_blank"
+        rel="noopener noreferrer">mattpocock/skills</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">2. 맥락 관리</small>
+    <h2>맥락은 어디서 오나</h2>
+    <p>예시: superpowers가 남기는 설계와 실행 계획</p>
+    <pre
+      class="code tree dense"><code>{`docs/superpowers/
+├── specs/2026-09-30-auth-design.md     # 설계 (brainstorming)
+│   ├── 아키텍처, 구성 요소
+│   ├── 데이터 흐름, 오류 처리
+│   └── 테스트
+└── plans/2026-09-30-auth.md            # 실행 계획 (writing-plans)
+    ├── Goal, Architecture, Tech Stack  # 한 문장 목표와 접근 방식
+    ├── Spec                            # 이 계획이 따르는 설계 문서
+    ├── Global Constraints              # 버전, 의존성 같은 전체 제약
+    └── Task N
+        ├── Files                       # 만들고 고칠 파일, 테스트 파일
+        ├── Interfaces                  # 앞 작업에서 받고 뒤 작업에 넘길 것
+        └── - [ ] Step 1..5             # 실패 테스트 → 확인 → 구현 → 통과 → 커밋`}</code></pre>
+    <small class="source"
+      ><a
+        href="https://github.com/obra/superpowers"
+        target="_blank"
+        rel="noopener noreferrer">obra/superpowers</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">확률 높이기</small>
+    <h2>3. 결정적 도구</h2>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">3. 결정적 도구</small>
+    <h2>strawberry의 r은 몇 개?</h2>
+    <pre class="code"><code>"strawberry".count("r")  # 3</code></pre>
+    <p>r 개수를 세는 코드를 작성하고 실행하면 100% 정확</p>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">3. 결정적 도구</small>
+    <h2>정적분석</h2>
+    <dl class="defs">
+      <dt>eslint</dt>
+      <dd>정해 둔 규칙 위반 검사</dd>
+      <dt>knip, fallow</dt>
+      <dd>안 쓰는 파일·코드·의존성 찾기</dd>
+      <dt>react-doctor</dt>
+      <dd>React 코드 건강 점수</dd>
+    </dl>
+    <small class="source"
+      ><a href="https://eslint.org" target="_blank" rel="noopener noreferrer"
+        >eslint.org</a
+      > · <a href="https://knip.dev" target="_blank" rel="noopener noreferrer"
+        >knip.dev</a
+      > · <a
+        href="https://github.com/fallow-rs/fallow"
+        target="_blank"
+        rel="noopener noreferrer">github.com/fallow-rs/fallow</a
+      > · <a
+        href="https://github.com/millionco/react-doctor"
+        target="_blank"
+        rel="noopener noreferrer">github.com/millionco/react-doctor</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">3. 결정적 도구</small>
+    <h2>테스팅</h2>
+    <ul>
+      <li>e2e: 사용자처럼 처음부터 끝까지 눌러 보며 확인</li>
+      <li>integration: 여러 부분을 이었을 때 함께 잘 동작하는지 확인</li>
+      <li>unit: 함수 하나가 맞는 값을 돌려주는지 확인</li>
+    </ul>
+    <img
+      class="figure"
+      style="--ratio: 2000 / 1214; --figure-max-height: 30dvh"
+      src="/img/working-with-ai/playwright-trace.avif"
+      alt="playwright가 브라우저를 자동으로 조작하며 단계별 화면과 코드를 기록한 테스트 결과 화면"
+      width="2000"
+      height="1214"
+      loading="lazy"
+    />
+    <small class="source"
+      ><a
+        href="https://playwright.dev"
+        target="_blank"
+        rel="noopener noreferrer">playwright.dev</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <h2>LLM을 넘어 AI 에이전트의 시대</h2>
+    <p class="equation">
+      <strong>에이전트</strong> = LLM + 지침 + 맥락 + 도구 + 반복 실행
+    </p>
+  </section>
+
+  <!-- 쉬는 시간: 빈 화면 -->
+  <section class="slide" aria-label="쉬는 시간"></section>
+
+  <!-- 2. 워크플로우 자동화 -->
+  <section class="slide chapter">
+    <h1>워크플로우 자동화</h1>
+    <p>내가 반복하는 작업을 AI가 수행</p>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">워크플로우 자동화</small>
+    <h2>워크플로우와 에이전트</h2>
+    <dl class="defs">
+      <dt>워크플로우</dt>
+      <dd>사람이 미리 정해 둔 경로를 따라 AI와 도구가 움직임</dd>
+      <dt>에이전트</dt>
+      <dd>AI가 경로와 도구 사용을 스스로 정함</dd>
+    </dl>
+    <p>결과가 흔들릴수록 경로를 먼저 정해 둔다</p>
+    <small class="source"
+      ><a
+        href="https://www.anthropic.com/engineering/building-effective-agents"
+        target="_blank"
+        rel="noopener noreferrer"
+        >anthropic.com/engineering/building-effective-agents</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">워크플로우 자동화</small>
+    <h2>기본 패턴 5가지</h2>
+    <table class="stages">
+      <thead>
+        <tr><th>패턴</th><th>원문 예시</th><th>연구에 비유하면</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>체이닝<small>앞 단계 결과가 다음 단계 입력</small></th>
+          <td>마케팅 문구 작성 → 다른 언어로 번역</td>
+          <td>목차 작성 → 목차 검토 → 본문 작성</td>
+        </tr>
+        <tr>
+          <th>라우팅<small>입력을 분류해 담당에게 보냄</small></th>
+          <td>고객 문의를 일반·환불·기술 지원으로 나눔</td>
+          <td>논문 분야에 따라 다른 리뷰 기준 적용</td>
+        </tr>
+        <tr>
+          <th>병렬화<small>동시에 돌리고 결과를 모음</small></th>
+          <td>여러 모델이 같은 코드의 취약점 검토</td>
+          <td>같은 문헌을 세 번 요약해 겹치는 내용만 채택</td>
+        </tr>
+        <tr>
+          <th>오케스트레이터·워커<small>나누고, 맡기고, 합침</small></th>
+          <td>여러 파일에 걸친 코드 수정</td>
+          <td>지도교수가 문헌 조사를 주제별로 나눠 맡기고 취합</td>
+        </tr>
+        <tr>
+          <th>평가자·개선자<small>쓰고 고치기를 반복</small></th>
+          <td>문학 번역을 첨삭하며 다듬기</td>
+          <td>초록을 쓰고 리뷰어 입장에서 첨삭하기를 반복</td>
+        </tr>
+      </tbody>
+    </table>
+    <small class="source"
+      ><a
+        href="https://www.anthropic.com/engineering/building-effective-agents"
+        target="_blank"
+        rel="noopener noreferrer"
+        >anthropic.com/engineering/building-effective-agents</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">워크플로우 자동화</small>
+    <h2>예시: 탐색 → 계획 → 구현 → 커밋</h2>
+    <dl class="defs">
+      <dt>탐색</dt>
+      <dd>코드를 읽기만 하고 고치지 않음</dd>
+      <dt>계획</dt>
+      <dd>바꿀 파일과 흐름을 정리하고, 사람이 직접 다듬음</dd>
+      <dt>구현</dt>
+      <dd>계획대로 코드를 쓰고 테스트를 돌려 확인</dd>
+      <dt>커밋</dt>
+      <dd>설명을 붙여 커밋하고 PR 생성</dd>
+    </dl>
+    <p>바뀔 내용을 한 문장으로 설명할 수 있으면 계획은 건너뛴다</p>
+    <small class="source"
+      ><a
+        href="https://code.claude.com/docs/en/best-practices"
+        target="_blank"
+        rel="noopener noreferrer">code.claude.com/docs/en/best-practices</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">워크플로우 자동화</small>
+    <h2>예시: 명세 주도 개발</h2>
+    <dl class="defs">
+      <dt>constitution</dt>
+      <dd>프로젝트 원칙 (처음 한 번)</dd>
+      <dt>specify</dt>
+      <dd>무엇을, 왜 만드는지</dd>
+      <dt>plan</dt>
+      <dd>어떻게 만들지: 기술, 구조</dd>
+      <dt>tasks</dt>
+      <dd>실행할 작업 목록</dd>
+      <dt>implement → converge</dt>
+      <dd>명세와 맞을 때까지 구현을 반복</dd>
+    </dl>
+    <small class="source"
+      ><a
+        href="https://github.com/github/spec-kit"
+        target="_blank"
+        rel="noopener noreferrer">github/spec-kit</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">워크플로우 자동화</small>
+    <h2>예시: 반복, 분리, 팬아웃</h2>
+    <dl class="defs">
+      <dt>될 때까지 반복 (Ralph)</dt>
+      <dd>
+        같은 지시서를 계속 다시 줌. 한 번에 한 가지, 채점을 통과해야 다음으로
+      </dd>
+      <dt>작성자·검토자</dt>
+      <dd>코드를 쓰는 세션과 검토하는 세션을 나눔</dd>
+      <dt>팬아웃</dt>
+      <dd>파일 2,000개 목록을 만들고 파일마다 AI를 따로 실행</dd>
+    </dl>
+    <pre
+      class="code"><code>while :; do cat PROMPT.md | claude; done  # 지시서를 AI에게 끝없이 다시 주기</code></pre>
+    <small class="source"
+      ><a
+        href="https://ghuntley.com/ralph/"
+        target="_blank"
+        rel="noopener noreferrer">ghuntley.com/ralph</a
+      > · <a
+        href="https://code.claude.com/docs/en/best-practices"
+        target="_blank"
+        rel="noopener noreferrer">code.claude.com/docs/en/best-practices</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">워크플로우 자동화</small>
+    <h2>오픈소스보다<br />나의 워크플로우를 정의하기</h2>
+    <dl class="defs">
+      <dt>단계</dt>
+      <dd>매번 같은 순서로 하는 일을 나누기</dd>
+      <dt>입력·결과물</dt>
+      <dd>각 단계가 무엇을 받아 무엇을 넘기는지</dd>
+      <dt>완료 기준</dt>
+      <dd>언제 다음 단계로 넘어가는지, 누가 판단하는지</dd>
+    </dl>
+  </section>
+
+  <!-- 3. 직군 간의 경계 허물기 -->
+  <section class="slide chapter">
+    <h1>직군 간의 경계 허물기</h1>
+  </section>
+
+  <section class="slide">
+    <h2>가장 큰 비용은 커뮤니케이션</h2>
+    <ul>
+      <li>개발자는 생각보다 코딩할 시간이 별로 없음</li>
+      <li>비개발자와의 커뮤니케이션: 기획, 디자인, 외부 부서</li>
+      <li>개발자 간의 커뮤니케이션: 동일 직군, 다른 직군</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <h2>진정한 AI의 혁신</h2>
+    <p>사람 간 커뮤니케이션을 없애는 것</p>
+    <dl class="defs">
+      <dt>지금</dt>
+      <dd>기획자 A → 기획자 B → 개발자 A → 개발자 B → … → 의사결정</dd>
+      <dt>앞으로</dt>
+      <dd>기획자 A → AI → 의사결정</dd>
+    </dl>
+    <p>그래서 맥락을 AI가 읽을 수 있는 곳으로 옮기는 중</p>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">사례 · 당근</small>
+    <h2>배포 내역을 누구나 물어볼 수 있게</h2>
+    <dl class="cells">
+      <div>
+        <dt>문제</dt>
+        <dd>"이 기능 언제 나갔어요?"마다 개발자가 기록을 뒤짐</dd>
+      </div>
+      <div>
+        <dt>한 일</dt>
+        <dd>
+          배포 내역을 Notion에 쌓고, AI가 비개발자도 읽는 릴리즈 노트로 번역
+        </dd>
+      </div>
+      <div>
+        <dt>결과</dt>
+        <dd>위클리 정리를 자동 노트로 대체, 다른 팀도 요청해 주간 요약 추가</dd>
+      </div>
+    </dl>
+    <small class="source"
+      ><a
+        href="https://medium.com/daangn/%EB%88%84%EA%B5%AC%EB%82%98-%EC%B0%BE%EC%95%84%EB%B3%BC-%EC%88%98-%EC%9E%88%EB%8A%94-%EC%A4%91%EA%B3%A0%EA%B1%B0%EB%9E%98-%EC%84%9C%EB%B2%84-llm-%EB%A6%B4%EB%A6%AC%EC%A6%88-%EB%85%B8%ED%8A%B8-%EB%8F%84%EC%9E%85%EA%B8%B0-93afe203d766"
+        target="_blank"
+        rel="noopener noreferrer"
+        >당근 테크 블로그: 중고거래 서버 LLM 릴리즈 노트 도입기</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">사례 · 배달의민족</small>
+    <h2>흩어진 사내 지식을 에이전트 하나로</h2>
+    <dl class="cells">
+      <div>
+        <dt>문제</dt>
+        <dd>정보가 흩어져 있어 질문마다 각 시스템을 일일이 찾아다님</dd>
+      </div>
+      <div>
+        <dt>한 일</dt>
+        <dd>
+          위키, Jira, Slack, 구글 드라이브를 AI 에이전트 '물어보새'에 연결
+        </dd>
+      </div>
+      <div>
+        <dt>결과</dt>
+        <dd>전 직원 33% 사용, 조직별 문의 해결 속도 평균 21% 향상</dd>
+      </div>
+    </dl>
+    <small class="source"
+      ><a
+        href="https://techblog.woowahan.com/23273/"
+        target="_blank"
+        rel="noopener noreferrer">우아한형제들 기술블로그: 물어보새 3부</a
+      > · <a
+        href="http://www.newstheai.com/news/articleView.html?idxno=10194"
+        target="_blank"
+        rel="noopener noreferrer">더에이아이 기사</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">사례 · 토스</small>
+    <h2>분석가를 기다리지 않는 데이터 조회</h2>
+    <dl class="cells">
+      <div>
+        <dt>문제</dt>
+        <dd>분석가에게 오는 요청의 70%가 단순 수치 추출</dd>
+      </div>
+      <div>
+        <dt>한 일</dt>
+        <dd>
+          테이블 설명, 용어, 지표 정의를 AI가 읽게 먼저 정리하고 데이터봇 '판다'
+          제작
+        </dd>
+      </div>
+      <div>
+        <dt>결과</dt>
+        <dd>출시 첫 주 팀원 절반, 현재 70%가 사용</dd>
+      </div>
+    </dl>
+    <small class="source"
+      ><a
+        href="https://toss.tech/article/da-assistant-panda"
+        target="_blank"
+        rel="noopener noreferrer"
+        >토스 테크 블로그: 토스플레이스 데이터봇 '판다'를 소개합니다</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">사례 · Uber</small>
+    <h2>온콜 엔지니어를 기다리지 않는 사내 질문</h2>
+    <dl class="cells">
+      <div>
+        <dt>문제</dt>
+        <dd>
+          지원 채널에 월 약 45,000건의 질문, 답은 온콜 엔지니어를 기다려야 함
+        </dd>
+      </div>
+      <div>
+        <dt>한 일</dt>
+        <dd>사내 위키, 사내 Q&A, 요구사항 문서를 AI 봇 'Genie'에 연결</dd>
+      </div>
+      <div>
+        <dt>결과</dt>
+        <dd>
+          154개 채널에서 7만 건 이상 답변, 엔지니어링 13,000시간 절약(추정)
+        </dd>
+      </div>
+    </dl>
+    <small class="source"
+      ><a
+        href="https://www.uber.com/us/en/blog/genie-ubers-gen-ai-on-call-copilot/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Uber Blog: Genie, Uber's Gen AI On-Call Copilot</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">마무리</small>
+    <h2>
+      AI는 비결정적이다.<br />원하는 결과가 나올 확률을 높이는 구조를 만든다
+    </h2>
+    <ol class="chips">
+      <li>1. 작업 지침</li>
+      <li>2. 맥락 관리</li>
+      <li>3. 결정적 도구</li>
+    </ol>
+  </section>
+
+  <!-- 내가 AI 쓰는 방법 -->
+  <section class="slide chapter">
+    <h1>내가 AI 쓰는 방법</h1>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">내가 AI 쓰는 방법</small>
+    <h2>conductor</h2>
+    <ul>
+      <li>여러 에이전트를 각자 독립된 작업 공간(worktree)에서 동시에 실행</li>
+      <li>계획부터 머지까지 한 화면에서 진행</li>
+    </ul>
+    <img
+      class="figure"
+      style="--ratio: 2000 / 1293"
+      src="/img/working-with-ai/conductor.avif"
+      alt="conductor 화면: 왼쪽에 작업 공간 목록, 가운데에 에이전트 대화, 오른쪽에 변경 파일과 머지 버튼"
+      width="2000"
+      height="1293"
+      loading="lazy"
+    />
+    <small class="source"
+      ><a
+        href="https://conductor.build"
+        target="_blank"
+        rel="noopener noreferrer">conductor.build</a
+      ></small
+    >
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">예시 1</small>
+    <h2>개발 업무의 네 단계</h2>
+    <ol class="chips flow">
+      <li>plan</li>
+      <li>implement</li>
+      <li>review</li>
+      <li>merge</li>
+    </ol>
+    <p>단계는 정했으니, 이제 단계마다 입력·결과물·완료 기준을 채울 차례</p>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">예시 1</small>
+    <h2>단계마다 입력·결과물·완료 기준</h2>
+    <table class="stages">
+      <thead>
+        <tr><th>단계</th><th>입력 → 결과물</th><th>완료 기준</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>plan<small>pyan-plan, uiop</small></th>
+          <td>기획서 → JIRA 티켓 (티켓 설명 = 계획서)</td>
+          <td><strong>내가 승인</strong></td>
+        </tr>
+        <tr>
+          <th>implement<small>pyan-implement</small></th>
+          <td>티켓 하나 → 코드</td>
+          <td>티켓 항목 완료 + lint·type·test 통과</td>
+        </tr>
+        <tr>
+          <th>review<small>pyan-review</small></th>
+          <td>코드 → 지적 사항</td>
+          <td><strong>내가 최종 검토</strong></td>
+        </tr>
+        <tr>
+          <th>merge<small>pyan-commit, pyan-write-pr</small></th>
+          <td>코드 → 커밋·PR</td>
+          <td>동료 승인 후 <strong>내가 머지</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">예시 2</small>
+    <h2>add-matrix</h2>
+    <dl class="cells">
+      <div>
+        <dt>문제</dt>
+        <dd>
+          앱마다 에러 모니터링(Matrix) 설정을 반복. 4개 환경 앱 생성, env 파일,
+          Sentry 연동, 알림 정책까지 여러 사내 도구를 오가는 수작업
+        </dd>
+      </div>
+      <div>
+        <dt>워크플로우</dt>
+        <dd>
+          SKILL.md에 단계 정의 → 단계마다 스크립트로 API 호출 → env와 API
+          응답으로 검증 → 알림방 생성처럼 사람 손이 필요한 일만 안내
+        </dd>
+      </div>
+      <div>
+        <dt>결과</dt>
+        <dd>대화 한 번으로 설정 완료. 누가 실행해도 같은 결과</dd>
+      </div>
+      <div>
+        <dt>사용 개념</dt>
+        <dd>작업 지침, 맥락 관리, 결정적 도구</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">예시 3</small>
+    <h2>pyan-tldr</h2>
+    <dl class="cells">
+      <div><dt>문제</dt><dd>읽어야 할 정보가 너무 많음</dd></div>
+      <div>
+        <dt>워크플로우</dt>
+        <dd>cli로 유튜브, 네이버 블로그 콘텐츠 탐색 → tldr 프롬프트로 요약</dd>
+      </div>
+      <div>
+        <dt>결과</dt>
+        <dd>30분 동안 훑어야 할 정보를 1분 안에 파악하고 문서로 정리</dd>
+      </div>
+      <div><dt>사용 개념</dt><dd>작업 지침, 결정적 도구</dd></div>
+    </dl>
+  </section>
+
+  <section class="slide end">
+    <h1>Q&A</h1>
+  </section>
+
+  <section class="slide end">
+    <small class="eyebrow">실습</small>
+    <h2>AI로 웹 발표 자료 만들고 배포하기</h2>
+    <div class="practice-qr" set:html={practiceQr} />
+    <a
+      class="practice-link"
+      href={practiceUrl}
+      target="_blank"
+      rel="noopener noreferrer">{practiceUrl.replace('https://', '')}</a
+    >
+  </section>
+</SlideLayout>
+
+<style is:global>
+  .deck .slide {
+    gap: 1.5rem;
+  }
+
+  .deck .chapter h1 {
+    font-size: calc(var(--slide-title-size) * 1.2);
+  }
+
+  .deck .end {
+    align-items: center;
+  }
+
+  .deck .practice-qr {
+    width: min(40dvh, 60vw);
+    overflow: hidden;
+    background: white;
+    border-radius: 0.75rem;
+  }
+
+  .deck .practice-qr svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .deck .practice-link {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  /* 오른쪽 아래 페이지 번호와 겹치지 않도록 비워 둔다. */
+  .deck .source {
+    position: absolute;
+    inset-inline: var(--slide-padding);
+    bottom: var(--slide-padding);
+    padding-right: 3rem;
+  }
+
+  .deck .source a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .deck .eyebrow {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  .deck .slide ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-left: 1.25em;
+  }
+
+  .deck .slide ul {
+    list-style: disc;
+  }
+
+  .deck .slide li::marker {
+    color: var(--slide-muted);
+  }
+
+  /* ---- chips: 단계나 구성 요소를 가로로 나열 ---- */
+  .deck .slide ol.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .deck .chips li {
+    padding: 0.375em 0.875em;
+    border: 1px solid var(--slide-border);
+    border-radius: 999px;
+  }
+
+  .deck .chips.flow li {
+    font-family: var(--font-mono);
+  }
+
+  .deck .chips.flow li:not(:last-child)::after {
+    margin-left: 0.875em;
+    color: var(--slide-muted);
+    content: '→';
+  }
+
+  .deck .chips.flow li {
+    padding-inline: 0;
+    border-color: transparent;
+  }
+
+  /* ---- defs: 이름과 설명 한 줄씩 ---- */
+  .deck .defs {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 1rem 2.5rem;
+    margin: 0;
+  }
+
+  .deck .defs dt {
+    font-weight: 600;
+    color: var(--slide-heading);
+  }
+
+  .deck .defs dd {
+    margin: 0;
+  }
+
+  /* ---- cells: 사례를 네 칸으로 ---- */
+  .deck .cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .deck .cells > div {
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--slide-border);
+    border-radius: 0.75rem;
+  }
+
+  .deck .cells dt {
+    font-size: var(--slide-small-size);
+    color: var(--slide-muted);
+  }
+
+  .deck .cells dd {
+    margin: 0.25rem 0 0;
+  }
+
+  /* ---- stages: 워크플로우 단계별 표 ---- */
+  .deck .stages {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .deck .stages th,
+  .deck .stages td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--slide-border);
+    vertical-align: top;
+  }
+
+  .deck .stages thead th {
+    font-size: var(--slide-small-size);
+    font-weight: 400;
+    color: var(--slide-muted);
+  }
+
+  .deck .stages tbody th {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--slide-heading);
+  }
+
+  .deck .stages tbody th small {
+    display: block;
+    font-family: var(--slide-font-body);
+    font-weight: 400;
+    color: var(--slide-muted);
+  }
+
+  .deck .stages strong {
+    color: var(--slide-heading);
+  }
+
+  /* ---- dist: 다음 토큰 확률 막대 ---- */
+  .deck .slide ul.dist {
+    gap: 1rem;
+    max-width: 48rem;
+    padding: 0;
+    font-family: var(--font-mono);
+    list-style: none;
+  }
+
+  .deck .dist li {
+    display: grid;
+    grid-template-columns: 6em 1fr 4em;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .deck .dist-bar {
+    height: 0.625em;
+    background:
+      linear-gradient(var(--slide-heading), var(--slide-heading)) left /
+        var(--p) 100% no-repeat,
+      var(--selection);
+    border-radius: 999px;
+  }
+
+  .deck .dist-pct {
+    color: var(--slide-muted);
+    text-align: right;
+  }
+
+  /* ---- iceberg: 수면 위와 아래 ---- */
+  .deck .iceberg {
+    display: flex;
+    flex-direction: column;
+    max-width: 48rem;
+  }
+
+  .deck .iceberg > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .deck .iceberg-top {
+    border-bottom: 2px dashed var(--slide-muted);
+  }
+
+  .deck .iceberg-bottom {
+    padding-block: 2.5rem !important;
+    color: var(--slide-muted);
+    background: var(--selection);
+    border-radius: 0 0 1.5rem 1.5rem;
+  }
+
+  /* ---- misc ---- */
+
+  /* 높이 상한을 이미지 비율(--ratio)로 너비로 바꿔 넘치지 않게 한다. */
+  .deck .figure {
+    --figure-max-height: 42dvh;
+
+    align-self: flex-start;
+    width: min(100%, calc(var(--figure-max-height) * var(--ratio)));
+    height: auto;
+    background: white;
+    border-radius: 0.75rem;
+  }
+
+  /* 넓은 화면에서는 글과 이미지를 좌우로, 좁은 화면에서는 위아래로 둔다. */
+  .deck .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .deck .split .figure {
+    justify-self: center;
+  }
+
+  .deck .split-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .deck .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .deck .figure.portrait {
+    --figure-max-height: 60dvh;
+  }
+
+  .deck .code {
+    align-self: flex-start;
+    padding: 1.25rem 1.75rem;
+    margin: 0;
+    font-family: var(--font-mono);
+    background: var(--selection);
+    border-radius: 0.75rem;
+  }
+
+  /* 좁은 화면에서는 줄바꿈 대신 가로 스크롤로 트리 정렬을 지킨다. */
+  .deck .code.tree {
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: calc(var(--slide-body-size) * 0.9);
+    line-height: 1.7;
+  }
+
+  /* 줄 수가 많은 트리는 한 장에 들어가도록 줄 간격을 좁힌다. */
+  .deck .code.tree.dense {
+    font-size: calc(var(--slide-body-size) * 0.8);
+    line-height: 1.5;
+  }
+
+  .deck .equation {
+    font-family: var(--font-mono);
+  }
+
+  .deck .equation strong {
+    color: var(--slide-heading);
+  }
+</style>

@@ -1,18 +1,26 @@
 import satori, { type SatoriOptions } from 'satori';
 import sharp from 'sharp';
 
-async function getFontData(url: string) {
-  const fontResponse = await fetch(url);
-  return await fontResponse.arrayBuffer();
+// jsDelivr가 폰트 대신 오류 문구를 돌려줄 때가 있어 GitHub 원본으로 한 번 더 받는다.
+const FONT_SOURCES = [
+  'https://cdn.jsdelivr.net/gh/bepyan/arita@main/fonts',
+  'https://raw.githubusercontent.com/bepyan/arita/main/fonts',
+];
+
+async function getFontData(fileName: string): Promise<ArrayBuffer> {
+  for (const source of FONT_SOURCES) {
+    const response = await fetch(`${source}/${fileName}`);
+    const contentType = response.headers.get('content-type') ?? '';
+    if (response.ok && !contentType.startsWith('text/')) {
+      return await response.arrayBuffer();
+    }
+  }
+  throw new Error(`[og-image] 폰트를 받지 못했습니다: ${fileName}`);
 }
 
 const [AritaBuri, AritaBuriBold] = await Promise.all([
-  getFontData(
-    'https://cdn.jsdelivr.net/gh/bepyan/arita@main/fonts/AritaBuriKR-Medium.ttf',
-  ),
-  getFontData(
-    'https://cdn.jsdelivr.net/gh/bepyan/arita@main/fonts/AritaBuriKR-Bold.ttf',
-  ),
+  getFontData('AritaBuriKR-Medium.ttf'),
+  getFontData('AritaBuriKR-Bold.ttf'),
 ]);
 
 const satoriOption: SatoriOptions = {

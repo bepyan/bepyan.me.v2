@@ -185,9 +185,6 @@ export const createSlideEditor = (
   const toggle = () => {
     (document.activeElement as HTMLElement | null)?.blur();
     setActive(!isActive);
-    showToast(
-      isActive ? '편집 모드: 글자를 눌러 고칩니다.' : '편집 모드를 껐습니다.',
-    );
   };
 
   return {

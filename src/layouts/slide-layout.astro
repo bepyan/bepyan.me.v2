@@ -48,6 +48,9 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <button type="button" role="menuitem" data-action="last">
           <span>마지막 슬라이드</span><kbd>End</kbd>
         </button>
+        <button type="button" role="menuitem" data-action="overview">
+          <span>장표 한눈에 보기</span><kbd>O</kbd>
+        </button>
         <form class="deck-menu-goto">
           <input
             type="number"
@@ -80,7 +83,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <a href="/slides" role="menuitem">홈으로</a>
       </div>
       <dialog class="deck-qr" aria-label="QR 코드">
-        <button type="button" class="deck-qr-close" aria-label="닫기">
+        <button type="button" class="deck-close" aria-label="닫기">
           <!-- lucide x -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -101,6 +104,25 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <small class="deck-qr-hint">클릭하여 URL 복사 · ESC 또는 Q로 닫기</small
         >
       </dialog>
+      <dialog class="deck-overview" aria-label="장표 한눈에 보기">
+        <button type="button" class="deck-close" aria-label="닫기">
+          <!-- lucide x -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+        <ol class="deck-overview-grid"></ol>
+      </dialog>
     </main>
   </body>
 </html>
@@ -111,7 +133,8 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   // themeStore는 giscus(React)를 import해 React island가 없는 이 페이지에서 dev 오류를 낸다.
   // 같은 localStorage 키를 직접 다뤄 블로그와 테마를 공유한다.
   const deck = document.querySelector<HTMLElement>('.deck')!;
-  const slides = [...deck.querySelectorAll<HTMLElement>('.slide')];
+  // 오버뷰 복제본과 섞이지 않도록 직계 자식만 장으로 센다.
+  const slides = [...deck.querySelectorAll<HTMLElement>(':scope > .slide')];
   const progress = deck.querySelector<HTMLElement>('.deck-progress')!;
   const counter = deck.querySelector<HTMLElement>('.deck-counter')!;
   const menuStatus = deck.querySelector<HTMLElement>('.deck-menu-status')!;
@@ -133,6 +156,9 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     menuStatus.parentElement!.ariaLabel = status;
     prevItem.disabled = current === 0;
     nextItem.disabled = current === total - 1;
+    slides.forEach((slide, i) =>
+      slide.toggleAttribute('data-current', i === current),
+    );
     history.replaceState(null, '', `#${current + 1}`);
   };
 
@@ -225,9 +251,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   const toggleQr = () => (qr.open ? qr.close() : openQr());
 
-  qr.querySelector('.deck-qr-close')!.addEventListener('click', () =>
-    qr.close(),
-  );
+  qr.querySelector('.deck-close')!.addEventListener('click', () => qr.close());
   qr.addEventListener('close', () => deck.focus());
 
   qrUrl.addEventListener('click', async () => {
@@ -237,11 +261,86 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     setTimeout(() => (qrUrl.textContent = url), COPY_FEEDBACK_MS);
   });
 
+  const overview = deck.querySelector<HTMLDialogElement>('.deck-overview')!;
+  const overviewGrid = overview.querySelector<HTMLElement>(
+    '.deck-overview-grid',
+  )!;
+  let overviewItems: HTMLButtonElement[] = [];
+
+  // 복제본은 실제 뷰포트 크기(vw·dvh)로 그린 뒤 transform으로 줄인다.
+  const updateOverviewScale = () => {
+    const frame = overviewGrid.querySelector<HTMLElement>(
+      '.deck-overview-frame',
+    );
+    if (!frame) return;
+    overview.style.setProperty(
+      '--overview-scale',
+      `${frame.clientWidth / innerWidth}`,
+    );
+  };
+
+  const buildOverview = () => {
+    overviewItems = slides.map((slide, i) => {
+      const clone = slide.cloneNode(true) as HTMLElement;
+      clone.inert = true;
+      clone.removeAttribute('data-current');
+      [clone, ...clone.querySelectorAll('[id]')].forEach((el) =>
+        el.removeAttribute('id'),
+      );
+      const frame = document.createElement('span');
+      frame.className = 'deck-overview-frame';
+      frame.append(clone);
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'deck-overview-item';
+      item.ariaLabel = `슬라이드 ${i + 1}`;
+      item.append(frame);
+      item.addEventListener('click', () => {
+        overview.close();
+        goTo(i, 'instant');
+      });
+      return item;
+    });
+    overviewGrid.append(
+      ...overviewItems.map((item) => {
+        const li = document.createElement('li');
+        li.append(item);
+        return li;
+      }),
+    );
+  };
+
+  const openOverview = () => {
+    if (!overviewItems.length) buildOverview();
+    overviewItems.forEach((item, i) => {
+      item.ariaCurrent = i === current ? 'true' : null;
+    });
+    overview.showModal();
+    updateOverviewScale();
+    const item = overviewItems[current];
+    item.scrollIntoView({ block: 'center', behavior: 'instant' });
+    item.focus({ preventScroll: true });
+  };
+
+  const toggleOverview = () =>
+    overview.open ? overview.close() : openOverview();
+
+  overview
+    .querySelector('.deck-close')!
+    .addEventListener('click', () => overview.close());
+  overview.addEventListener('close', () => deck.focus());
+  window.addEventListener('resize', () => {
+    if (overview.open) updateOverviewScale();
+  });
+
+  const isOverlayOpen = () => qr.open || overview.open;
+
   const MENU_ACTIONS: Record<string, () => void> = {
     prev: goPrev,
     next: goNext,
     first: goFirst,
     last: goLast,
+    overview: openOverview,
     'copy-link': () => copyText(getSlideUrl()),
     qr: openQr,
     pdf: () => window.print(),
@@ -294,6 +393,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   // macOS는 mousedown에 contextmenu가 발생해 auto popover가 뒤따르는 mouseup에 닫힌다.
   // manual popover로 열고 닫기 조건을 직접 관리한다.
   deck.addEventListener('contextmenu', (e) => {
+    if (isOverlayOpen()) return;
     e.preventDefault();
     openMenuAt(e.clientX, e.clientY);
   });
@@ -322,7 +422,9 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   deck.addEventListener('click', (e) => {
     const isOverlay =
-      menu.contains(e.target as Node) || qr.contains(e.target as Node);
+      menu.contains(e.target as Node) ||
+      qr.contains(e.target as Node) ||
+      overview.contains(e.target as Node);
     const tap = { x: e.clientX, y: e.clientY, time: e.timeStamp };
     const isDoubleTap =
       !isOverlay &&
@@ -381,6 +483,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     KeyF: toggleFullscreen,
     KeyT: toggleTheme,
     KeyQ: toggleQr,
+    KeyO: toggleOverview,
   };
 
   document.addEventListener('keydown', (e) => {
@@ -392,6 +495,11 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     // Escape는 dialog 기본 동작이 닫는다.
     if (qr.open) {
       if (e.code === 'KeyQ') qr.close();
+      return;
+    }
+    // 오버뷰 안의 Tab·Enter·화살표는 기본 동작(포커스 이동, 스크롤)에 맡긴다.
+    if (overview.open) {
+      if (e.code === 'KeyO') overview.close();
       return;
     }
     const action = KEY_ACTIONS[e.key] ?? CODE_ACTIONS[e.code];

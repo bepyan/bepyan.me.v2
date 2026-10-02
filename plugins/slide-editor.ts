@@ -158,10 +158,10 @@ const applyEdit = async (root: string, payload: Payload) => {
   const slidesDir = path.resolve(root, 'src/pages/slides');
   const file = path.resolve(slidesDir, payload.page, 'index.astro');
   if (!file.startsWith(slidesDir + path.sep)) {
-    throw new EditError(400, '잘못된 장표 경로입니다.');
+    throw new EditError(400, '잘못된 발표 자료 경로입니다.');
   }
   if (!existsSync(file))
-    throw new EditError(404, '장표 파일을 찾을 수 없습니다.');
+    throw new EditError(404, '발표 자료 파일을 찾을 수 없습니다.');
 
   // AST의 start/end는 UTF-8 byte offset이라 Buffer 기준으로 자른다.
   const source = await readFile(file);
@@ -169,10 +169,13 @@ const applyEdit = async (root: string, payload: Payload) => {
 
   const slides = collectSlides(ast.body);
   if (slides.length !== payload.total) {
-    throw new EditError(409, '소스의 장 개수가 화면과 달라 고칠 수 없습니다.');
+    throw new EditError(
+      409,
+      '소스의 장표 개수가 화면과 달라 고칠 수 없습니다.',
+    );
   }
   let target = slides[payload.slide];
-  if (!target) throw new EditError(400, '없는 장입니다.');
+  if (!target) throw new EditError(400, '없는 장표입니다.');
   for (const index of payload.path) {
     target = elementChildren(target)[index];
     if (!target) throw new EditError(409, '소스에서 요소를 찾을 수 없습니다.');

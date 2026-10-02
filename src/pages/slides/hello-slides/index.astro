@@ -7,7 +7,7 @@ import meta from './_meta';
 <SlideLayout {meta}>
   <section class="slide">
     <h1>{meta.title}</h1>
-    <p>장마다 레이아웃 하나를 보여 줍니다.</p>
+    <p>장표마다 레이아웃 하나를 보여 줍니다.</p>
     <small class="hint">
       <kbd>← →</kbd> 키, 스크롤, 스와이프로 넘깁니다.
     </small>
@@ -26,9 +26,9 @@ import meta from './_meta';
 
   <section class="slide">
     <small class="eyebrow">.eyebrow · ul · .source</small>
-    <h2>기본 장</h2>
+    <h2>기본 장표</h2>
     <ul>
-      <li>eyebrow로 장의 위치를 알려 줍니다</li>
+      <li>eyebrow로 장표의 위치를 알려 줍니다</li>
       <li>본문은 목록 3~5개가 알맞습니다</li>
       <li>출처는 왼쪽 아래에 둡니다</li>
     </ul>
@@ -39,12 +39,12 @@ import meta from './_meta';
     <small class="eyebrow">dl.defs</small>
     <h2>용어 정의</h2>
     <dl class="defs">
+      <dt>발표 자료</dt>
+      <dd>발표 하나를 이루는 장표의 묶음</dd>
       <dt>장표</dt>
-      <dd>발표 하나를 이루는 장의 묶음</dd>
-      <dt>장</dt>
       <dd>한 화면을 채우는 section.slide</dd>
       <dt>토큰</dt>
-      <dd>장표 스타일에서 덮어쓰는 --slide-* 변수</dd>
+      <dd>발표 자료 스타일에서 덮어쓰는 --slide-* 변수</dd>
     </dl>
   </section>
 
@@ -62,18 +62,18 @@ import meta from './_meta';
       </div>
       <div>
         <dt>공유</dt>
-        <dd>주소 끝의 #4로 지금 보는 장을 공유합니다</dd>
+        <dd>주소 끝의 #4로 지금 보는 장표를 공유합니다</dd>
       </div>
       <div>
         <dt>PDF</dt>
-        <dd>메뉴에서 한 장을 한 페이지로 인쇄합니다</dd>
+        <dd>메뉴에서 한 장표를 한 페이지로 인쇄합니다</dd>
       </div>
     </dl>
   </section>
 
   <section class="slide">
     <small class="eyebrow">table.data-table</small>
-    <h2>장표 파일 구조</h2>
+    <h2>발표 자료 파일 구조</h2>
     <table class="data-table">
       <thead>
         <tr><th>파일</th><th>역할</th></tr>
@@ -81,7 +81,7 @@ import meta from './_meta';
       <tbody>
         <tr>
           <th>index.astro<small>라우팅됨</small></th>
-          <td>장을 담은 장표 본문</td>
+          <td>장표를 담은 발표 자료 본문</td>
         </tr>
         <tr>
           <th>_meta.ts<small>라우팅 안 됨</small></th>
@@ -89,7 +89,7 @@ import meta from './_meta';
         </tr>
         <tr>
           <th>_draft.md<small>라우팅 안 됨</small></th>
-          <td>장 구성 초안</td>
+          <td>장표 구성 초안</td>
         </tr>
       </tbody>
     </table>
@@ -110,7 +110,7 @@ import meta from './_meta';
         class="figure"
         style="--ratio: 1280 / 720"
         src="/img/hello-slides/overview.avif"
-        alt="모든 장을 썸네일로 보여 주는 한눈에 보기 화면"
+        alt="모든 장표를 썸네일로 보여 주는 한눈에 보기 화면"
         width="1280"
         height="720"
         loading="lazy"
@@ -138,7 +138,7 @@ import meta from './_meta';
     <h2>폴더 구조</h2>
     <pre
       class="code tree"><code>{`src/pages/slides/<slug>/
-├── index.astro   # 장표 본문
+├── index.astro   # 발표 자료 본문
 ├── _meta.ts      # 제목, 날짜
 └── _draft.md     # 초안`}</code></pre>
   </section>
@@ -148,7 +148,7 @@ import meta from './_meta';
     <h2>순서와 타임라인</h2>
     <ol class="chips flow">
       <li>초안</li>
-      <li>장 구성</li>
+      <li>장표 구성</li>
       <li>스크린샷 검증</li>
       <li>발표</li>
     </ol>
@@ -157,7 +157,7 @@ import meta from './_meta';
   <section class="slide">
     <small class="eyebrow">blockquote.statement</small>
     <blockquote class="statement">
-      <p>한 장에는 하나의 메시지만 담는다.</p>
+      <p>한 장표에는 하나의 메시지만 담는다.</p>
     </blockquote>
   </section>
 
@@ -174,7 +174,7 @@ import meta from './_meta';
         <dd>4</dd>
       </div>
       <div>
-        <dt>장당 메시지</dt>
+        <dt>장표당 메시지</dt>
         <dd>1</dd>
       </div>
     </dl>
@@ -184,7 +184,7 @@ import meta from './_meta';
     <small class="eyebrow">.reveal</small>
     <h2>차례로 등장</h2>
     <ul>
-      <li class="reveal" style="--i: 1">현재 장이 되면 나타납니다</li>
+      <li class="reveal" style="--i: 1">현재 장표가 되면 나타납니다</li>
       <li class="reveal" style="--i: 2">--i 순서대로 늦게 나옵니다</li>
       <li class="reveal" style="--i: 3">
         인쇄와 동작 줄이기 설정에서는 처음부터 보입니다

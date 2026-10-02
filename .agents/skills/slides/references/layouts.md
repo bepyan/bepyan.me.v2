@@ -1,12 +1,12 @@
 # 공용 레이아웃
 
-`src/styles/slides.css`의 `/* ---- layouts ---- */` 구간에 정의되어 있다. 실제 모양은 `/slides/hello-slides` 갤러리에서 장마다 하나씩 볼 수 있다.
+`src/styles/slides.css`의 `/* ---- layouts ---- */` 구간에 정의되어 있다. 실제 모양은 `/slides/hello-slides` 갤러리에서 장표마다 하나씩 볼 수 있다.
 
-장 안의 요소는 `.slide`의 `gap`(1.5rem)으로 세로 간격이 잡힌다. 요소마다 margin을 따로 주지 않는다.
+장표 안의 요소는 `.slide`의 `gap`(1.5rem)으로 세로 간격이 잡힌다. 요소마다 margin을 따로 주지 않는다.
 
-## 기본 장: eyebrow · ul · source
+## 기본 장표: eyebrow · ul · source
 
-언제: 제목 하나와 설명 목록. 대부분의 장.
+언제: 제목 하나와 설명 목록. 대부분의 장표.
 밀도: 낮음은 목록 1~3개, 높음은 4~8개.
 
 ```html
@@ -24,7 +24,7 @@
 </section>
 ```
 
-- `eyebrow`는 장이 속한 장(章)이나 맥락을 적는다.
+- `eyebrow`는 장표가 속한 구간이나 맥락을 적는다.
 - `source`는 왼쪽 아래에 고정되고, 오른쪽 아래 페이지 번호와 겹치지 않게 비워 둔다. 출처가 여럿이면 `·`로 잇는다.
 
 ## chapter
@@ -40,7 +40,7 @@
 
 ## end
 
-언제: 마지막 장, Q&A. 내용을 가로 가운데로 모은다.
+언제: 마지막 장표, Q&A. 내용을 가로 가운데로 모은다.
 
 ```html
 <section class="slide end">
@@ -78,8 +78,8 @@
 
 ```html
 <dl class="defs">
-  <dt>장표</dt>
-  <dd>발표 하나를 이루는 장의 묶음</dd>
+  <dt>발표 자료</dt>
+  <dd>발표 하나를 이루는 장표의 묶음</dd>
 </dl>
 ```
 
@@ -126,7 +126,7 @@
 
 ## figure
 
-언제: 스크린샷, 도표 이미지. `--ratio`(너비 / 높이)로 높이 상한(`--figure-max-height`, 기본 42dvh)을 너비로 바꿔 장을 넘지 않게 한다.
+언제: 스크린샷, 도표 이미지. `--ratio`(너비 / 높이)로 높이 상한(`--figure-max-height`, 기본 42dvh)을 너비로 바꿔 장표를 넘지 않게 한다.
 
 ```html
 <img
@@ -199,13 +199,13 @@
 
 ## blockquote.statement
 
-언제: 한 문장을 크게 보여 주는 장. 낮은 밀도에서 구간을 정리하거나 핵심 메시지를 강조할 때.
+언제: 한 문장을 크게 보여 주는 장표. 낮은 밀도에서 구간을 정리하거나 핵심 메시지를 강조할 때.
 
 ```html
 <section class="slide">
   <small class="eyebrow">정리</small>
   <blockquote class="statement">
-    <p>한 장에는 하나의 메시지만 담는다.</p>
+    <p>한 장표에는 하나의 메시지만 담는다.</p>
   </blockquote>
 </section>
 ```

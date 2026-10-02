@@ -13,7 +13,7 @@ export type SlideInfo = SlideMeta & {
   href: string;
 };
 
-// 장표마다 src/pages/slides/<slug>/_meta.ts 에서 default export
+// 발표 자료마다 src/pages/slides/<slug>/_meta.ts 에서 default export
 const metaModules = import.meta.glob<{ default: SlideMeta }>(
   '/src/pages/slides/*/_meta.ts',
   { eager: true },

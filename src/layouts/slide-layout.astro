@@ -141,7 +141,6 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   // themeStore는 giscus(React)를 import해 React island가 없는 이 페이지에서 dev 오류를 낸다.
   // 같은 localStorage 키를 직접 다뤄 블로그와 테마를 공유한다.
   const deck = document.querySelector<HTMLElement>('.deck')!;
-  // 오버뷰 복제본과 섞이지 않도록 직계 자식만 장으로 센다.
   const slides = [...deck.querySelectorAll<HTMLElement>(':scope > .slide')];
   const progress = deck.querySelector<HTMLElement>('.deck-progress')!;
   const counter = deck.querySelector<HTMLElement>('.deck-counter')!;
@@ -275,7 +274,6 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   )!;
   let overviewItems: HTMLButtonElement[] = [];
 
-  // 복제본은 실제 뷰포트 크기(vw·dvh)로 그린 뒤 transform으로 줄인다.
   const updateOverviewScale = () => {
     const frame = overviewGrid.querySelector<HTMLElement>(
       '.deck-overview-frame',
@@ -495,7 +493,6 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   };
 
   document.addEventListener('keydown', (e) => {
-    // 편집 중인 글자 입력은 단축키로 가로채지 않는다.
     if ((e.target as HTMLElement).isContentEditable) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (isMenuOpen()) {
@@ -507,7 +504,6 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
       if (e.code === 'KeyQ') qr.close();
       return;
     }
-    // 오버뷰 안의 Tab·Enter·화살표는 기본 동작(포커스 이동, 스크롤)에 맡긴다.
     if (overview.open) {
       if (e.code === 'KeyO') overview.close();
       return;
@@ -518,7 +514,6 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     action();
   });
 
-  // 편집 모드는 dev 서버에서만 쓴다. 분기째 prod 번들에서 빠진다.
   if (import.meta.env.DEV) {
     import('~/libs/slide-editor').then(({ createSlideEditor }) => {
       const editor = createSlideEditor(deck, slides);

@@ -308,7 +308,7 @@ body {
   line-height: 1.5;
 }
 
-/* ---- statement: 한 문장을 크게 ---- */
+/* ---- statement ---- */
 .deck .statement {
   max-width: 24em;
   margin: 0;
@@ -323,7 +323,7 @@ body {
   margin: 0;
 }
 
-/* ---- stats: 숫자를 크게, 이름을 작게 ---- */
+/* ---- stats ---- */
 .deck .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
@@ -597,7 +597,6 @@ body {
 
 .deck-overview-grid {
   display: grid;
-  /* 좁은 화면에서도 두 장씩 보이게 한다. */
   grid-template-columns: repeat(
     auto-fill,
     minmax(min(calc(50% - 0.625rem), 16rem), 1fr)
@@ -632,7 +631,6 @@ body {
   box-shadow: 0 0 0 2px var(--slide-accent);
 }
 
-/* 높이가 배율로 정해져 있어 화면 밖 썸네일은 렌더링을 건너뛴다. */
 .deck-overview-frame {
   position: relative;
   display: block;
@@ -652,7 +650,6 @@ body {
 }
 
 /* ---- reveal ---- */
-/* 현재 장이 되면 .reveal 요소가 --i 순서대로 나타난다. 오버뷰 복제본은 직계 자식이 아니라 제외된다. */
 @media screen and (prefers-reduced-motion: no-preference) {
   .deck > .slide .reveal {
     transition:

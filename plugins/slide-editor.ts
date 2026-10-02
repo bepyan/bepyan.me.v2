@@ -8,11 +8,6 @@ import { z } from 'astro/zod';
 import * as prettier from 'prettier';
 import type { Plugin } from 'vite';
 
-/**
- * dev 서버에서 슬라이드 편집 모드가 고친 글자를 `.astro` 소스에 저장한다.
- * 클라이언트는 src/libs/slide-editor.ts.
- */
-
 const ENDPOINT = '/__slides/edit';
 const MAX_BODY_BYTES = 64 * 1024;
 
@@ -28,7 +23,6 @@ const payloadSchema = z.object({
 
 type Payload = z.infer<typeof payloadSchema>;
 
-// compiler-rs AST 중 여기서 다루는 부분만 좁혀 둔다.
 interface AstNode {
   type: string;
   start: number;
@@ -66,7 +60,6 @@ const getAttributeName = (
     ? `${attr.name.namespace.name}:${attr.name.name}`
     : attr.name?.name;
 
-// 소문자 태그만 HTML 요소다. 컴포넌트(대문자, 점 표기)와 hoist되는 태그는 DOM과 1:1이 아니다.
 const isPlainElement = (node: AstNode) => {
   if (node.type !== 'JSXElement') return false;
   const tag = getTagName(node);
@@ -93,7 +86,6 @@ const hasSlideClass = (node: AstNode) =>
       attr.value.value.split(/\s+/).includes('slide'),
   ) ?? false;
 
-// 표현식 안은 들어가지 않는다. 그 안의 장은 개수 검사에서 걸러진다.
 const collectSlides = (nodes: AstNode[], found: AstNode[] = []) => {
   for (const node of nodes) {
     if (node.type !== 'JSXElement') continue;
@@ -103,7 +95,6 @@ const collectSlides = (nodes: AstNode[], found: AstNode[] = []) => {
   return found;
 };
 
-// DOM의 element 자식 순서와 같아야 하므로, 형제 중 DOM과 어긋날 수 있는 노드가 있으면 거부한다.
 const elementChildren = (node: AstNode) => {
   const children = (node.children ?? []).filter(
     (child) => child.type !== 'AstroComment' && child.type !== 'JSXText',
@@ -149,7 +140,6 @@ const decodeEntities = (text: string) =>
     );
   });
 
-// 클라이언트의 normalizeText와 같은 규칙이어야 한다.
 const normalizeText = (text: string) => text.replace(/\s+/g, ' ').trim();
 
 const escapeText = (text: string) =>
@@ -208,7 +198,6 @@ const applyEdit = async (root: string, payload: Payload) => {
   }
   if (payload.dryRun) return;
 
-  // 앞쪽 offset이 밀리지 않도록 뒤에서부터 바꾼다.
   let edited = source;
   for (let i = runs.length - 1; i >= 0; i--) {
     const next = payload.next[i];

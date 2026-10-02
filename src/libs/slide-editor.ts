@@ -1,10 +1,5 @@
 import '~/styles/slide-editor.css';
 
-/**
- * dev 전용 슬라이드 편집 모드. 고친 글자는 plugins/slide-editor.ts가 소스에 저장한다.
- * slide-layout.astro가 import.meta.env.DEV 분기에서만 import해 prod 번들에 들어가지 않는다.
- */
-
 const ENDPOINT = '/__slides/edit';
 const EDITABLE = 'h1,h2,h3,p,li,dt,dd,th,td,small,blockquote,figcaption';
 const STORAGE_KEY = 'slides:edit-mode';
@@ -26,7 +21,6 @@ type EditRequest = {
   dryRun?: boolean;
 };
 
-// 서버의 normalizeText와 같은 규칙이어야 한다.
 const normalizeText = (text: string) => text.replace(/\s+/g, ' ').trim();
 
 const getTextRuns = (el: HTMLElement) => {
@@ -39,7 +33,6 @@ const getTextRuns = (el: HTMLElement) => {
   return runs;
 };
 
-// 인라인 태그를 지우거나 합치면 소스와 1:1 대응이 깨지므로 구조를 비교한다.
 const getStructure = (el: HTMLElement) =>
   [...el.querySelectorAll('*')].map((child) => child.tagName).join(',');
 
@@ -69,7 +62,6 @@ export const createSlideEditor = (
     toastTimer = setTimeout(() => delete toast.dataset.visible, TOAST_MS);
   };
 
-  // 바깥 편집 대상만 고른다. li 안의 p처럼 겹치면 바깥 하나로 묶는다.
   const getTargets = () =>
     slides.flatMap((slide) =>
       [...slide.querySelectorAll<HTMLElement>(EDITABLE)].filter(
@@ -112,7 +104,6 @@ export const createSlideEditor = (
     showToast(message);
   };
 
-  // 표현식으로 만든 글자는 입력하기 전에 미리 거부한다.
   const onFocusIn = async (e: FocusEvent) => {
     const el = e.target as HTMLElement;
     if (!el.isContentEditable || snapshots.has(el)) return;
@@ -145,7 +136,6 @@ export const createSlideEditor = (
     }
     if (runs.every((run, i) => run === snapshot.runs[i])) return;
 
-    // 저장되면 dev 서버가 페이지를 다시 불러온다.
     const result = await request({
       ...getLocation(el),
       prev: snapshot.runs,
@@ -159,10 +149,10 @@ export const createSlideEditor = (
     }
   };
 
-  // Enter와 Esc는 줄바꿈·취소 대신 편집을 끝낸다. 한글 조합 중 Enter는 조합 확정이라 건드리지 않는다.
   const onKeyDown = (e: KeyboardEvent) => {
     const el = e.target as HTMLElement;
     if (!el.isContentEditable) return;
+    // 한글 조합 중 Enter는 조합 확정이라 건드리지 않는다.
     if (e.isComposing || e.keyCode === 229) return;
     if (e.key !== 'Enter' && e.key !== 'Escape') return;
     e.preventDefault();
@@ -182,7 +172,6 @@ export const createSlideEditor = (
         el.removeAttribute('contenteditable');
       }
     });
-    // 저장 후 페이지를 다시 불러와도 편집 모드를 이어 간다.
     if (next) sessionStorage.setItem(STORAGE_KEY, '1');
     else sessionStorage.removeItem(STORAGE_KEY);
   };
@@ -193,7 +182,6 @@ export const createSlideEditor = (
 
   if (sessionStorage.getItem(STORAGE_KEY)) setActive(true);
 
-  // 편집 중이던 요소를 먼저 blur해 고친 내용을 저장한다.
   const toggle = () => {
     (document.activeElement as HTMLElement | null)?.blur();
     setActive(!isActive);

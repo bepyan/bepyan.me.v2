@@ -1,4 +1,3 @@
-/* dev 편집 모드 전용. src/libs/slide-editor.ts가 import해 prod에는 들어가지 않는다. */
 .deck[data-editing] > .slide [contenteditable] {
   border-radius: 0.25rem;
   outline: 1px dashed var(--slide-muted);

@@ -39,12 +39,12 @@ import meta from './_meta';
     <small class="eyebrow">dl.defs</small>
     <h2>용어 정의</h2>
     <dl class="defs">
-      <dt>덱</dt>
+      <dt>장표</dt>
       <dd>발표 하나를 이루는 장의 묶음</dd>
       <dt>장</dt>
       <dd>한 화면을 채우는 section.slide</dd>
       <dt>토큰</dt>
-      <dd>덱 스타일에서 덮어쓰는 --slide-* 변수</dd>
+      <dd>장표 스타일에서 덮어쓰는 --slide-* 변수</dd>
     </dl>
   </section>
 
@@ -73,7 +73,7 @@ import meta from './_meta';
 
   <section class="slide">
     <small class="eyebrow">table.data-table</small>
-    <h2>덱 파일 구조</h2>
+    <h2>장표 파일 구조</h2>
     <table class="data-table">
       <thead>
         <tr><th>파일</th><th>역할</th></tr>
@@ -81,7 +81,7 @@ import meta from './_meta';
       <tbody>
         <tr>
           <th>index.astro<small>라우팅됨</small></th>
-          <td>장을 담은 덱 본문</td>
+          <td>장을 담은 장표 본문</td>
         </tr>
         <tr>
           <th>_meta.ts<small>라우팅 안 됨</small></th>
@@ -138,7 +138,7 @@ import meta from './_meta';
     <h2>폴더 구조</h2>
     <pre
       class="code tree"><code>{`src/pages/slides/<slug>/
-├── index.astro   # 덱 본문
+├── index.astro   # 장표 본문
 ├── _meta.ts      # 제목, 날짜
 └── _draft.md     # 초안`}</code></pre>
   </section>

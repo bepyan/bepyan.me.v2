@@ -158,10 +158,10 @@ const applyEdit = async (root: string, payload: Payload) => {
   const slidesDir = path.resolve(root, 'src/pages/slides');
   const file = path.resolve(slidesDir, payload.page, 'index.astro');
   if (!file.startsWith(slidesDir + path.sep)) {
-    throw new EditError(400, '잘못된 덱 경로입니다.');
+    throw new EditError(400, '잘못된 장표 경로입니다.');
   }
   if (!existsSync(file))
-    throw new EditError(404, '덱 파일을 찾을 수 없습니다.');
+    throw new EditError(404, '장표 파일을 찾을 수 없습니다.');
 
   // AST의 start/end는 UTF-8 byte offset이라 Buffer 기준으로 자른다.
   const source = await readFile(file);

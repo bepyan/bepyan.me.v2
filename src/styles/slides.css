@@ -3,7 +3,7 @@
 /*
  * 슬라이드 토큰
  * 블로그 테마 변수를 참조하므로 .dark 전환이 자동 반영된다.
- * 덱별 커스텀은 덱 파일의 <style>에서 덮어쓴다.
+ * 장표별 커스텀은 장표 파일의 <style>에서 덮어쓴다.
  *   .deck { --slide-accent: tomato; }
  *   .dark .deck { --slide-accent: salmon; }
  */

@@ -78,7 +78,7 @@
 
 ```html
 <dl class="defs">
-  <dt>덱</dt>
+  <dt>장표</dt>
   <dd>발표 하나를 이루는 장의 묶음</dd>
 </dl>
 ```

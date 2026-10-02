@@ -13,4 +13,4 @@
 - 인쇄(PDF), 동작 줄이기 설정, 한눈에 보기 썸네일에서는 처음부터 다 보인다. 규칙이 `@media screen and (prefers-reduced-motion: no-preference)` 안의 `.deck > .slide` 선택자에만 걸려 있기 때문이다.
 - 발표자가 말하면서 하나씩 짚을 목록에만 쓴다. 장마다 쓰면 넘길 때마다 기다리게 된다.
 - 클릭으로 하나씩 여는 단계(fragment)는 없다. 현재 장이 되는 순간 모두 순서대로 나온다.
-- 다른 효과가 필요하면 덱 `<style is:global>`에 같은 미디어 쿼리와 `.deck > .slide:not([data-current]) .<name>` 선택자로 만든다. 업무 보고처럼 차분한 덱은 0.2~0.3초로 짧게 둔다.
+- 다른 효과가 필요하면 장표 `<style is:global>`에 같은 미디어 쿼리와 `.deck > .slide:not([data-current]) .<name>` 선택자로 만든다. 업무 보고처럼 차분한 장표는 0.2~0.3초로 짧게 둔다.

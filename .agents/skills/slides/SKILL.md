@@ -1,30 +1,30 @@
 ---
 name: slides
-description: 이 저장소의 발표 덱(src/pages/slides/<slug>)을 새로 만들거나 장을 추가·수정할 때 사용한다. 이 저장소에서는 frontend-slides 대신 이 스킬을 쓴다. 블로그 글(MDX) 작성에는 사용하지 않는다.
+description: 이 저장소의 발표 장표(src/pages/slides/<slug>)를 새로 만들거나 장을 추가·수정할 때 사용한다. 이 저장소에서는 frontend-slides 대신 이 스킬을 쓴다. 블로그 글(MDX) 작성에는 사용하지 않는다.
 ---
 
-# 슬라이드 덱
+# 장표
 
-덱은 Astro 페이지 하나이고, 장(`section.slide`)이 화면 높이만큼 쌓여 scroll-snap으로 넘어간다. 고정 스테이지(1920×1080 배율 조정)가 아니라 `vw`·`clamp` 기반 유동 레이아웃이라 같은 마크업이 데스크톱과 모바일에서 다르게 흐른다.
+장표는 Astro 페이지 하나이고, 장(`section.slide`)이 화면 높이만큼 쌓여 scroll-snap으로 넘어간다. 고정 스테이지(1920×1080 배율 조정)가 아니라 `vw`·`clamp` 기반 유동 레이아웃이라 같은 마크업이 데스크톱과 모바일에서 다르게 흐른다.
 
 밀도 모드, 검증 규칙, `.reveal` 애니메이션은 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)(Zara Zhang, MIT)에서 가져와 이 저장소 구조에 맞게 고쳤다.
 
 ## 작업 순서
 
-1. **덱 준비**: 새 덱이면 `src/pages/slides/<slug>/`에 `index.astro`와 `_meta.ts`를 만든다([덱 구조](#덱-구조)). 완료 조건: `bun dev`에서 `/slides/<slug>`가 열리고 `/slides` 목록에 덱이 보인다.
+1. **장표 준비**: 새 장표라면 `src/pages/slides/<slug>/`에 `index.astro`와 `_meta.ts`를 만든다([장표 구조](#장표-구조)). 완료 조건: `bun dev`에서 `/slides/<slug>`가 열리고 `/slides` 목록에 장표가 보인다.
 2. **밀도 결정**: [밀도 모드](#밀도-모드) 중 하나를 고른다. 사용자가 정하지 않았으면 발표 상황을 묻는다. 완료 조건: 모드 하나가 정해졌다.
-3. **장 작성**: [references/layouts.md](references/layouts.md)를 읽고 장마다 공용 레이아웃을 고른다. 맞는 레이아웃이 없을 때만 덱 전용 클래스를 만든다. 등장 애니메이션을 넣을 때는 [references/animation.md](references/animation.md)를 읽는다. 완료 조건: 모든 장이 공용 레이아웃이나 덱 `<style is:global>`에 정의한 클래스만 쓴다.
+3. **장 작성**: [references/layouts.md](references/layouts.md)를 읽고 장마다 공용 레이아웃을 고른다. 맞는 레이아웃이 없을 때만 장표 전용 클래스를 만든다. 등장 애니메이션을 넣을 때는 [references/animation.md](references/animation.md)를 읽는다. 완료 조건: 모든 장이 공용 레이아웃이나 장표 `<style is:global>`에 정의한 클래스만 쓴다.
 4. **검증**: [검증](#검증)의 항목을 모두 통과한다.
 
-## 덱 구조
+## 장표 구조
 
 | 파일             | 라우팅 | 역할                                           |
 | ---------------- | ------ | ---------------------------------------------- |
-| `index.astro`    | 됨     | 덱 본문                                        |
+| `index.astro`    | 됨     | 장표 본문                                      |
 | `_meta.ts`       | 안 됨  | `SlideMeta` default export. 목록과 head에 쓰임 |
 | `_draft.md`      | 안 됨  | 장 구성 초안                                   |
 | `_script.md`     | 안 됨  | 발표 대본. 장 번호는 `#N`으로 적는다           |
-| 그 밖의 `.astro` | 됨     | 실습 자료처럼 덱에 딸린 별도 페이지            |
+| 그 밖의 `.astro` | 됨     | 실습 자료처럼 장표에 딸린 별도 페이지          |
 
 `_`로 시작하는 파일은 Astro가 라우팅하지 않는다.
 
@@ -33,7 +33,7 @@ description: 이 저장소의 발표 덱(src/pages/slides/<slug>)을 새로 만�
 import type { SlideMeta } from '~/libs/slides';
 
 export default {
-  title: '덱 제목',
+  title: '장표 제목',
   date: new Date('2026-10-01'),
   event: '행사명', // 선택
   description: '한 줄 설명', // 선택
@@ -69,11 +69,11 @@ import meta from './_meta';
 
 - `<section class="slide">`를 `SlideLayout`의 직계 자식으로, 소스에 그대로 쓴다. `{items.map(...)}`이나 컴포넌트로 장을 만들지 않는다. 장 번호, `.reveal`, 한눈에 보기, 편집 모드가 모두 `.deck > .slide`를 장으로 센다.
 - 글자는 가능한 한 마크업에 직접 쓴다. `{}` 표현식으로 넣은 글자는 편집 모드에서 고칠 수 없다.
-- 덱 전용 클래스는 `<style is:global>`에 `.deck .<name>` 선택자로 정의한다.
+- 장표 전용 클래스는 `<style is:global>`에 `.deck .<name>` 선택자로 정의한다.
 
 ### 토큰
 
-`src/styles/slides.css` 맨 위의 `--slide-*` 변수를 덱 `<style is:global>`에서 `.deck`와 `.dark .deck`에 덮어쓴다. 다크 모드 값을 함께 정한다.
+`src/styles/slides.css` 맨 위의 `--slide-*` 변수를 장표 `<style is:global>`에서 `.deck`와 `.dark .deck`에 덮어쓴다. 다크 모드 값을 함께 정한다.
 
 ### 이미지
 
@@ -96,7 +96,7 @@ import meta from './_meta';
 
 ## 검증
 
-1. `bun dev`로 덱을 열고, 고친 장을 1280×720과 390×844에서 라이트·다크 모드로 스크린샷을 찍어 확인한다. 글자 겹침, 잘림, 패널 겹침은 스크린샷으로만 보인다.
+1. `bun dev`로 장표를 열고, 고친 장을 1280×720과 390×844에서 라이트·다크 모드로 스크린샷을 찍어 확인한다. 글자 겹침, 잘림, 패널 겹침은 스크린샷으로만 보인다.
 2. 브라우저 콘솔에서 넘치는 장을 찾는다. 결과가 `[]`이어야 한다. 두 뷰포트에서 모두 실행한다.
 
    ```js

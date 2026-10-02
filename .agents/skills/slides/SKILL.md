@@ -1,13 +1,11 @@
 ---
 name: slides
-description: 이 저장소의 발표 장표(src/pages/slides/<slug>)를 새로 만들거나 장을 추가·수정할 때 사용한다. 이 저장소에서는 frontend-slides 대신 이 스킬을 쓴다. 블로그 글(MDX) 작성에는 사용하지 않는다.
+description: 이 저장소의 발표 장표(src/pages/slides/<slug>)를 새로 만들거나 장을 추가·수정할 때 사용한다. 이 저장소에서는 frontend-slides 대신 이 스킬을 쓴다.
 ---
 
 # 장표
 
 장표는 Astro 페이지 하나이고, 장(`section.slide`)이 화면 높이만큼 쌓여 scroll-snap으로 넘어간다. 고정 스테이지(1920×1080 배율 조정)가 아니라 `vw`·`clamp` 기반 유동 레이아웃이라 같은 마크업이 데스크톱과 모바일에서 다르게 흐른다.
-
-밀도 모드, 검증 규칙, `.reveal` 애니메이션은 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)(Zara Zhang, MIT)에서 가져와 이 저장소 구조에 맞게 고쳤다.
 
 ## 작업 순서
 

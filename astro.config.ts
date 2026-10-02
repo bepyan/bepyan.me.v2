@@ -20,6 +20,7 @@ import remarkBreaks from 'remark-breaks';
 import { createTwoslasher as createTwoslasherESLint } from 'twoslash-eslint';
 
 import myESLintConfig from './eslint.config';
+import { slideEditor } from './plugins/slide-editor';
 import { transformerFragment } from './plugins/transformer-fragment';
 import { SITE } from './src/consts';
 
@@ -27,7 +28,7 @@ export default defineConfig({
   site: SITE.site,
   output: 'static',
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), slideEditor()],
   },
   markdown: {
     processor: unified({

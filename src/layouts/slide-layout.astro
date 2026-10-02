@@ -79,6 +79,14 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <button type="button" role="menuitem" data-action="theme">
           <span>테마 전환</span><kbd>T</kbd>
         </button>
+        {
+          import.meta.env.DEV && (
+            <button type="button" role="menuitem" data-action="edit">
+              <span data-label>편집 모드</span>
+              <kbd>E</kbd>
+            </button>
+          )
+        }
         <hr />
         <a href="/slides" role="menuitem">홈으로</a>
       </div>
@@ -487,6 +495,8 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   };
 
   document.addEventListener('keydown', (e) => {
+    // 편집 중인 글자 입력은 단축키로 가로채지 않는다.
+    if ((e.target as HTMLElement).isContentEditable) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (isMenuOpen()) {
       if (e.key === 'Escape') closeMenu();
@@ -507,6 +517,16 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     e.preventDefault();
     action();
   });
+
+  // 편집 모드는 dev 서버에서만 쓴다. 분기째 prod 번들에서 빠진다.
+  if (import.meta.env.DEV) {
+    import('~/libs/slide-editor').then(({ createSlideEditor }) => {
+      const editor = createSlideEditor(deck, slides);
+      MENU_ACTIONS.edit = editor.toggle;
+      CODE_ACTIONS.KeyE = editor.toggle;
+      KEY_ACTIONS.Escape = editor.exit;
+    });
+  }
 
   const initialIndex = Number(location.hash.slice(1)) - 1;
   if (initialIndex > 0) goTo(initialIndex, 'instant');

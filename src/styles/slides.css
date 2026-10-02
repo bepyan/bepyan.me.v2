@@ -75,7 +75,8 @@ body {
 }
 
 .slide h1,
-.slide h2 {
+.slide h2,
+.slide h3 {
   margin: 0;
   font-family: var(--slide-font-display);
   font-weight: 700;
@@ -89,6 +90,10 @@ body {
 
 .slide h2 {
   font-size: var(--slide-h2-size);
+}
+
+.slide h3 {
+  font-size: calc(var(--slide-body-size) * 1.25);
 }
 
 .slide small {
@@ -301,6 +306,44 @@ body {
 .deck .code.tree.dense {
   font-size: calc(var(--slide-body-size) * 0.8);
   line-height: 1.5;
+}
+
+/* ---- statement: 한 문장을 크게 ---- */
+.deck .statement {
+  max-width: 24em;
+  margin: 0;
+  font-family: var(--slide-font-display);
+  font-size: var(--slide-h2-size);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--slide-heading);
+}
+
+.deck .statement p {
+  margin: 0;
+}
+
+/* ---- stats: 숫자를 크게, 이름을 작게 ---- */
+.deck .stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1.5rem 2.5rem;
+  margin: 0;
+}
+
+.deck .stats dt {
+  font-size: var(--slide-small-size);
+  color: var(--slide-muted);
+}
+
+.deck .stats dd {
+  margin: 0;
+  font-family: var(--slide-font-display);
+  font-size: var(--slide-title-size);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--slide-heading);
 }
 
 /* ---- chrome ---- */

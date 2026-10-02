@@ -7,44 +7,193 @@ import meta from './_meta';
 <SlideLayout {meta}>
   <section class="slide">
     <h1>{meta.title}</h1>
+    <p>장마다 레이아웃 하나를 보여 줍니다.</p>
     <small class="hint">
       <kbd>← →</kbd> 키, 스크롤, 스와이프로 넘깁니다.
     </small>
   </section>
 
-  <section class="slide">
-    <h2>전체화면</h2>
-    <p><kbd>F</kbd> 키를 누르거나 우클릭 메뉴에서 켭니다.</p>
+  <section class="slide chapter">
+    <small class="eyebrow">.chapter + ol.chips</small>
+    <h1>단축키</h1>
+    <ol class="chips">
+      <li>F 전체화면</li>
+      <li>T 테마</li>
+      <li>Q QR 코드</li>
+      <li>O 한눈에 보기</li>
+    </ol>
   </section>
 
   <section class="slide">
-    <h2>테마</h2>
-    <p>블로그 테마를 따르고, <kbd>T</kbd> 키로 전환합니다.</p>
+    <small class="eyebrow">.eyebrow · ul · .source</small>
+    <h2>기본 장</h2>
+    <ul>
+      <li>eyebrow로 장의 위치를 알려 줍니다</li>
+      <li>본문은 목록 3~5개가 알맞습니다</li>
+      <li>출처는 왼쪽 아래에 둡니다</li>
+    </ul>
+    <small class="source">출처는 이렇게 표시합니다</small>
   </section>
 
   <section class="slide">
-    <h2>공유</h2>
-    <p>주소 끝의 <code>#4</code>로 지금 보는 장을 공유합니다.</p>
+    <small class="eyebrow">dl.defs</small>
+    <h2>용어 정의</h2>
+    <dl class="defs">
+      <dt>덱</dt>
+      <dd>발표 하나를 이루는 장의 묶음</dd>
+      <dt>장</dt>
+      <dd>한 화면을 채우는 section.slide</dd>
+      <dt>토큰</dt>
+      <dd>덱 스타일에서 덮어쓰는 --slide-* 변수</dd>
+    </dl>
   </section>
 
   <section class="slide">
-    <h2>커스텀</h2>
-    <p>
-      <code>&lt;style is:global&gt;</code>에서 <code class="accent"
-        >--slide-accent</code
-      > 같은 토큰을 덮어씁니다.
-    </p>
+    <small class="eyebrow">dl.cells</small>
+    <h2>사례 나열</h2>
+    <dl class="cells">
+      <div>
+        <dt>전체화면</dt>
+        <dd>F 키나 우클릭 메뉴에서 켭니다</dd>
+      </div>
+      <div>
+        <dt>테마</dt>
+        <dd>블로그 테마를 따르고 T 키로 바꿉니다</dd>
+      </div>
+      <div>
+        <dt>공유</dt>
+        <dd>주소 끝의 #4로 지금 보는 장을 공유합니다</dd>
+      </div>
+      <div>
+        <dt>PDF</dt>
+        <dd>메뉴에서 한 장을 한 페이지로 인쇄합니다</dd>
+      </div>
+    </dl>
   </section>
 
   <section class="slide">
-    <h2>파일 구조</h2>
-    <p>
-      <code>src/pages/slides/&lt;slug&gt;/</code>에 <code>index.astro</code>와
-      <code>_meta.ts</code>를 둡니다.
-    </p>
+    <small class="eyebrow">table.data-table</small>
+    <h2>덱 파일 구조</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>파일</th><th>역할</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>index.astro<small>라우팅됨</small></th>
+          <td>장을 담은 덱 본문</td>
+        </tr>
+        <tr>
+          <th>_meta.ts<small>라우팅 안 됨</small></th>
+          <td>제목, 날짜, 설명</td>
+        </tr>
+        <tr>
+          <th>_draft.md<small>라우팅 안 됨</small></th>
+          <td>장 구성 초안</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">.split + .figure</small>
+    <h2>글과 이미지</h2>
+    <div class="split">
+      <div class="split-text">
+        <p>넓은 화면에서는 좌우로, 좁은 화면에서는 위아래로 놓입니다.</p>
+        <ul>
+          <li>--ratio에 이미지 비율을 적습니다</li>
+          <li>--figure-max-height로 높이 상한을 정합니다</li>
+        </ul>
+      </div>
+      <img
+        class="figure"
+        style="--ratio: 1280 / 720"
+        src="/img/hello-slides/overview.avif"
+        alt="모든 장을 썸네일로 보여 주는 한눈에 보기 화면"
+        width="1280"
+        height="720"
+        loading="lazy"
+      />
+    </div>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">.split + .split-text × 2</small>
+    <h2>비교 2단</h2>
+    <div class="split">
+      <div class="split-text">
+        <h3>유동 레이아웃</h3>
+        <p>vw와 clamp로 화면 크기에 맞춰 글자와 여백이 바뀝니다.</p>
+      </div>
+      <div class="split-text">
+        <h3>고정 스테이지</h3>
+        <p>1920×1080 화면을 통째로 줄이고 늘립니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">pre.code.tree</small>
+    <h2>폴더 구조</h2>
+    <pre
+      class="code tree"><code>{`src/pages/slides/<slug>/
+├── index.astro   # 덱 본문
+├── _meta.ts      # 제목, 날짜
+└── _draft.md     # 초안`}</code></pre>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">ol.chips.flow</small>
+    <h2>순서와 타임라인</h2>
+    <ol class="chips flow">
+      <li>초안</li>
+      <li>장 구성</li>
+      <li>스크린샷 검증</li>
+      <li>발표</li>
+    </ol>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">blockquote.statement</small>
+    <blockquote class="statement">
+      <p>한 장에는 하나의 메시지만 담는다.</p>
+    </blockquote>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">dl.stats</small>
+    <h2>숫자로 보기</h2>
+    <dl class="stats">
+      <div>
+        <dt>레이아웃</dt>
+        <dd>12</dd>
+      </div>
+      <div>
+        <dt>단축키</dt>
+        <dd>4</dd>
+      </div>
+      <div>
+        <dt>장당 메시지</dt>
+        <dd>1</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="slide">
+    <small class="eyebrow">.reveal</small>
+    <h2>차례로 등장</h2>
+    <ul>
+      <li class="reveal" style="--i: 1">현재 장이 되면 나타납니다</li>
+      <li class="reveal" style="--i: 2">--i 순서대로 늦게 나옵니다</li>
+      <li class="reveal" style="--i: 3">
+        인쇄와 동작 줄이기 설정에서는 처음부터 보입니다
+      </li>
+    </ul>
   </section>
 
   <section class="slide end">
+    <small class="eyebrow">.end</small>
     <h1>E.O.D</h1>
   </section>
 </SlideLayout>
@@ -61,9 +210,5 @@ import meta from './_meta';
   .deck .hint {
     position: absolute;
     bottom: var(--slide-padding);
-  }
-
-  .deck .accent {
-    color: var(--slide-accent);
   }
 </style>

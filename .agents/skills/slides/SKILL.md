@@ -16,13 +16,11 @@ description: 이 저장소의 발표 자료(src/pages/slides/<slug>)를 새로 �
 
 ## 파일 구조
 
-`_`로 시작하는 파일은 Astro가 라우팅하지 않는다.
-
 - `index.astro` (필수): 발표 자료 본문
-- `_meta.ts` (필수): `SlideMeta` default export. 목록과 head에 쓰인다.
-- `_draft.md`: 사용자와 내용을 브레인스토밍하는 초안
-- `_script.md`: 발표 대본. 장표 번호는 `#N`으로 적는다.
-- 그 밖의 `.astro`: 실습 자료처럼 발표 자료에 딸린 별도 페이지
+- `_meta.ts` (필수): 발표 자료 메타데이터
+- `_draft.md`: 초안
+- `_script.md`: 발표 대본
+- 그 밖의 `.astro`: 발표 자료에 딸린 별도 페이지
 
 ```ts
 // _meta.ts
@@ -49,7 +47,19 @@ import meta from './_meta';
     <h1>{meta.title}</h1>
   </section>
 </SlideLayout>
+```
 
+### 장표 마크업 규칙
+
+- `<section class="slide">`를 `SlideLayout`의 직계 자식으로, 소스에 그대로 쓴다. 장표 번호, `.reveal`, 한눈에 보기, 편집 모드가 모두 `.deck > .slide`를 장표로 센다.
+- 글자는 가능한 한 마크업에 직접 쓴다. `{}` 표현식으로 넣은 글자는 편집 모드에서 고칠 수 없다.
+- 발표 자료 전용 클래스는 `<style is:global>`에 `.deck .<name>` 선택자로 정의한다.
+
+### 토큰
+
+`src/styles/slides.css` 맨 위의 `--slide-*` 변수가 기본값이고, 블로그 테마를 따른다. 발표 자료마다 바꾸려면 `index.astro`의 `<style is:global>`에서 `.deck`와 `.dark .deck`에 덮어쓴다. 다크 모드 값을 함께 정한다.
+
+```astro
 <style is:global>
   .deck {
     --slide-accent: #2f6fed;
@@ -61,19 +71,13 @@ import meta from './_meta';
 </style>
 ```
 
-### 장표 마크업 규칙
-
-- `<section class="slide">`를 `SlideLayout`의 직계 자식으로, 소스에 그대로 쓴다. 장표 번호, `.reveal`, 한눈에 보기, 편집 모드가 모두 `.deck > .slide`를 장표로 센다.
-- 글자는 가능한 한 마크업에 직접 쓴다. `{}` 표현식으로 넣은 글자는 편집 모드에서 고칠 수 없다.
-- 발표 자료 전용 클래스는 `<style is:global>`에 `.deck .<name>` 선택자로 정의한다.
-
-### 토큰
-
-`src/styles/slides.css` 맨 위의 `--slide-*` 변수를 발표 자료 `<style is:global>`에서 `.deck`와 `.dark .deck`에 덮어쓴다. 다크 모드 값을 함께 정한다.
-
 ### 이미지
 
-`public/img/<slug>/`에 PNG로 넣고 `bun run img:avif`로 AVIF로 바꾼다. 변환 후 PNG는 지워지고, 스크립트는 MDX 참조만 고치므로 `index.astro`에는 처음부터 `.avif` 경로를 쓴다. 마크업은 [layouts.md의 figure](references/layouts.md#figure)를 따른다.
+이미지는 `public/img/<slug>/`에 보관한다.
+마크업은 [layouts.md의 figure](references/layouts.md#figure) 가이드를 따른다.
+
+리소스 효율화를 위해 기본적으로 AVIF 포맷의 파일을 사용한다.
+`bun run img:avif` 명령어를 통해 PNG 파일을 AVIF로 변환할 수 있다.
 
 ## 밀도
 
@@ -98,5 +102,5 @@ import meta from './_meta';
    });
    ```
 
-3. 넘치는 장표는 내용을 다른 장표로 나눈다.
+3. 넘치는 장표가 있으면 장표 번호, 뷰포트, 넘친 요소를 사용자에게 보고한다.
 4. `bun run check`와 `bun run build`가 통과한다.

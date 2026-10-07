@@ -3,7 +3,7 @@
 /*
  * 슬라이드 토큰
  * 블로그 테마 변수를 참조하므로 .dark 전환이 자동 반영된다.
- * 덱별 커스텀은 덱 파일의 <style>에서 덮어쓴다.
+ * 발표 자료별 커스텀은 발표 자료 파일의 <style>에서 덮어쓴다.
  *   .deck { --slide-accent: tomato; }
  *   .dark .deck { --slide-accent: salmon; }
  */
@@ -66,6 +66,7 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
   justify-content: center;
   height: 100dvh;
   padding: var(--slide-padding);
@@ -74,7 +75,8 @@ body {
 }
 
 .slide h1,
-.slide h2 {
+.slide h2,
+.slide h3 {
   margin: 0;
   font-family: var(--slide-font-display);
   font-weight: 700;
@@ -90,9 +92,258 @@ body {
   font-size: var(--slide-h2-size);
 }
 
+.slide h3 {
+  font-size: calc(var(--slide-body-size) * 1.25);
+}
+
 .slide small {
   font-size: var(--slide-small-size);
   color: var(--slide-muted);
+}
+
+/* ---- layouts ---- */
+.deck .chapter h1 {
+  font-size: calc(var(--slide-title-size) * 1.2);
+}
+
+.deck .end {
+  align-items: center;
+}
+
+/* 오른쪽 아래 페이지 번호와 겹치지 않도록 비워 둔다. */
+.deck .source {
+  position: absolute;
+  inset-inline: var(--slide-padding);
+  bottom: var(--slide-padding);
+  padding-right: 3rem;
+}
+
+.deck .source a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.deck .eyebrow {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.deck .slide ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-left: 1.25em;
+  list-style: disc;
+}
+
+.deck .slide li::marker {
+  color: var(--slide-muted);
+}
+
+/* ---- chips: 단계나 구성 요소를 가로로 나열 ---- */
+.deck .slide ol.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.deck .chips li {
+  padding: 0.375em 0.875em;
+  border: 1px solid var(--slide-border);
+  border-radius: 999px;
+}
+
+.deck .chips.flow li {
+  padding-inline: 0;
+  font-family: var(--font-mono);
+  border-color: transparent;
+}
+
+.deck .chips.flow li:not(:last-child)::after {
+  margin-left: 0.875em;
+  color: var(--slide-muted);
+  content: '→';
+}
+
+/* ---- defs: 이름과 설명 한 줄씩 ---- */
+.deck .defs {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 1rem 2.5rem;
+  margin: 0;
+}
+
+.deck .defs dt {
+  font-weight: 600;
+  color: var(--slide-heading);
+}
+
+.deck .defs dd {
+  margin: 0;
+}
+
+/* ---- cells: 사례를 여러 칸으로 ---- */
+.deck .cells {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.deck .cells > div {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--slide-border);
+  border-radius: 0.75rem;
+}
+
+.deck .cells dt {
+  font-size: var(--slide-small-size);
+  color: var(--slide-muted);
+}
+
+.deck .cells dd {
+  margin: 0.25rem 0 0;
+}
+
+/* ---- data-table: 행 머리글이 있는 표 ---- */
+.deck .data-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.deck .data-table th,
+.deck .data-table td {
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+  border-bottom: 1px solid var(--slide-border);
+}
+
+.deck .data-table thead th {
+  font-size: var(--slide-small-size);
+  font-weight: 400;
+  color: var(--slide-muted);
+}
+
+.deck .data-table tbody th {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--slide-heading);
+}
+
+.deck .data-table tbody th small {
+  display: block;
+  font-family: var(--slide-font-body);
+  font-weight: 400;
+  color: var(--slide-muted);
+}
+
+.deck .data-table strong {
+  color: var(--slide-heading);
+}
+
+/* ---- figure ---- */
+/* 높이 상한을 이미지 비율(--ratio)로 너비로 바꿔 넘치지 않게 한다. */
+.deck .figure {
+  --figure-max-height: 42dvh;
+
+  align-self: flex-start;
+  width: min(100%, calc(var(--figure-max-height) * var(--ratio)));
+  height: auto;
+  background: white;
+  border-radius: 0.75rem;
+}
+
+/* 넓은 화면에서는 글과 이미지를 좌우로, 좁은 화면에서는 위아래로 둔다. */
+.deck .split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.deck .split .figure {
+  justify-self: center;
+}
+
+.deck .split-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .deck .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.deck .figure.portrait {
+  --figure-max-height: 60dvh;
+}
+
+/* ---- code ---- */
+.deck .code {
+  align-self: flex-start;
+  padding: 1.25rem 1.75rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  background: var(--selection);
+  border-radius: 0.75rem;
+}
+
+/* 좁은 화면에서는 줄바꿈 대신 가로 스크롤로 트리 정렬을 지킨다. */
+.deck .code.tree {
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: calc(var(--slide-body-size) * 0.9);
+  line-height: 1.7;
+}
+
+/* 줄 수가 많은 트리는 한 장에 들어가도록 줄 간격을 좁힌다. */
+.deck .code.tree.dense {
+  font-size: calc(var(--slide-body-size) * 0.8);
+  line-height: 1.5;
+}
+
+/* ---- statement ---- */
+.deck .statement {
+  max-width: 24em;
+  margin: 0;
+  font-family: var(--slide-font-display);
+  font-size: var(--slide-h2-size);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--slide-heading);
+}
+
+.deck .statement p {
+  margin: 0;
+}
+
+/* ---- stats ---- */
+.deck .stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1.5rem 2.5rem;
+  margin: 0;
+}
+
+.deck .stats dt {
+  font-size: var(--slide-small-size);
+  color: var(--slide-muted);
+}
+
+.deck .stats dd {
+  margin: 0;
+  font-family: var(--slide-font-display);
+  font-size: var(--slide-title-size);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--slide-heading);
 }
 
 /* ---- chrome ---- */
@@ -232,6 +483,36 @@ body {
   color: var(--slide-muted);
 }
 
+/* ---- dialog ---- */
+.deck-close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  color: var(--slide-muted);
+  cursor: pointer;
+  background: var(--slide-bg);
+  border: 0;
+  border-radius: 0.375rem;
+}
+
+.deck-close svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.deck-close:hover,
+.deck-close:focus-visible {
+  color: var(--slide-fg);
+  background: var(--selection);
+  outline: none;
+}
+
 /* ---- qr ---- */
 .deck-qr {
   box-sizing: border-box;
@@ -257,35 +538,6 @@ body {
 
 .deck-qr::backdrop {
   background: var(--slide-bg);
-}
-
-.deck-qr-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  padding: 0;
-  color: var(--slide-muted);
-  cursor: pointer;
-  background: none;
-  border: 0;
-  border-radius: 0.375rem;
-}
-
-.deck-qr-close svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.deck-qr-close:hover,
-.deck-qr-close:focus-visible {
-  color: var(--slide-fg);
-  background: var(--selection);
-  outline: none;
 }
 
 .deck-qr-code {
@@ -322,6 +574,97 @@ body {
   color: var(--slide-muted);
 }
 
+/* ---- overview ---- */
+.deck-overview {
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  padding: 5rem var(--slide-padding) var(--slide-padding);
+  margin: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-family: var(--slide-font-body);
+  color: var(--slide-fg);
+  background: var(--slide-bg);
+  border: 0;
+}
+
+.deck-overview::backdrop {
+  background: var(--slide-bg);
+}
+
+.deck-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(calc(50% - 0.625rem), 16rem), 1fr)
+  );
+  gap: 1.25rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.deck-overview-item {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--slide-border);
+  border-radius: 0.5rem;
+}
+
+.deck-overview-item:hover,
+.deck-overview-item:focus-visible {
+  border-color: var(--slide-muted);
+  outline: none;
+}
+
+.deck-overview-item[aria-current='true'] {
+  border-color: var(--slide-accent);
+  box-shadow: 0 0 0 2px var(--slide-accent);
+}
+
+.deck-overview-frame {
+  position: relative;
+  display: block;
+  height: calc(100dvh * var(--overview-scale, 0.2));
+  overflow: hidden;
+  border-radius: inherit;
+  content-visibility: auto;
+}
+
+.deck-overview-frame > .slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  transform: scale(var(--overview-scale, 0.2));
+  transform-origin: 0 0;
+}
+
+/* ---- reveal ---- */
+@media screen and (prefers-reduced-motion: no-preference) {
+  .deck > .slide .reveal {
+    transition:
+      opacity 0.6s ease,
+      translate 0.6s ease;
+    transition-delay: calc(var(--i, 0) * 0.1s);
+  }
+
+  .deck > .slide:not([data-current]) .reveal {
+    opacity: 0;
+    transition-delay: 0s;
+    translate: 0 1rem;
+  }
+}
+
 /* ---- print ---- */
 /* 한 장이 PDF 한 페이지가 되도록 스크롤 컨테이너를 풀고 크롬을 숨긴다. */
 @media print {
@@ -350,7 +693,8 @@ body {
   .deck-progress,
   .deck-counter,
   .deck-menu,
-  .deck-qr {
+  .deck-qr,
+  .deck-overview {
     display: none;
   }
 }

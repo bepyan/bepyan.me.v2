@@ -488,7 +488,7 @@ const colorDist = [
   <section class="slide">
     <small class="eyebrow">워크플로우 자동화</small>
     <h2>기본 패턴 5가지</h2>
-    <table class="stages">
+    <table class="data-table">
       <thead>
         <tr><th>패턴</th><th>원문 예시</th><th>연구에 비유하면</th></tr>
       </thead>
@@ -823,7 +823,7 @@ const colorDist = [
   <section class="slide">
     <small class="eyebrow">예시 1</small>
     <h2>단계마다 입력·결과물·완료 기준</h2>
-    <table class="stages">
+    <table class="data-table">
       <thead>
         <tr><th>단계</th><th>입력 → 결과물</th><th>완료 기준</th></tr>
       </thead>
@@ -916,18 +916,6 @@ const colorDist = [
 </SlideLayout>
 
 <style is:global>
-  .deck .slide {
-    gap: 1.5rem;
-  }
-
-  .deck .chapter h1 {
-    font-size: calc(var(--slide-title-size) * 1.2);
-  }
-
-  .deck .end {
-    align-items: center;
-  }
-
   .deck .practice-qr {
     width: min(40dvh, 60vw);
     overflow: hidden;
@@ -944,146 +932,6 @@ const colorDist = [
   .deck .practice-link {
     color: inherit;
     text-underline-offset: 0.2em;
-  }
-
-  /* 오른쪽 아래 페이지 번호와 겹치지 않도록 비워 둔다. */
-  .deck .source {
-    position: absolute;
-    inset-inline: var(--slide-padding);
-    bottom: var(--slide-padding);
-    padding-right: 3rem;
-  }
-
-  .deck .source a {
-    color: inherit;
-    text-underline-offset: 0.2em;
-  }
-
-  .deck .eyebrow {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-  }
-
-  .deck .slide ul {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding-left: 1.25em;
-  }
-
-  .deck .slide ul {
-    list-style: disc;
-  }
-
-  .deck .slide li::marker {
-    color: var(--slide-muted);
-  }
-
-  /* ---- chips: 단계나 구성 요소를 가로로 나열 ---- */
-  .deck .slide ol.chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    padding: 0;
-    list-style: none;
-  }
-
-  .deck .chips li {
-    padding: 0.375em 0.875em;
-    border: 1px solid var(--slide-border);
-    border-radius: 999px;
-  }
-
-  .deck .chips.flow li {
-    font-family: var(--font-mono);
-  }
-
-  .deck .chips.flow li:not(:last-child)::after {
-    margin-left: 0.875em;
-    color: var(--slide-muted);
-    content: '→';
-  }
-
-  .deck .chips.flow li {
-    padding-inline: 0;
-    border-color: transparent;
-  }
-
-  /* ---- defs: 이름과 설명 한 줄씩 ---- */
-  .deck .defs {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 1rem 2.5rem;
-    margin: 0;
-  }
-
-  .deck .defs dt {
-    font-weight: 600;
-    color: var(--slide-heading);
-  }
-
-  .deck .defs dd {
-    margin: 0;
-  }
-
-  /* ---- cells: 사례를 네 칸으로 ---- */
-  .deck .cells {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-    gap: 1rem;
-    margin: 0;
-  }
-
-  .deck .cells > div {
-    padding: 1.25rem 1.5rem;
-    border: 1px solid var(--slide-border);
-    border-radius: 0.75rem;
-  }
-
-  .deck .cells dt {
-    font-size: var(--slide-small-size);
-    color: var(--slide-muted);
-  }
-
-  .deck .cells dd {
-    margin: 0.25rem 0 0;
-  }
-
-  /* ---- stages: 워크플로우 단계별 표 ---- */
-  .deck .stages {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-  }
-
-  .deck .stages th,
-  .deck .stages td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--slide-border);
-    vertical-align: top;
-  }
-
-  .deck .stages thead th {
-    font-size: var(--slide-small-size);
-    font-weight: 400;
-    color: var(--slide-muted);
-  }
-
-  .deck .stages tbody th {
-    font-family: var(--font-mono);
-    font-weight: 600;
-    color: var(--slide-heading);
-  }
-
-  .deck .stages tbody th small {
-    display: block;
-    font-family: var(--slide-font-body);
-    font-weight: 400;
-    color: var(--slide-muted);
-  }
-
-  .deck .stages strong {
-    color: var(--slide-heading);
   }
 
   /* ---- dist: 다음 토큰 확률 막대 ---- */
@@ -1139,70 +987,6 @@ const colorDist = [
     color: var(--slide-muted);
     background: var(--selection);
     border-radius: 0 0 1.5rem 1.5rem;
-  }
-
-  /* ---- misc ---- */
-
-  /* 높이 상한을 이미지 비율(--ratio)로 너비로 바꿔 넘치지 않게 한다. */
-  .deck .figure {
-    --figure-max-height: 42dvh;
-
-    align-self: flex-start;
-    width: min(100%, calc(var(--figure-max-height) * var(--ratio)));
-    height: auto;
-    background: white;
-    border-radius: 0.75rem;
-  }
-
-  /* 넓은 화면에서는 글과 이미지를 좌우로, 좁은 화면에서는 위아래로 둔다. */
-  .deck .split {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 2.5rem;
-    align-items: center;
-  }
-
-  .deck .split .figure {
-    justify-self: center;
-  }
-
-  .deck .split-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  @media (max-width: 900px) {
-    .deck .split {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  .deck .figure.portrait {
-    --figure-max-height: 60dvh;
-  }
-
-  .deck .code {
-    align-self: flex-start;
-    padding: 1.25rem 1.75rem;
-    margin: 0;
-    font-family: var(--font-mono);
-    background: var(--selection);
-    border-radius: 0.75rem;
-  }
-
-  /* 좁은 화면에서는 줄바꿈 대신 가로 스크롤로 트리 정렬을 지킨다. */
-  .deck .code.tree {
-    max-width: 100%;
-    overflow-x: auto;
-    font-size: calc(var(--slide-body-size) * 0.9);
-    line-height: 1.7;
-  }
-
-  /* 줄 수가 많은 트리는 한 장에 들어가도록 줄 간격을 좁힌다. */
-  .deck .code.tree.dense {
-    font-size: calc(var(--slide-body-size) * 0.8);
-    line-height: 1.5;
   }
 
   .deck .equation {

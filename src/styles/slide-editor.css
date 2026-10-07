@@ -1,0 +1,29 @@
+.deck[data-editing] > .slide [contenteditable] {
+  border-radius: 0.25rem;
+  outline: 1px dashed var(--slide-muted);
+  outline-offset: 0.25rem;
+}
+
+.deck[data-editing] > .slide [contenteditable]:focus {
+  outline: 2px solid var(--slide-accent);
+}
+
+.slide-editor-toast {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  z-index: 20;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: var(--slide-bg);
+  pointer-events: none;
+  background: var(--slide-fg);
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  translate: -50% 0;
+}
+
+.slide-editor-toast[data-visible] {
+  opacity: 1;
+}
